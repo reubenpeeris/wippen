@@ -112,6 +112,15 @@ public class ActionVerifier {
 			}
 		}
 		
+		//Check for non-rebuild/build capture with own build value
+		for (Pile p : table) {
+			if (p.wasBuiltByPlayerInPosion(playerPosition)
+					&& handCardUsed.getValue() == p.getValue()
+					&& !tablePilesUsed.contains(p)) {
+				throw new WippenRuleException("Trying to use promised card without consuming pile: " + expression);
+			}
+		}
+		
 		return new Move(expression, playerPosition, type, tablePilesUsed, handCardUsed);
 	}
 	

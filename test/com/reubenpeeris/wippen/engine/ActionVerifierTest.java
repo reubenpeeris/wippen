@@ -49,8 +49,8 @@ public class ActionVerifierTest {
 	private void assertInvalid(Collection<Pile> table, Collection<Card> hand,
 			Player player, String expression, String message) throws ParseException {
 		try {
-			ActionVerifier.verifyAction(Parser.parseMath(expression), player.getPosition(), table, hand);
-			fail();
+			Move move = ActionVerifier.verifyAction(Parser.parseMath(expression), player.getPosition(), table, hand);
+			fail(move.toString());
 		} catch (WippenRuleException e) {
 			assertEquals(message + expression, e.getMessage());
 		}
@@ -204,6 +204,20 @@ public class ActionVerifierTest {
 		assertValid(asSet(new Pile[]{b12_s6PlusD6}), asSet(c12, c10, c2),
 				player2, "12-2C", BUILD,
 				asSet(c2, s6, d6), c2, asSet(new Pile[]{b12_s6PlusD6}));
+	}
+
+	@Test
+	public void testUsingPromisedCardWithoutConsumingPile() throws Exception {
+		assertInvalid(asList(new Pile[]{b12_s6PlusD6}), asList(c12, c10, c2),
+				player1, "12C",
+				"Trying to use promised card without consuming pile: ");
+	}
+
+	@Test
+	public void testUsingPromiedCardToConsumePile() throws Exception {
+		assertValid(asSet(new Pile[]{b12_s6PlusD6}), asSet(c12, d12),
+				player2, "12=12C", BUILD,
+				asSet(c12, s6, d6), c12, asSet(new Pile[]{b12_s6PlusD6}));
 	}
 
 	private <T> Set<T> asSet(@SuppressWarnings("unchecked") T... array) {
