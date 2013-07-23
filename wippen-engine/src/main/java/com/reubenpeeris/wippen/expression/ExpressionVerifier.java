@@ -103,8 +103,7 @@ public class ExpressionVerifier {
 		// The first card returned by getPiles() will be the first card in the expression
 		if (expression.getValue() == handCardUsed.getRank().getValue()
 				&& expression.getPiles().iterator().next().equals(handCardUsed)
-				&& (expression.getClass().equals(Equals.class)
-						|| expression instanceof Pile)) {
+				&& (expression.getClass().equals(Equals.class))) {
 			return CAPTURE;
 		} else {
 			return BUILD;
