@@ -10,7 +10,7 @@ import com.reubenpeeris.wippen.robot.BaseRobot;
 /**
  * Simplest working robot. Each go, simply discards the first card in its hand.
  */
-public class FirstCardDiscarder extends BaseRobot {
+public class Discarder extends BaseRobot {
     @Override
     public Expression takeTurn(Collection<Pile> table, Collection<Card> hand) {
         return hand.iterator().next();

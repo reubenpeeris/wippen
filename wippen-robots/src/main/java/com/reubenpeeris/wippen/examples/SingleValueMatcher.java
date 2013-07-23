@@ -8,7 +8,7 @@ import com.reubenpeeris.wippen.expression.Expression;
 import com.reubenpeeris.wippen.expression.Pile;
 import com.reubenpeeris.wippen.robot.BaseRobot;
 
-public class FirstValueMatcher extends BaseRobot {
+public class SingleValueMatcher extends BaseRobot {
     @Override
     public Expression takeTurn(Collection<Pile> table, Collection<Card> hand) {
         for (Pile pile : table) {
