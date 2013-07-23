@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 
+import com.reubenpeeris.wippen.engine.Player;
+
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
@@ -17,22 +19,26 @@ public final class Building extends Pile {
 	private final Collection<Card> cards;
 	@Getter
 	private final Rank rank;
-	private final int playerPosition;
+	private final Player player;
 
-	public Building(Collection<Card> cards, Rank rank, int playerPosition) {
+	//TODO should take an expression to verify maths is right?
+	public Building(Collection<Card> cards, Rank rank, Player player) {
+		if (cards == null || rank == null || player == null || player == Player.NOBODY) {
+			throw new IllegalArgumentException();
+		}
 		this.rank = rank;
 		this.cards = Collections.unmodifiableCollection(new HashSet<Card>(cards));
-		this.playerPosition = playerPosition;
+		this.player = player;
 	}
 
 	@Override
-	public boolean wasBuiltByPlayerInPosion(int position) {
-		return playerPosition == position;
+	public Player getPlayer() {
+		return player;
 	}
 
 	@Override
 	public String toString() {
-		return rank.toString() + (playerPosition == -1 ? "" : "B" + playerPosition);
+		return rank.toString() + "B" + player.getPosition();
 	}
 
 	@Override

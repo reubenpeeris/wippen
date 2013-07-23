@@ -32,11 +32,6 @@ public class PileTest {
 		}
 
 		@Override
-		public boolean wasBuiltByPlayerInPosion(int position) {
-			return false;
-		}
-
-		@Override
 		public int getValue() {
 			return 0;
 		}

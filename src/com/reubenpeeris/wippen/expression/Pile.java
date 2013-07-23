@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.reubenpeeris.wippen.engine.Player;
+
 public abstract class Pile extends Expression {
 	/**
 	 * Limit scope so that robot implementors cannot create their own
@@ -13,8 +15,9 @@ public abstract class Pile extends Expression {
 	public abstract Rank getRank();
 	public abstract Collection<Card> getCards();
 	
-	//not really happy with this as int is not type safe.
-	public abstract boolean wasBuiltByPlayerInPosion(int position);
+	public Player getPlayer() {
+		return Player.NOBODY;
+	}
 	
 	public static Collection<Card> getCards(Collection<Pile> piles) {
 		if (piles == null) {

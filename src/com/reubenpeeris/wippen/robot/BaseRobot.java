@@ -1,42 +1,59 @@
 package com.reubenpeeris.wippen.robot;
 
 import java.util.Collection;
+import java.util.List;
 
-import com.reubenpeeris.wippen.expression.Expression;
+import com.reubenpeeris.wippen.engine.Player;
+import com.reubenpeeris.wippen.engine.Score;
+import com.reubenpeeris.wippen.expression.Card;
+import com.reubenpeeris.wippen.expression.Move;
 import com.reubenpeeris.wippen.expression.Pile;
 
 public abstract class BaseRobot implements Robot {
-	private int position = -1;
-
-	@Override
-	public String matchStart(int players, int rounds, int position) {
-		this.position = position;
-		return toString();
+	private Player me;
+	
+	public Player getMe() {
+		if (me == null) {
+			throw new IllegalStateException();
+		}
+		return me;
 	}
 	
-	protected int getPosition() {
-		if (position == -1) {
-			throw new IllegalStateException("Requesting position before it has been initialised");
-		}
-		
-		return position;
-	}
-
 	@Override
-	public String toString() {
+	public String getName() {
 		return getClass().getSimpleName();
 	}
 
-	//No-op implementations
 	@Override
-	public void gameComplete(String scores, String totals) {
+	public void startMatch(List<Player> allPlayers, Player me, int numberOfSets) {
+		this.me = me;
 	}
 
 	@Override
-	public void gameStart(int first) {
+	public void startSet() {
 	}
 
 	@Override
-	public void turnPlayed(int player, Collection<Pile> table, Expression expression) {
+	public void startGame(Player first, Collection<Pile> table) {
+	}
+
+	@Override
+	public void cardsDealt(Collection<Card> hand) {
+	}
+
+	@Override
+	public void turnPlayed(Move move) {
+	}
+
+	@Override
+	public void gameComplete(List<Score> scores) {
+	}
+
+	@Override
+	public void setComplete(List<Score> scores) {
+	}
+
+	@Override
+	public void matchComplete(List<Score> scores) {
 	}
 }

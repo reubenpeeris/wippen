@@ -32,11 +32,6 @@ public final class Card extends Pile {
 	}
 
 	@Override
-	public boolean wasBuiltByPlayerInPosion(int position) {
-		return false;
-	}
-
-	@Override
 	public Collection<Pile> getPiles() {
 		return Collections.<Pile>singleton(this);
 	}

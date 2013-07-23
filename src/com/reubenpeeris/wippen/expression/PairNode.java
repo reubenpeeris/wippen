@@ -2,12 +2,15 @@ package com.reubenpeeris.wippen.expression;
 
 import java.util.Collection;
 
+import lombok.Getter;
+
 import com.reubenpeeris.wippen.util.CollectionPair;
 
 
 /**
  * Represents a mathematical expression build using cards.
  */
+@Getter
 abstract class PairNode extends Expression {
 	abstract static class Validator {
 		abstract boolean isValid(int left, int right);
@@ -74,12 +77,7 @@ abstract class PairNode extends Expression {
 	}
 	
 	abstract String getOperatorSymbol();
-	
-	@Override
-	public final int getValue() {
-		return value;
-	}
-	
+		
 	abstract int getValue(int left, int right); 
 	
 	@Override

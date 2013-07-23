@@ -2,15 +2,18 @@ package com.reubenpeeris.wippen.engine;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-import com.reubenpeeris.wippen.expression.Card;
-import com.reubenpeeris.wippen.expression.Expression;
-import com.reubenpeeris.wippen.expression.Pile;
-import com.reubenpeeris.wippen.robotloader.RobotLoaderManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.reubenpeeris.wippen.expression.Card;
+import com.reubenpeeris.wippen.expression.Move;
+import com.reubenpeeris.wippen.expression.Pile;
+import com.reubenpeeris.wippen.robotloader.RobotLoaderManager;
+import com.reubenpeeris.wippen.util.RoundIterable;
 
 public class Wippen {
     private static final Logger logger = LoggerFactory.getLogger(Wippen.class);
@@ -53,56 +56,53 @@ public class Wippen {
 	}
 	
 	private void run() {
-		System.out.println("running");
+		final int sets = 100;
 		
-		final int rounds = 100;
+		System.out.println("Running");
+		System.out.println(" Sets:    " + sets);
+		System.out.println(" Players: " + players.size());
 		
-		ScoreKeeper scoreKeeper = new ScoreKeeper(players);
+		Scorer scoreKeeper = new Scorer(players);
 		
-		//Match start
-		for (int i = 0; i < players.size(); i++) {
-			Player p = players.get(i);
-			p.matchStart(players.size(), rounds, i + 1);
+		//Match
+		for (Player player : players) {
+			player.startMatch(players, sets);
 		}
 		
-		//Start round
+		//Set
 		long start = System.currentTimeMillis(); 
-		for (int round = 0; round < rounds; round++) {
+		for (int set = 0; set < sets; set++) {
+			for (Player player : players) {
+				player.startSet();
+			}
 		
-			//Must be same number of Games started by each player
-			for (int firstPlayer = 0; firstPlayer < players.size(); firstPlayer++) {
-				//Game start
-				scoreKeeper.startNewGame();
-				Deck deck = Deck.newDeck(new Random(round));
-				
-				for (Player p : players) {
-					p.gameStart(firstPlayer);
-				}
+			//Game
+			for (Player firstPlayer : players) {
+				Deck deck = Deck.newDeck(new Random(set));
 				
 				Collection<Pile> table = new ArrayList<Pile>();
-				
 				for (int i = 0; i < 4; i++) {
 					Card card = deck.nextCard();
-					
 					table.add(card);
+				}
+				Collection<Pile> immutableTable = Collections.unmodifiableCollection(table);
+				
+				for (Player player : players) {
+					player.startGame(firstPlayer, immutableTable);
 				}
 				
 				Player lastPlayerToTake = null;
 				while (!deck.isEmpty()) {
-					//Hand start
+					//Deal
 					for (Player p : players) {
 						p.setHand(deck.nextCards(4));
 					}
 					
-					while (!players.get(firstPlayer).hasEmptyHand()) {
-						for (int position = 0; position < players.size(); position++) {
-							Player player = players.get((position + firstPlayer) % players.size());
-							
-							Expression expression = player.takeTurn(table);
-							//Validate move
+					while (!firstPlayer.isHandEmpty()) {
+						for (Player player : new RoundIterable<>(players, firstPlayer)) {
 							try {
-								Move move = ActionVerifier.verifyAction(expression, player.getPosition(), table, player.getHand());
-							
+								Move move = player.takeTurn(immutableTable);
+								
 								if (logger.isDebugEnabled()) {
 									logger.debug(player.toString());
 									logger.debug("Table: {}", table);
@@ -113,7 +113,7 @@ public class Wippen {
 								//Inform players
 								for (Player observer : players) {
 									if (!observer.equals(player)) {
-										observer.turnPlayed(player.getPosition(), table, move.getExpression());
+										observer.turnPlayed(move);
 									}
 								}
 								
@@ -125,16 +125,16 @@ public class Wippen {
 										table.add(move.getPileGenerated());
 										break;
 									case CAPTURE:
-										player.addCardsToWinnings(move.getCardsUsed());
-										if (table.size() == 0) {
-											scoreKeeper.addClearUp(player);
+										player.addToCapturedCards(move.getCards());
+										if (table.isEmpty()) {
+											player.addSweep();
 										}
 										lastPlayerToTake = player;
 										break;
 									default: throw new IllegalStateException();
 								}
 							} catch (ParseException e) {
-								throw new RuntimeException("Invalid move from player: '" + player + "' with expression: '" + expression + "'", e);
+								throw new RuntimeException("Invalid move from player: '" + player + "'", e);
 							}
 						}
 					}
@@ -142,15 +142,27 @@ public class Wippen {
 				
 				if (lastPlayerToTake != null) {
 					for (Pile pile : table) {
-						lastPlayerToTake.addCardsToWinnings(pile.getCards());
+						lastPlayerToTake.addToCapturedCards(pile.getCards());
 					}
 				}
 				
 				scoreKeeper.calculateGameScores();
+
+				for (Player player : players) {
+					player.gameComplete(scoreKeeper.getScores());
+				}
+			}
+			
+			for (Player player : players) {
+				player.setComplete(scoreKeeper.getScores());
 			}
 		}
 
+		for (Player player : players) {
+			player.matchComplete(scoreKeeper.getScores());
+		}
+
 		logger.info("Time: {}", (System.currentTimeMillis() - start));
-		logger.info(scoreKeeper.toString());
+		System.out.println(scoreKeeper);
 	}
 }

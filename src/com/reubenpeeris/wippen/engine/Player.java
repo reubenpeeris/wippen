@@ -3,24 +3,79 @@ package com.reubenpeeris.wippen.engine;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import com.reubenpeeris.wippen.expression.Card;
 import com.reubenpeeris.wippen.expression.Expression;
+import com.reubenpeeris.wippen.expression.ExpressionVerifier;
+import com.reubenpeeris.wippen.expression.Move;
 import com.reubenpeeris.wippen.expression.Pile;
 import com.reubenpeeris.wippen.robot.Robot;
 
-class Player {
-	public static final int NOBODY = -1;
+public class Player {
+	public static final Player NOBODY = new Player(-1, new Robot() {
+		@Override
+		public void startMatch(List<Player> allPlayers, Player you,
+				int numberOfSets) {
+		}
+
+		@Override
+		public void startSet() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public void gameComplete(List<Score> scores) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public void setComplete(List<Score> scores) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public void matchComplete(List<Score> scores) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public String getName() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public void startGame(Player first, Collection<Pile> table) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public void cardsDealt(Collection<Card> hand) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public Expression takeTurn(Collection<Pile> table, Collection<Card> hand) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public void turnPlayed(Move move) {
+			throw new UnsupportedOperationException();			
+		}
+	});
 	
-	private Collection<Card> hand;
-	private final Collection<Card> winnings = new ArrayList<Card>();
+	private final Collection<Card> capturedCards = new ArrayList<Card>();
 	private final int position;
-	private String name;
-	
 	private final Robot robot;
+	private final Score score = new Score();
+	private Collection<Card> hand;
+	private int sweeps;
 	
 	public Player(int position, Robot robot) {
-		if (robot == null) throw new NullPointerException();
+		if (robot == null) {
+			throw new IllegalArgumentException();
+		}
 		
 		this.robot = robot;
 		this.position = position;
@@ -30,57 +85,100 @@ class Player {
 		return position;
 	}
 	
-	public Collection<Card> getHand() {
+	Collection<Card> getHand() {
 		return hand;
 	}
 	
-	public boolean removeFromHand(Card card) {
+	boolean removeFromHand(Card card) {
 		return hand.remove(card);
 	}
 	
-	public void setHand(Collection<Card> hand) {
+	void setHand(Collection<Card> hand) {
 		this.hand = hand;
 	}
 	
-	public Collection<Card> getWinnings() {
-		return winnings;
-	}
-	
-	public boolean hasEmptyHand() {
+	boolean isHandEmpty() {
 		return hand.isEmpty();
 	}
 
-	public void addCardsToWinnings(Collection<Card> cardsUsed) {
-		winnings.addAll(cardsUsed);
+	//Scoring
+	Score getScore() {
+		return score;
+	}
+	
+	void addSweep() {
+		sweeps++;
+	}
+	
+	int getSweeps() {
+		return sweeps;
+	}
+	
+	void addToCapturedCards(Collection<Card> cardsUsed) {
+		capturedCards.addAll(cardsUsed);
+	}
+	
+	Collection<Card> getCapturedCards() {
+		return capturedCards;
 	}
 		
-	public String matchStart(int players, int rounds, int position) {
-		name = robot.matchStart(players, rounds, position);
-		return name;
-	}
-	
-	public void gameStart(int first) {
-		robot.gameStart(first);
-	}
-
-	public Expression takeTurn(Collection<Pile> table) {
-		return robot.takeTurn(Collections.unmodifiableCollection(table), Collections.unmodifiableCollection(hand));
-	}
-	
-	public void turnPlayed(int player, Collection<Pile> table, Expression expression) {
-		robot.turnPlayed(player, table, expression);
-	}
-	
-	public void gameComplete(String scores, String totals) {
-		robot.gameComplete(scores, totals);
-	}
-
-	public void clearWinnings() {
-		winnings.clear();
+	void clearCapturedAndSweeps() {
+		capturedCards.clear();
+		sweeps = 0;
 	}
 	
 	@Override
 	public String toString() {
-		return (name == null ? "[Unknown]" : name);
+		return "Player " + position + " [" + robot.getName() + "]";
+	}
+	
+	//Robot like methods
+	void startMatch(List<Player> allPlayers, int numberOfSets) {
+		score.startMatch();
+		robot.startMatch(allPlayers, this, numberOfSets);
+	}
+	
+	void startSet() {
+		score.startSet();
+		robot.startSet();
+	}
+	
+	void startGame(Player first, Collection<Pile> table) {
+		score.startGame();
+		robot.startGame(first, table);
+	}
+	
+	void gameComplete(List<Score> scores) {
+		robot.gameComplete(scores);
+	}
+	
+	void setComplete(List<Score> scores) {
+		robot.setComplete(scores);
+	}
+	
+	void matchComplete(List<Score> scores) {
+		robot.matchComplete(scores);
+	}
+	
+	void cardsDealt(Collection<Card> hand) {
+		robot.cardsDealt(hand);
+	}
+	
+	Move takeTurn(Collection<Pile> table) throws ParseException {
+		Collection<Card> hand = Collections.unmodifiableCollection(this.hand);
+		Expression expression = robot.takeTurn(table, hand);
+		
+		Move move;
+		if (expression instanceof Move) {
+			move = (Move)expression;
+		} else {
+			move = ExpressionVerifier.verifyExpression(expression, this, table, hand);
+		}
+		
+		return move;
+	}
+	
+	void turnPlayed(Move move) {
+		robot.turnPlayed(move);
 	}
 }

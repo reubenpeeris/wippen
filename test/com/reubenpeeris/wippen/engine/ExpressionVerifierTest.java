@@ -2,9 +2,9 @@ package com.reubenpeeris.wippen.engine;
 
 import static java.util.Arrays.asList;
 import static com.reubenpeeris.wippen.Cards.*;
-import static com.reubenpeeris.wippen.engine.Move.Type.BUILD;
-import static com.reubenpeeris.wippen.engine.Move.Type.CAPTURE;
-import static com.reubenpeeris.wippen.engine.Move.Type.DISCARD;
+import static com.reubenpeeris.wippen.expression.Move.Type.BUILD;
+import static com.reubenpeeris.wippen.expression.Move.Type.CAPTURE;
+import static com.reubenpeeris.wippen.expression.Move.Type.DISCARD;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
@@ -12,10 +12,13 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import com.reubenpeeris.wippen.expression.Building;
 import com.reubenpeeris.wippen.expression.Card;
+import com.reubenpeeris.wippen.expression.ExpressionVerifier;
+import com.reubenpeeris.wippen.expression.Move;
 import com.reubenpeeris.wippen.expression.Pile;
 import com.reubenpeeris.wippen.expression.Rank;
 
@@ -30,7 +33,7 @@ import org.junit.Test;
  * Doublebuild - build to the same value as a existing building.
  * Dualbuild - build a new building while another exists.
  */
-public class ActionVerifierTest {
+public class ExpressionVerifierTest {
 	private final Player player1 = new Player(1, new MockRobot());
 	private final Player player2 = new Player(2, new MockRobot());
 	private final Set<Pile> emptyTable = Collections.emptySet();
@@ -38,10 +41,10 @@ public class ActionVerifierTest {
 	private void assertValid(Collection<Pile> table, Collection<Card> hand,
 			Player player, String expression, Move.Type type,
 			Set<Card> cardsUsed, Card handCardUsed, Set<Pile> tablePilesUsed) throws ParseException {
-		Move move = ActionVerifier.verifyAction(Parser.parseMath(expression), player.getPosition(), table, hand);
+		Move move = ExpressionVerifier.verifyExpression(Parser.parseMath(expression, table), player, table, hand);
 
 		assertEquals(type, move.getType());
-		assertEquals(cardsUsed, asSet(move.getCardsUsed()));
+		assertEquals(cardsUsed, asSet(move.getCards()));
 		assertEquals(handCardUsed, move.getHandCardUsed());
 		assertEquals(tablePilesUsed, asSet(move.getTablePilesUsed()));
 	}
@@ -49,7 +52,7 @@ public class ActionVerifierTest {
 	private void assertInvalid(Collection<Pile> table, Collection<Card> hand,
 			Player player, String expression, String message) throws ParseException {
 		try {
-			Move move = ActionVerifier.verifyAction(Parser.parseMath(expression), player.getPosition(), table, hand);
+			Move move = ExpressionVerifier.verifyExpression(Parser.parseMath(expression, table), player, table, hand);
 			fail(move.toString());
 		} catch (WippenRuleException e) {
 			assertEquals(message + expression, e.getMessage());
@@ -103,7 +106,7 @@ public class ActionVerifierTest {
 	@Test
 	public void testDoubleCaptureIncludingBuilding() throws Exception {
 		assertValid(asSet(new Pile[]{b12_s6PlusD6, h6, h2}), asSet(c12),
-				player1, "12C=12=6H*2H", CAPTURE,
+				player1, "12C=12B1=6H*2H", CAPTURE,
 				asSet(s6, d6, h6, h2, c12), c12, asSet(new Pile[]{b12_s6PlusD6, h6, h2}));
 	}
 	
@@ -116,16 +119,23 @@ public class ActionVerifierTest {
 	}
 
 	@Test
-	public void testSimpleTakeOwnBuilding() throws Exception {
+	public void testSimpleCaptureOwnBuilding() throws Exception {
 		assertValid(asSet(new Pile[]{b12_s6PlusD6, h6, h2}), asSet(c12),
-				player1, "12C=12", CAPTURE,
+				player1, "12C=12B1", CAPTURE,
 				asSet(s6, d6, c12), c12, asSet(new Pile[]{b12_s6PlusD6}));
 	}
 
 	@Test
-	public void testSimpleTakeOthersBuilding() throws Exception {
+	public void testCaptureOthersBuildingAsPartOfComplexExpression() throws Exception {
+		assertValid(asSet(new Pile[]{b12_s6PlusD6, h2}), asSet(h6),
+				player2, "6H=(12B1/2H)", CAPTURE,
+				asSet(s6, d6, h2, h6), h6, asSet(new Pile[]{b12_s6PlusD6, h2}));
+	}
+
+	@Test
+	public void testSimpleCaptureOthersBuilding() throws Exception {
 		assertValid(asSet(new Pile[]{b12_s6PlusD6, h6, h2}), asSet(c12),
-				player2, "12C=12", CAPTURE,
+				player2, "12C=12B1", CAPTURE,
 				asSet(s6, d6, c12), c12, asSet(new Pile[]{b12_s6PlusD6}));
 	}
 
@@ -146,7 +156,7 @@ public class ActionVerifierTest {
 	@Test
 	public void testRebuildForSameValue() throws Exception {
 		assertValid(asSet(new Pile[]{b12_s6PlusD6}), asSet(s1, c12),
-				player1, "1S*12", BUILD,
+				player1, "1S*12B1", BUILD,
 				asSet(s1, s6, d6), s1, asSet(new Pile[]{b12_s6PlusD6}));
 	}
 
@@ -160,7 +170,7 @@ public class ActionVerifierTest {
 	@Test
 	public void testDoubleBuild() throws Exception {
 		assertValid(asSet(new Pile[]{b12_s6PlusD6, h6}), asSet(c2, c12),
-				player1, "6H*2C", BUILD,
+				player1, "6H*2C=12B1", BUILD,
 				asSet(h6, c2, s6, d6), c2, asSet(new Pile[]{b12_s6PlusD6, h6}));
 	}
 
@@ -172,14 +182,14 @@ public class ActionVerifierTest {
 	}
 
 	@Test
-	public void testTakeWithValueThatCouldBuild() throws Exception {
+	public void testCaptureWithValueThatCouldBuild() throws Exception {
 		assertValid(asSet(new Pile[]{h6, c2}), asSet(c12, s12), player1,
 				"12C=(6H*2C)", CAPTURE,
 				asSet(h6, c2, c12), c12, asSet(new Pile[]{h6, c2}));
 	}
 
 	@Test
-	public void testBuildWithValueThatCouldTake() throws Exception {
+	public void testBuildWithValueThatCouldCapture() throws Exception {
 		assertValid(asSet(new Pile[]{h6, c2}), asSet(c12, s12), player1,
 				"(6H*2C)=12C", BUILD,
 				asSet(h6, c2, c12), c12, asSet(new Pile[]{h6, c2}));
@@ -195,33 +205,33 @@ public class ActionVerifierTest {
 	@Test
 	public void testRebuildForNewValue() throws Exception {
 		assertInvalid(asList(new Pile[]{b12_s6PlusD6}), asList(c12, c10, c2),
-				player1, "(12-2C)",
+				player1, "(12B1-2C)",
 				"Trying to build to new value using own building in expression: ");
 	}
 
 	@Test
 	public void testOverbuildForNewValue() throws Exception {
 		assertValid(asSet(new Pile[]{b12_s6PlusD6}), asSet(c12, c10, c2),
-				player2, "12-2C", BUILD,
+				player2, "12B1-2C", BUILD,
 				asSet(c2, s6, d6), c2, asSet(new Pile[]{b12_s6PlusD6}));
 	}
 
 	@Test
 	public void testUsingPromisedCardWithoutConsumingPile() throws Exception {
-		assertInvalid(asList(new Pile[]{b12_s6PlusD6}), asList(c12, c10, c2),
-				player1, "12C",
-				"Trying to use promised card without consuming pile: ");
+		assertValid(asList(new Pile[]{b12_s6PlusD6}), asList(c12, c10, c2),
+				player1, "12C", DISCARD, 
+				asSet(c12), c12, Collections.<Pile>emptySet());
 	}
 
 	@Test
 	public void testUsingPromiedCardToConsumePile() throws Exception {
 		assertValid(asSet(new Pile[]{b12_s6PlusD6}), asSet(c12, d12),
-				player2, "12=12C", BUILD,
+				player2, "12B1=12C", BUILD,
 				asSet(c12, s6, d6), c12, asSet(new Pile[]{b12_s6PlusD6}));
 	}
 
 	private <T> Set<T> asSet(@SuppressWarnings("unchecked") T... array) {
-		Set<T> set = new HashSet<T>();
+		Set<T> set = new LinkedHashSet<T>();
 		for (T t : array) {
 			set.add(t);
 		}
@@ -233,5 +243,5 @@ public class ActionVerifierTest {
 		return new HashSet<T>(collection);
 	}
 	
-	private final Building b12_s6PlusD6 = new Building(asList(s6, d6), new Rank(12), player1.getPosition());
+	private final Building b12_s6PlusD6 = new Building(asList(s6, d6), new Rank(12), player1);
 }

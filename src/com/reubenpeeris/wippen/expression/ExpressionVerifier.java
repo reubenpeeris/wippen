@@ -1,24 +1,22 @@
-package com.reubenpeeris.wippen.engine;
+package com.reubenpeeris.wippen.expression;
 
-import static com.reubenpeeris.wippen.engine.Move.Type.BUILD;
-import static com.reubenpeeris.wippen.engine.Move.Type.DISCARD;
-import static com.reubenpeeris.wippen.engine.Move.Type.CAPTURE;
+import static com.reubenpeeris.wippen.expression.Move.Type.BUILD;
+import static com.reubenpeeris.wippen.expression.Move.Type.CAPTURE;
+import static com.reubenpeeris.wippen.expression.Move.Type.DISCARD;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.reubenpeeris.wippen.engine.Move.Type;
-import com.reubenpeeris.wippen.expression.Card;
-import com.reubenpeeris.wippen.expression.Equals;
-import com.reubenpeeris.wippen.expression.Expression;
-import com.reubenpeeris.wippen.expression.Pile;
-import com.reubenpeeris.wippen.expression.Rank;
+import com.reubenpeeris.wippen.engine.ParseException;
+import com.reubenpeeris.wippen.engine.Player;
+import com.reubenpeeris.wippen.engine.WippenRuleException;
+import com.reubenpeeris.wippen.expression.Move.Type;
 
-public class ActionVerifier {
-	private ActionVerifier() {}
+public class ExpressionVerifier {
+	private ExpressionVerifier() {}
 	
-	public static Move verifyAction(Expression expression, int playerPosition, Collection<Pile> table, Collection<Card> hand) throws ParseException {
+	public static Move verifyExpression(Expression expression, Player player, Collection<Pile> table, Collection<Card> hand) throws ParseException {
 		Set<Pile> tablePilesUsed = new HashSet<Pile>();
 		Card handCardUsed = null;
 		Set<Rank> ownBuildingsUsed = new HashSet<Rank>();
@@ -27,7 +25,7 @@ public class ActionVerifier {
 		
 		pile:
 		for (Pile pile : expression.getPiles()) {
-			if (pile.getCards().size() == 0) {
+			if (pile.getCards().size() != 1) {
 				//Is a Building, so must be on table
 				for (Pile tablePile: table) {
 					if (tablePile.getCards().size() > 1 && tablePile.getRank().equals(pile.getRank())) {
@@ -35,7 +33,7 @@ public class ActionVerifier {
 							throw new WippenRuleException("Trying to use Pile multiple times in expression: " + expression);
 						}
 						
-						if (tablePile.wasBuiltByPlayerInPosion(playerPosition)) {
+						if (tablePile.getPlayer().equals(player)) {
 							ownBuildingsUsed.add(tablePile.getRank());
 						}
 						continue pile;
@@ -68,24 +66,6 @@ public class ActionVerifier {
 		
 		final Type type = determineType(expression, handCardUsed);
 		
-		if (type == CAPTURE) {
-			//Will consume any Buildings of the same value captured
-			//TODO should not capture buildings!
-			for (Pile tablePile : table) {
-				if (tablePile.getCards().size() > 1 &&
-						handCardUsed.getRank().equals(tablePile.getRank())) {
-					tablePilesUsed.add(tablePile);
-				}
-			}
-		} else if (type == BUILD) {
-			//Will consume any Piles of the same value built 
-			for (Pile tablePile : table) {
-				if (value == tablePile.getRank().getValue()) {
-					tablePilesUsed.add(tablePile);
-				}
-			}
-		}
-		
 		//If building check that player has card they claim to
 		if (type == BUILD) {
 			boolean validBuild = false;
@@ -112,16 +92,7 @@ public class ActionVerifier {
 			}
 		}
 		
-		//Check for non-rebuild/build capture with own build value
-		for (Pile p : table) {
-			if (p.wasBuiltByPlayerInPosion(playerPosition)
-					&& handCardUsed.getValue() == p.getValue()
-					&& !tablePilesUsed.contains(p)) {
-				throw new WippenRuleException("Trying to use promised card without consuming pile: " + expression);
-			}
-		}
-		
-		return new Move(expression, playerPosition, type, tablePilesUsed, handCardUsed);
+		return new Move(expression, player, table, hand, type, tablePilesUsed, handCardUsed);
 	}
 	
 	private static Type determineType(Expression expression, Card handCardUsed) {

@@ -33,6 +33,10 @@
  *  which can be used are add (+), subtract (-), multiple (*) and divide (/) (implicitly parenthesis are allowed too where required).
  *  </p>
  * 
+ * 	<h4>Discard<h4>
+ * 	A discard is performed by discarding a single card from the players hand to the table.<br/>
+ *  E.g. 4S: The 4S is discarded from the player's hand.
+ * 
  *  <h4>Capture</h4>
  *  A capture is performed by making a mathematical expression from the table cards that is equal to a card from the hand. E.g.
  *  <ul>
@@ -49,10 +53,11 @@
  * 
  *  <h4>Build</h4>
  *  A build is performed by making a mathematical expression from one or more cards on the table with one card from the hand
- *  that is equal in value to another card in the hand. Effectively a player that builds in promising that they have a card of
+ *  that is equal in value to another card in the hand. Effectively a player that builds is promising that they have a card of
  *  that value, but they are not obliged to show it.
  *  <ul>
  *   <li>Simple<br/>
+ *   
  *   </li>
  *   <li>Dual<br/>
  *   </li>
@@ -64,6 +69,8 @@
  *    E.g. 12H-6B:
  *   </li>
  *  </ul>
+ *  
+ *  
  * 
  *  <h3>Scoring</h3>
  *  At the end of a round the cards captured by each player are used to award points. The following criteria are used:

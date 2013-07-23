@@ -1,12 +1,11 @@
 package com.reubenpeeris.wippen.engine;
 
-import java.util.Collections;
+import java.util.Collection;
 import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.reubenpeeris.wippen.expression.Add;
-import com.reubenpeeris.wippen.expression.Building;
 import com.reubenpeeris.wippen.expression.Card;
 import com.reubenpeeris.wippen.expression.Divide;
 import com.reubenpeeris.wippen.expression.Equals;
@@ -21,10 +20,10 @@ import com.reubenpeeris.wippen.expression.Suit;
 public final class Parser {
 	//Order is significant, increasing precedence left to right.
 	private static final String OPERATORS = "=+-*/";
-	private static final Pattern PILE_PATTERN = Pattern.compile("^([1-9]|1[0-3])(?:([CDHS])|(?:B\\d+)?)$");
+	private static final Pattern PILE_PATTERN = Pattern.compile("^([1-9]|1[0-3])(?:([CDHS])|B(\\d+))$");
 	
-	public static Expression parseExpression(String expression) throws ParseException {
-		return parseMath(expression);
+	public static Expression parseExpression(String expression, Collection<Pile> table) throws ParseException {
+		return parseMath(expression, table);
 	}
 	
 	private static int precedence(char c) {
@@ -77,7 +76,7 @@ public final class Parser {
 		return output.toString();
 	}
 	
-	static Expression parseMath(String expression) throws ParseException {
+	static Expression parseMath(String expression, Collection<Pile> table) throws ParseException {
 		String[] tokens = infixToPostfix(expression).split("\\s");
 		
 		Stack<Expression> stack = new Stack<Expression>();
@@ -109,7 +108,7 @@ public final class Parser {
 				stack.push(e);
 			} else {
 				try {
-					stack.push(parsePile(token));
+					stack.push(parsePile(token, table));
 				} catch (ParseException e) {
 					throw new ParseException("Invalid format parsing: '" + expression + "'", e);
 				}
@@ -123,7 +122,7 @@ public final class Parser {
 		return stack.pop();
 	}
 	
-	static Pile parsePile(String string) throws ParseException {
+	static Pile parsePile(String string, Collection<Pile> table) throws ParseException {
 		Matcher matcher = PILE_PATTERN.matcher(string);
 		
 		if (!matcher.matches()) {
@@ -132,9 +131,18 @@ public final class Parser {
 		
 		final Rank rank = new Rank(Integer.valueOf(matcher.group(1)));
 		final String suit = matcher.group(2);
+		final String positionString = matcher.group(3);
 		
 		if (suit == null) {
-			return new Building(Collections.<Card>emptyList(), rank, Player.NOBODY);
+			int position = Integer.parseInt(positionString);
+			
+			for (Pile pile : table) {
+				if (pile.getValue() == rank.getValue() && pile.getPlayer().getPosition() == position) {
+					return pile;
+				}
+			}
+			
+			throw new ParseException("Pile not found on table: " + string);
 		}
 		
 		return new Card(Suit.fromLetter(suit), rank);

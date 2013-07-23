@@ -4,8 +4,9 @@ import java.util.Collections;
 
 import org.junit.Test;
 
-import static com.reubenpeeris.wippen.Cards.s1;
+import com.reubenpeeris.wippen.engine.Player;
 
+import static com.reubenpeeris.wippen.Cards.s1;
 import static org.junit.Assert.*;
 
 public class CardTest {
@@ -31,9 +32,7 @@ public class CardTest {
 
 	@Test
 	public void testWasBuiltByPlayer() {
-		for (int i = 1; i <= 4; i++) {
-			assertFalse(s1.wasBuiltByPlayerInPosion(i));
-		}
+		assertEquals(Player.NOBODY, s1.getPlayer());
 	}
 
 	@Test

@@ -6,10 +6,14 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.Collection;
+import java.util.List;
 
 import com.reubenpeeris.wippen.engine.Parser;
+import com.reubenpeeris.wippen.engine.Score;
 import com.reubenpeeris.wippen.expression.Card;
 import com.reubenpeeris.wippen.expression.Expression;
+import com.reubenpeeris.wippen.expression.ExpressionVerifier;
+import com.reubenpeeris.wippen.expression.Move;
 import com.reubenpeeris.wippen.expression.Pile;
 
 public class HumanRobot extends BaseRobot {
@@ -34,45 +38,32 @@ public class HumanRobot extends BaseRobot {
 	}
 
 	@Override
-	public String matchStart(int players, int rounds, int position) {
-		sendMessage(String.format("MATCH_START PLAYERS=%d ROUNDS=%d POSITION=%d", players, rounds, position));
-		return receiveMessage();
-	}
-
-	@Override
-	public void gameStart(int first) {
-		sendMessage(String.format("GAME_START FIRST_PLAYER=%d", first));
-	}
-
-	@Override
 	public Expression takeTurn(Collection<Pile> table, Collection<Card> hand) {
 		sendMessage(String.format("TAKE_TURN TABLE=%s HAND=%s", table.toString(), hand.toString()));
 		
-		Expression parsedExpression = null;
+		Move move = null;
 		boolean done = false;
 		do {
 			String expression = receiveMessage();
 			try {
-				//TODO fix!
-				//This does not check as much as the MoveValidator
-				//E.g. if pile does not exist or belongs to wrong owner
-				parsedExpression = Parser.parseExpression(expression);
+				Expression parsedExpression = Parser.parseExpression(expression, table);
+				move = ExpressionVerifier.verifyExpression(parsedExpression, getMe(), table, hand);
 				done = true;
 			} catch (Exception e) {
 				sendMessage("TRY AGAIN (" + e.getMessage() + ")");
 			}
 		} while (!done);
 		
-		return parsedExpression;
+		return move;
 	}
 
 	@Override
-	public void turnPlayed(int player, Collection<Pile> table, Expression expression) {
-		sendMessage(String.format("TURN_PLAYED PLAYER=%d TABLE=%s ACTION=%s", player, table.toString(), expression));
+	public void turnPlayed(Move move) {
+		sendMessage(String.format("TURN_PLAYED PLAYER=%d TABLE=%s ACTION=%s", move.getPlayer().getPosition(), move.getTable(), move));
 	}
-
+	
 	@Override
-	public void gameComplete(String scores, String totals) {
-		sendMessage(String.format("GAME_COMPLETE SCORES=%s TOTALS=%s", scores, totals));
+	public void gameComplete(List<Score> scores) {
+		sendMessage(scores.toString());
 	}
 }
