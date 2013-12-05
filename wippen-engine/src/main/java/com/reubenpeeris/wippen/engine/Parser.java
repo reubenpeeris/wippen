@@ -97,8 +97,8 @@ public final class Parser {
 					throw new IllegalStateException();
 				}
 				
-				nodeBuilder.setRight(stack.pop());
-				nodeBuilder.setLeft(stack.pop());
+				nodeBuilder.right(stack.pop());
+				nodeBuilder.left(stack.pop());
 				
 				Expression e =  nodeBuilder.build();
 				if (e == null) {

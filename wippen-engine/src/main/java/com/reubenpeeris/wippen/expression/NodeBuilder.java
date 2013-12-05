@@ -33,11 +33,13 @@ public abstract class NodeBuilder {
 		this(PairNode.ALWAYS_VALID);
 	}
 
-	public void setLeft(Expression left) {
+	public NodeBuilder left(Expression left) {
 		this.left = left;
+		return this;
 	}
 
-	public void setRight(Expression right) {
+	public NodeBuilder right(Expression right) {
 		this.right = right;
+		return this;
 	}
 }
