@@ -232,8 +232,9 @@ public class ExpressionVerifierTest {
 				asSet(c12, s6, d6), c12, asSet(new Pile[]{b12_s6PlusD6}));
 	}
 
-	private <T> Set<T> asSet(@SuppressWarnings("unchecked") T... array) {
-		Set<T> set = new LinkedHashSet<T>();
+	@SuppressWarnings("unchecked")
+	private <T> Set<T> asSet(T... array) {
+		Set<T> set = new LinkedHashSet<>();
 		for (T t : array) {
 			set.add(t);
 		}
@@ -242,7 +243,7 @@ public class ExpressionVerifierTest {
 	}
 	
 	private <T> Set<T> asSet(Collection<T> collection) {
-		return new HashSet<T>(collection);
+		return new HashSet<>(collection);
 	}
 
 	private final Building b12_s6PlusD6 = new Building(new Move(BUILD, s6, new Add(s6, d6)), player1);

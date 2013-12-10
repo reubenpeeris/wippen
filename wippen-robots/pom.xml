@@ -5,7 +5,10 @@
 	<artifactId>wippen-robots</artifactId>
 	<version>1.0-SNAPSHOT</version>
 	<name>wippen-robots</name>
-	<url>http://maven.apache.org</url>
+	
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
 
 	<dependencies>
 		<dependency>
@@ -24,6 +27,7 @@
 				<configuration>
 					<source>1.7</source>
 					<target>1.7</target>
+					<compilerArgument>-Xlint:all</compilerArgument>
 				</configuration>
 			</plugin>
 			<plugin>

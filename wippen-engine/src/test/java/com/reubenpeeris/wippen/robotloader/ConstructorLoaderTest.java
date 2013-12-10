@@ -13,7 +13,7 @@ public class ConstructorLoaderTest {
 		public NoNpArgConstructor(String string) {}
 	}
 	
-	static ConstructorLoader<AnInterface> loader = new ConstructorLoader<ConstructorLoaderTest.AnInterface>(AnInterface.class);
+	static ConstructorLoader<AnInterface> loader = new ConstructorLoader<>(AnInterface.class);
 	
 	@Test(expected=IllegalArgumentException.class)
 	public void testAcceptsNullURL() {

@@ -63,7 +63,7 @@ public class Player {
         }
     });
 
-    private final Collection<Card> capturedCards = new ArrayList<Card>();
+    private final Collection<Card> capturedCards = new ArrayList<>();
     private final int position;
     private final Robot robot;
     private final Score score = new Score();

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LoaderManager<T> {
-	private final List<Loader<T>> loaders = new ArrayList<Loader<T>>();
+	private final List<Loader<T>> loaders = new ArrayList<>();
 	
 	protected void registerLoader(Loader<T> loader) {
 		if (loader ==  null) {

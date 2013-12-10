@@ -16,7 +16,7 @@ import static org.junit.Assert.*;
 public class DeckTest {
 	@Test
 	public void testFullDeckSize() {
-		Set<Card> uniqueCards = new HashSet<Card>(Deck.FULL_DECK);
+		Set<Card> uniqueCards = new HashSet<>(Deck.FULL_DECK);
 		
 		assertEquals(52, Deck.FULL_DECK.size());
 		assertEquals(52, uniqueCards.size());

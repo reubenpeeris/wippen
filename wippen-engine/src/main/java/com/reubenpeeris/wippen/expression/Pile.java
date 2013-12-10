@@ -23,7 +23,7 @@ public abstract class Pile extends Expression {
 			throw new IllegalArgumentException();
 		}
 		
-		List<Card> cards = new ArrayList<Card>();
+		List<Card> cards = new ArrayList<>();
 		
 		for (Pile pile : piles) {
 			cards.addAll(pile.getCards());

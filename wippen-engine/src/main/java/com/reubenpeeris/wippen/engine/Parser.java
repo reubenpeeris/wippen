@@ -35,7 +35,7 @@ public final class Parser {
     //http://www.chris-j.co.uk/parsing.php
     static String infixToPostfix(String expression) {
         StringBuilder output = new StringBuilder();
-        Stack<Character> stack = new Stack<Character>();
+        Stack<Character> stack = new Stack<>();
 
         for (int i = 0; i < expression.length(); i++) {
             char c = expression.charAt(i);
@@ -79,7 +79,7 @@ public final class Parser {
     static Expression parseMath(String expression, Collection<Pile> table) throws ParseException {
         String[] tokens = infixToPostfix(expression).split("\\s");
 
-        Stack<Expression> stack = new Stack<Expression>();
+        Stack<Expression> stack = new Stack<>();
 
         for (String token : tokens) {
             if (token.length() == 1 && precedence(token.charAt(0)) != -1) {

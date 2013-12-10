@@ -11,17 +11,17 @@ public class SpringLoaderTest {
 		
 	@Test(expected=IllegalArgumentException.class)
 	public void testConstructorNullClass() {
-		new SpringLoader<Object>(null, "valid-value");
+		new SpringLoader<>(null, "valid-value");
 	}
 	
 	@Test(expected=IllegalArgumentException.class)
 	public void testConstructorNullBeanName() {
-		new SpringLoader<AnInterface>(AnInterface.class, null);
+		new SpringLoader<>(AnInterface.class, null);
 	}
 	
 	@Test(expected=IllegalArgumentException.class)
 	public void testConstructorEmptyBeanName() {
-		new SpringLoader<AnInterface>(AnInterface.class, "");
+		new SpringLoader<>(AnInterface.class, "");
 	}
 	
 	@Test(expected=IllegalArgumentException.class)

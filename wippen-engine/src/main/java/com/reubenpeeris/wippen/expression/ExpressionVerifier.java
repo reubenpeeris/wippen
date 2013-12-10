@@ -14,9 +14,9 @@ public class ExpressionVerifier {
     private ExpressionVerifier() {}
 
     public static Move verifyExpression(Expression expression, Player player, Collection<Pile> table, Collection<Card> hand) {
-        Set<Pile> tablePilesUsed = new HashSet<Pile>();
+        Set<Pile> tablePilesUsed = new HashSet<>();
         Card handCardUsed = null;
-        Set<Pile> ownBuildingsUsed = new HashSet<Pile>();
+        Set<Pile> ownBuildingsUsed = new HashSet<>();
 
         final int value = expression.getValue();
 

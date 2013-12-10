@@ -57,7 +57,7 @@ abstract class PairNode extends Expression {
 		this.right = right;
 		this.value = getValue(left.getValue(), right.getValue());
 		
-		this.piles = new CollectionPair<Pile>(left.getPiles(), right.getPiles());
+		this.piles = new CollectionPair<>(left.getPiles(), right.getPiles());
 	}
 	
 	PairNode(Expression left, Expression right) {

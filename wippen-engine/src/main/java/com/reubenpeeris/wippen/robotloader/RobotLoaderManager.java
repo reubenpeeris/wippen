@@ -3,7 +3,7 @@ package com.reubenpeeris.wippen.robotloader;
 import com.reubenpeeris.wippen.robot.Robot;
 
 public final class RobotLoaderManager {
-	private static final LoaderManager<Robot> INSTANCE = new LoaderManager<Robot>();
+	private static final LoaderManager<Robot> INSTANCE = new LoaderManager<>();
 	
 	private RobotLoaderManager(){}
 	

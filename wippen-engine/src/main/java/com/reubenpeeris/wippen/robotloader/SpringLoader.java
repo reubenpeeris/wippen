@@ -44,34 +44,24 @@ public class SpringLoader<T> implements Loader<T> {
 		String path = url.substring(PROTOCOL.length());
 		ClassPathResource resource = new ClassPathResource(path);
 
-		AbstractApplicationContext context = null;
-		try {
-			try {
-				if (resource.exists()) {
-					context = new ClassPathXmlApplicationContext(path);
-				} else {
-					context = new FileSystemXmlApplicationContext(path);
-				}
-			} catch (BeanDefinitionStoreException e) {
-				if (e.getCause() instanceof FileNotFoundException) {
-					throw new LoaderException("Failed to find file: '" + path
-							+ "'", e);
-				} else {
-					throw new LoaderException("Failed to process file: '"
-							+ path + "'", e);
-				}
-			}
-
+		try (@SuppressWarnings("resource")
+		AbstractApplicationContext context = resource.exists() ? new ClassPathXmlApplicationContext(
+				path) : new FileSystemXmlApplicationContext(path)) {
 			try {
 				return context.getBean(beanName, clazz);
 			} catch (BeansException e) {
 				throw new LoaderException("Failed to load bean '" + beanName
 						+ "'", e);
 			}
-		} finally {
-			if (context != null) {
-				context.close();
+		} catch (BeanDefinitionStoreException e) {
+			if (e.getCause() instanceof FileNotFoundException) {
+				throw new LoaderException(
+						"Failed to find file: '" + path + "'", e);
+			} else {
+				throw new LoaderException("Failed to process file: '" + path
+						+ "'", e);
 			}
 		}
+
 	}
 }

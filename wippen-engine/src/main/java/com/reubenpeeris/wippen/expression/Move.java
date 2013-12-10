@@ -101,7 +101,7 @@ public class Move extends Expression {
         this.type = type;
         this.handCard = handCard;
 
-        Set<Pile> tablePilesUsed = new HashSet<Pile>(this.expression.getPiles());
+        Set<Pile> tablePilesUsed = new HashSet<>(this.expression.getPiles());
         tablePilesUsed.remove(handCard);
         this.tablePilesUsed = Collections.unmodifiableSet(tablePilesUsed);
     }
@@ -115,7 +115,7 @@ public class Move extends Expression {
             return String.format("For %s type %s", type, type.getMessage());
         }
 
-        if (new HashSet<Card>(expression.getCards()).size() < expression.getCards().size()) {
+        if (new HashSet<>(expression.getCards()).size() < expression.getCards().size()) {
             return "Trying to use card multiple times: " + expression;
         }
 

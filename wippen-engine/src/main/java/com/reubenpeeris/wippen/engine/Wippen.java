@@ -39,7 +39,7 @@ public class Wippen {
             throw new IllegalArgumentException("Must supply 2-4 robots to play");
         }
 
-        List<Player> players = new ArrayList<Player>();
+        List<Player> players = new ArrayList<>();
 
         try {
             Class.forName(com.reubenpeeris.wippen.robotloader.SpringRobotLoader.class.getName());
@@ -81,7 +81,7 @@ public class Wippen {
             for (Player firstPlayer : players) {
                 Deck deck = Deck.newDeck(new Random(set));
 
-                Collection<Pile> table = new ArrayList<Pile>();
+                Collection<Pile> table = new ArrayList<>();
                 for (int i = 0; i < 4; i++) {
                     Card card = deck.nextCard();
                     table.add(card);

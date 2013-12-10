@@ -29,7 +29,7 @@ public class RoundIterableTest {
 	public void testStartAtStart() {
 		List<String> list = Arrays.asList("one", "two", "three", "four");
 		
-		RoundIterable<String> iterable = new RoundIterable<String>(list, "one");
+		RoundIterable<String> iterable = new RoundIterable<>(list, "one");
 		
 		Iterator<String> it = iterable.iterator();
 
@@ -48,7 +48,7 @@ public class RoundIterableTest {
 	public void testStartNotAtStart() {
 		List<String> list = Arrays.asList("one", "two", "three", "four");
 		
-		RoundIterable<String> iterable = new RoundIterable<String>(list, "three");
+		RoundIterable<String> iterable = new RoundIterable<>(list, "three");
 		
 		Iterator<String> it = iterable.iterator();
 

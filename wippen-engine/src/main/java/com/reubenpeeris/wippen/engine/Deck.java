@@ -16,7 +16,7 @@ final class Deck {
 	public static final List<Card> FULL_DECK;
 	
 	static {
-		List<Card> deck = new ArrayList<Card>(52);
+		List<Card> deck = new ArrayList<>(52);
 		for (Suit suit : Suit.values()) {
 			for (int rank = 1; rank <= 13; rank++) {
 				deck.add(new Card(suit, new Rank(rank)));
@@ -27,7 +27,7 @@ final class Deck {
 	}
 	
 	public static Deck newDeck(Random shuffler) {
-		LinkedList<Card> cards = new LinkedList<Card>(FULL_DECK);
+		LinkedList<Card> cards = new LinkedList<>(FULL_DECK);
 		Collections.shuffle(cards, shuffler);
 		
 		return new Deck(cards);
@@ -57,7 +57,7 @@ final class Deck {
 			throw new IllegalArgumentException("Requested more cards that available in deck");
 		}
 		
-		Collection<Card> c = new ArrayList<Card>(n);
+		Collection<Card> c = new ArrayList<>(n);
 		for (int i = 0; i < n; i++) {
 			c.add(nextCard());
 		}

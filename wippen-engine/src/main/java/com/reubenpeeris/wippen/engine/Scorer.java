@@ -9,8 +9,8 @@ import com.reubenpeeris.wippen.expression.Rank;
 import com.reubenpeeris.wippen.expression.Suit;
 
 class Scorer {
-	private final List<Player> players = new ArrayList<Player>();
-	private final List<Score> scores = new ArrayList<Score>();
+	private final List<Player> players = new ArrayList<>();
+	private final List<Score> scores = new ArrayList<>();
 	
 	public Scorer(Collection<Player> players) {
 		this.players.addAll(players);
