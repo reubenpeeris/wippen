@@ -126,8 +126,8 @@ class Scorer {
 		
 		for (Player player : players) {
 			int score = player.getScore().getMatchPoints();
-			double percentage = score == 0 ? 0 : 100D * (double)score / (double)total;
-			sb.append(String.format("%-40s %5s %5.1f%%\n", player, score, percentage));
+			double percentage = score == 0 ? 0 : 100D * score / total;
+			sb.append(String.format("%-40s %5s %5.1f%%%n", player, score, percentage));
 		}
 		
 		return sb.toString();

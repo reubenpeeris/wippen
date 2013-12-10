@@ -12,6 +12,7 @@ public enum Suit {
 		this.letter = letter;
 	}
 
+	@Override
 	public String toString() {
 		return letter;
 	}

@@ -27,6 +27,7 @@ public final class Rank {
 		}
 	}
 	
+	@Override
 	public String toString() {
 		return Integer.toString(value);
 	}

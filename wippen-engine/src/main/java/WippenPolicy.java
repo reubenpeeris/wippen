@@ -56,6 +56,7 @@ public class WippenPolicy extends Policy {
 		return policy;
 	}
 	
+	@Override
 	public boolean implies(ProtectionDomain domain, Permission permission) {
 		if (INITIALIZATION_PERMISSION == permission) {
 			engineSource = domain.getCodeSource();

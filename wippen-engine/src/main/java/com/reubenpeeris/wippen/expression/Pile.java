@@ -13,7 +13,6 @@ public abstract class Pile extends Expression {
 	 */
 	Pile(){}
 	public abstract Rank getRank();
-	public abstract Collection<Card> getCards();
 	
 	public Player getPlayer() {
 		return Player.NOBODY;

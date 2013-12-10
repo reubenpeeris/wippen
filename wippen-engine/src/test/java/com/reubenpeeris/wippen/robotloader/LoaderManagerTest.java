@@ -10,7 +10,7 @@ public class LoaderManagerTest {
 	
 	@Before
 	public void setUp() {
-		loaderManager = new LoaderManager<>();;
+		loaderManager = new LoaderManager<>();
 	}
 	
 	@Test(expected=IllegalArgumentException.class)

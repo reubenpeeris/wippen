@@ -101,6 +101,8 @@ public final class Parser {
                 case '=':
                     nodeBuilder = Equals.builder();
                     break;
+                default:
+                	throw new IllegalStateException();
                 }
 
                 if (stack.size() < 2) {
@@ -139,7 +141,7 @@ public final class Parser {
             throw new ParseException("Invalid format: '" + string + "'");
         }
 
-        final Rank rank = new Rank(Integer.valueOf(matcher.group(1)));
+        final Rank rank = new Rank(Integer.parseInt(matcher.group(1)));
         final String suit = matcher.group(2);
         final String positionString = matcher.group(3);
 
