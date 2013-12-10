@@ -6,12 +6,8 @@ import java.util.Collections;
 
 import org.junit.Test;
 
-import static com.reubenpeeris.wippen.Cards.c1;
-import static com.reubenpeeris.wippen.Cards.c2;
-import static com.reubenpeeris.wippen.Cards.h1;
-import static com.reubenpeeris.wippen.Cards.h2;
-
-import static org.junit.Assert.assertEquals;
+import static com.reubenpeeris.wippen.Cards.*;
+import static org.junit.Assert.*;
 
 public class PileTest {
 	static class MockPile extends Pile {

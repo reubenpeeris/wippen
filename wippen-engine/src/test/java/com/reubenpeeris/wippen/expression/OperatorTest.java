@@ -1,9 +1,9 @@
 package com.reubenpeeris.wippen.expression;
 
+import org.junit.Test;
+
 import static com.reubenpeeris.wippen.Cards.*;
 import static org.junit.Assert.*;
-
-import org.junit.Test;
 
 public abstract class OperatorTest {
 	private final NodeBuilder nodeBuilder;

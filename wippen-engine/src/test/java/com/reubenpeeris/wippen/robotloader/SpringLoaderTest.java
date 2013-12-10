@@ -1,7 +1,8 @@
 package com.reubenpeeris.wippen.robotloader;
 
-import com.reubenpeeris.wippen.robotloader.ConstructorLoaderTest.AnInterface;
 import org.junit.Test;
+
+import com.reubenpeeris.wippen.robotloader.ConstructorLoaderTest.AnInterface;
 
 import static org.junit.Assert.*;
 

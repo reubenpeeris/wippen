@@ -11,8 +11,7 @@ import org.junit.Test;
 
 import com.reubenpeeris.wippen.expression.Card;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.*;
 
 public class DeckTest {
 	@Test

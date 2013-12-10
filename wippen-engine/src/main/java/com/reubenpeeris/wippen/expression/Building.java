@@ -2,12 +2,11 @@ package com.reubenpeeris.wippen.expression;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
-
-import com.reubenpeeris.wippen.engine.Player;
 
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
+
+import com.reubenpeeris.wippen.engine.Player;
+import com.reubenpeeris.wippen.expression.Move.Type;
 
 /**
  * A Building contains multiple cards that have been built together to form a
@@ -15,19 +14,14 @@ import lombok.Getter;
  */
 @EqualsAndHashCode(callSuper=false)
 public final class Building extends Pile {
-	@Getter
-	private final Collection<Card> cards;
-	@Getter
-	private final Rank rank;
+	private final Expression expression;
 	private final Player player;
 
-	//TODO should take an expression to verify maths is right?
-	public Building(Collection<Card> cards, Rank rank, Player player) {
-		if (cards == null || rank == null || player == null || player == Player.NOBODY) {
+	public Building(Move move, Player player) {
+		if (move == null || player == null || player == Player.NOBODY || !move.getType().equals(Type.BUILD)) {
 			throw new IllegalArgumentException();
 		}
-		this.rank = rank;
-		this.cards = Collections.unmodifiableCollection(new HashSet<Card>(cards));
+		this.expression = move;
 		this.player = player;
 	}
 
@@ -38,7 +32,7 @@ public final class Building extends Pile {
 
 	@Override
 	public String toString() {
-		return rank.toString() + "B" + player.getPosition();
+		return expression.getValue() + "B" + player.getPosition();
 	}
 
 	@Override
@@ -48,6 +42,16 @@ public final class Building extends Pile {
 
 	@Override
 	public int getValue() {
-		return rank.getValue();
+		return expression.getValue();
+	}
+
+	@Override
+	public Rank getRank() {
+		return new Rank(expression.getValue());
+	}
+
+	@Override
+	public Collection<Card> getCards() {
+		return expression.getCards();
 	}
 }

@@ -1,13 +1,5 @@
 package com.reubenpeeris.wippen.engine;
 
-import static java.util.Arrays.asList;
-import static com.reubenpeeris.wippen.Cards.*;
-import static com.reubenpeeris.wippen.expression.Move.Type.BUILD;
-import static com.reubenpeeris.wippen.expression.Move.Type.CAPTURE;
-import static com.reubenpeeris.wippen.expression.Move.Type.DISCARD;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -15,14 +7,24 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.junit.Test;
+
+import com.reubenpeeris.wippen.engine.ParseException;
+import com.reubenpeeris.wippen.engine.Parser;
+import com.reubenpeeris.wippen.engine.Player;
+import com.reubenpeeris.wippen.engine.WippenRuleException;
+import com.reubenpeeris.wippen.expression.Add;
 import com.reubenpeeris.wippen.expression.Building;
 import com.reubenpeeris.wippen.expression.Card;
 import com.reubenpeeris.wippen.expression.ExpressionVerifier;
 import com.reubenpeeris.wippen.expression.Move;
 import com.reubenpeeris.wippen.expression.Pile;
-import com.reubenpeeris.wippen.expression.Rank;
 
-import org.junit.Test;
+import static com.reubenpeeris.wippen.Cards.*;
+import static com.reubenpeeris.wippen.expression.Move.Type.*;
+import static java.util.Arrays.*;
+
+import static org.junit.Assert.*;
 
 /**
  * Discard - place a card onto the table from the hand as a new pile.
@@ -45,7 +47,7 @@ public class ExpressionVerifierTest {
 
 		assertEquals(type, move.getType());
 		assertEquals(cardsUsed, asSet(move.getCards()));
-		assertEquals(handCardUsed, move.getHandCardUsed());
+		assertEquals(handCardUsed, move.getHandCard());
 		assertEquals(tablePilesUsed, asSet(move.getTablePilesUsed()));
 	}
 	
@@ -242,6 +244,6 @@ public class ExpressionVerifierTest {
 	private <T> Set<T> asSet(Collection<T> collection) {
 		return new HashSet<T>(collection);
 	}
-	
-	private final Building b12_s6PlusD6 = new Building(asList(s6, d6), new Rank(12), player1);
+
+	private final Building b12_s6PlusD6 = new Building(new Move(BUILD, s6, new Add(s6, d6)), player1);
 }

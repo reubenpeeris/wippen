@@ -12,40 +12,38 @@ package com.reubenpeeris.wippen.expression;
  * This should not occur with even 1 moderately good player.
  */
 public final class Equals extends PairNode {
-	private static final Validator EQUALS_VALIDAOTR = new Validator() {
-		@Override
-		public boolean isValid(int left, int right) {
-			return left == right;
-		}
+    private static final Validator EQUALS_VALIDAOTR = new Validator() {
+        @Override
+        public boolean isValid(int left, int right) {
+            return left == right;
+        }
 
-		@Override
-		public boolean canParentEquals() {
-			return true;
-		}
-	};
-	
-	public static final class Builder extends NodeBuilder {
-		public Builder() {
-			super(EQUALS_VALIDAOTR);
-		}
-		
-		@Override
-		protected PairNode build(Expression left, Expression right) {
-			return new Equals(left, right);
-		}
-	}
-	
-	public Equals(Expression left, Expression right) {
-		super(left, right, EQUALS_VALIDAOTR);
-	}
-	
-	@Override
-	protected int getValue(int left, int right) {
-		return left;
-	}
-	
-	@Override
-	protected String getOperatorSymbol() {
-		return "=";
-	}
+        @Override
+        public boolean canParentEquals() {
+            return true;
+        }
+    };
+
+    public static NodeBuilder builder() {
+        return new NodeBuilder(EQUALS_VALIDAOTR) {
+            @Override
+            protected PairNode build(Expression left, Expression right) {
+                return new Equals(left, right);
+            }
+        };
+    }
+
+    public Equals(Expression left, Expression right) {
+        super(left, right, EQUALS_VALIDAOTR);
+    }
+
+    @Override
+    protected int getValue(int left, int right) {
+        return left;
+    }
+
+    @Override
+    protected String getOperatorSymbol() {
+        return "=";
+    }
 }

@@ -42,7 +42,7 @@ public abstract class BaseRobot implements Robot {
 	}
 
 	@Override
-	public void turnPlayed(Move move) {
+	public void turnPlayed(Player player, Collection<Pile> table, Move move) {
 	}
 
 	@Override

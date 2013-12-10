@@ -6,7 +6,6 @@ import java.util.List;
 import com.reubenpeeris.wippen.engine.Player;
 import com.reubenpeeris.wippen.engine.Score;
 import com.reubenpeeris.wippen.expression.Card;
-import com.reubenpeeris.wippen.expression.Expression;
 import com.reubenpeeris.wippen.expression.Move;
 import com.reubenpeeris.wippen.expression.Pile;
 
@@ -18,8 +17,8 @@ public interface Robot {
 	void startGame(Player first, Collection<Pile> table);
 
 	void cardsDealt(Collection<Card> hand);
-	Expression takeTurn(Collection<Pile> table, Collection<Card> hand);
-	void turnPlayed(Move move);
+	Move takeTurn(Collection<Pile> table, Collection<Card> hand);
+	void turnPlayed(Player player, Collection<Pile> table, Move move);
 	
 	void gameComplete(List<Score> scores);
 	void setComplete(List<Score> scores);

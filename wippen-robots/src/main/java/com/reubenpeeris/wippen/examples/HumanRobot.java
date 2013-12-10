@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.List;
 
 import com.reubenpeeris.wippen.engine.Parser;
+import com.reubenpeeris.wippen.engine.Player;
 import com.reubenpeeris.wippen.engine.Score;
 import com.reubenpeeris.wippen.expression.Card;
 import com.reubenpeeris.wippen.expression.Expression;
@@ -39,7 +40,7 @@ public class HumanRobot extends BaseRobot {
     }
 
     @Override
-    public Expression takeTurn(Collection<Pile> table, Collection<Card> hand) {
+    public Move takeTurn(Collection<Pile> table, Collection<Card> hand) {
         sendMessage(String.format("TAKE_TURN TABLE=%s HAND=%s", table.toString(), hand.toString()));
 
         Move move = null;
@@ -59,8 +60,8 @@ public class HumanRobot extends BaseRobot {
     }
 
     @Override
-    public void turnPlayed(Move move) {
-        sendMessage(String.format("TURN_PLAYED PLAYER=%d TABLE=%s ACTION=%s", move.getPlayer().getPosition(), move.getTable(), move));
+    public void turnPlayed(Player player, Collection<Pile> table, Move move) {
+        sendMessage(String.format("TURN_PLAYED PLAYER=%d TABLE=%s ACTION=%s", player.getPosition(), table, move));
     }
 
     @Override

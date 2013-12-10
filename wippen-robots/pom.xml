@@ -43,6 +43,7 @@
 						<argument>class:com.reubenpeeris.wippen.examples.Discarder</argument>
 						<argument>class:com.reubenpeeris.wippen.examples.SingleValueMatcher</argument>
 						<argument>class:com.reubenpeeris.wippen.examples.PairAdder</argument>
+						<argument>class:com.reubenpeeris.wippen.examples.PairCapturer</argument>
 					</arguments>
 				</configuration>
 			</plugin>

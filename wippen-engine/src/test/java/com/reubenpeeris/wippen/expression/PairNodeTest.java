@@ -1,10 +1,9 @@
 package com.reubenpeeris.wippen.expression;
 
-import static com.reubenpeeris.wippen.Cards.*;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import org.junit.Test;
+
+import static com.reubenpeeris.wippen.Cards.*;
+import static org.junit.Assert.*;
 
 public class PairNodeTest {
 	private static final class MockPairNode extends PairNode {

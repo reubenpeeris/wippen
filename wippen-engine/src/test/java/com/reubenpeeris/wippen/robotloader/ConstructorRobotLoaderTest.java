@@ -1,8 +1,9 @@
 package com.reubenpeeris.wippen.robotloader;
 
+import org.junit.Test;
+
 import com.reubenpeeris.wippen.engine.MockRobot;
 import com.reubenpeeris.wippen.robot.Robot;
-import org.junit.Test;
 
 import static org.junit.Assert.*;
 

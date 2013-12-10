@@ -1,25 +1,24 @@
 package com.reubenpeeris.wippen.engine;
 
-import static org.junit.Assert.assertEquals;
-
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-
-import com.reubenpeeris.wippen.expression.Building;
-import com.reubenpeeris.wippen.expression.Card;
-import com.reubenpeeris.wippen.expression.Expression;
-import com.reubenpeeris.wippen.expression.Pile;
-import com.reubenpeeris.wippen.expression.Rank;
 
 import org.junit.Test;
 
+import com.reubenpeeris.wippen.expression.Add;
+import com.reubenpeeris.wippen.expression.Building;
+import com.reubenpeeris.wippen.expression.Expression;
+import com.reubenpeeris.wippen.expression.Move;
+import com.reubenpeeris.wippen.expression.Move.Type;
+import com.reubenpeeris.wippen.expression.Pile;
+
 import static com.reubenpeeris.wippen.Cards.*;
+import static org.junit.Assert.*;
 
 public class ParserTest {
 	private final Player player1 = new Player(1, new MockRobot());
 	
-	private Collection<Pile> BIG_TABLE = Arrays.<Pile>asList(h3, d4, s2, new Building(Collections.<Card>emptySet(), new Rank(3), player1));
+	private Collection<Pile> BIG_TABLE = Arrays.<Pile>asList(h3, d4, s2, new Building(new Move(Type.BUILD, s1, new Add(s1, d2)), player1));
 	
 	@Test
 	public void testInfixToPostFixSimple() {

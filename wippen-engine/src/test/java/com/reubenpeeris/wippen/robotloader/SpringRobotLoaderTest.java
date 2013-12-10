@@ -4,7 +4,7 @@ import org.junit.Test;
 
 import com.reubenpeeris.wippen.robot.Robot;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class SpringRobotLoaderTest {
 	private static final String MOCK_ROBOT_URL = "spring:SpringRobotLoaderTest.xml";
