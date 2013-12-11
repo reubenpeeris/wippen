@@ -6,7 +6,7 @@ import java.util.Collections;
 
 import org.junit.Test;
 
-import static com.reubenpeeris.wippen.Cards.*;
+import static com.reubenpeeris.wippen.ObjectMother.*;
 import static org.junit.Assert.*;
 
 public class PileTest {

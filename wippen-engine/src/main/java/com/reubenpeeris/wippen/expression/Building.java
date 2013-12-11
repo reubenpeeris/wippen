@@ -1,33 +1,36 @@
 package com.reubenpeeris.wippen.expression;
 
+import static com.reubenpeeris.wippen.expression.Move.Type.*;
+
 import java.util.Collection;
 import java.util.Collections;
 
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NonNull;
 
 import com.reubenpeeris.wippen.engine.Player;
-import com.reubenpeeris.wippen.expression.Move.Type;
 
 /**
  * A Building contains multiple cards that have been built together to form a
  * specific value by a specific player.
  */
-@EqualsAndHashCode(callSuper=false)
+@EqualsAndHashCode(callSuper = false)
 public final class Building extends Pile {
 	private final Expression expression;
+	@Getter
 	private final Player player;
 
-	public Building(Move move, Player player) {
-		if (move == null || player == null || player == Player.NOBODY || !move.getType().equals(Type.BUILD)) {
-			throw new IllegalArgumentException();
+	public Building(@NonNull Move move, @NonNull Player player) {
+		if (move.getType() != BUILD) {
+			throw new IllegalArgumentException("Move must have type BUILD");
 		}
+		if (player == Player.NOBODY) {
+			throw new IllegalArgumentException("Player cannot be NOBODY");
+		}
+
 		this.expression = move;
 		this.player = player;
-	}
-
-	@Override
-	public Player getPlayer() {
-		return player;
 	}
 
 	@Override
@@ -37,7 +40,7 @@ public final class Building extends Pile {
 
 	@Override
 	public Collection<Pile> getPiles() {
-		return Collections.<Pile>singleton(this);
+		return Collections.<Pile> singleton(this);
 	}
 
 	@Override

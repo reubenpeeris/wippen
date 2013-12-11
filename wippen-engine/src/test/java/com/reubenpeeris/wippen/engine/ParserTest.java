@@ -12,7 +12,7 @@ import com.reubenpeeris.wippen.expression.Move;
 import com.reubenpeeris.wippen.expression.Move.Type;
 import com.reubenpeeris.wippen.expression.Pile;
 
-import static com.reubenpeeris.wippen.Cards.*;
+import static com.reubenpeeris.wippen.ObjectMother.*;
 import static org.junit.Assert.*;
 
 public class ParserTest {

@@ -13,7 +13,7 @@ import com.reubenpeeris.wippen.engine.Player;
 import com.reubenpeeris.wippen.expression.Move.Type;
 import com.reubenpeeris.wippen.robot.BaseRobot;
 
-import static com.reubenpeeris.wippen.Cards.*;
+import static com.reubenpeeris.wippen.ObjectMother.*;
 import static com.reubenpeeris.wippen.expression.Move.Type.*;
 
 import static org.junit.Assert.*;

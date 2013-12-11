@@ -2,7 +2,7 @@ package com.reubenpeeris.wippen.expression;
 
 import org.junit.Test;
 
-import static com.reubenpeeris.wippen.Cards.*;
+import static com.reubenpeeris.wippen.ObjectMother.*;
 import static org.junit.Assert.*;
 
 public class PairNodeTest {
@@ -25,7 +25,7 @@ public class PairNodeTest {
 	@Test
 	public void testAlwayValidValidator() {
 		assertTrue(PairNode.ALWAYS_VALID.isValid(1, 1));
-		assertFalse(PairNode.ALWAYS_VALID.canParentEquals());
+		assertFalse(PairNode.ALWAYS_VALID.canHaveLeftChildOfTypeEqual());
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -36,5 +36,53 @@ public class PairNodeTest {
 	@Test(expected = IllegalArgumentException.class)
 	public void testPairNodeRightNull() {
 		new MockPairNode(s2, null);
+	}
+	
+	@Test
+	public void assertThatTwoPairNodesOfSameTypeWithEquivalentExpressionsAreEqual() {
+		PairNode node1 = new MockNode1(c1, new Add(c2, c3));
+		PairNode node2 = new MockNode1(c1, new Add(c2, c3));
+		
+		assertTrue(node1.equals(node2));
+	}
+	
+	@Test
+	public void assertThatTwoPairNodesOfDifferentTypeWithEquivalentExpressionsAreNotEqual() {
+		PairNode node1 = new MockNode1(c1, new Add(c2, c3));
+		PairNode node2 = new MockNode2(c1, new Add(c2, c3));
+		
+		assertFalse(node1.equals(node2));
+	}
+	
+	private class MockNode1 extends PairNode {
+		MockNode1(Expression left, Expression right) {
+			super(left, right);
+		}
+
+		@Override
+		String getOperatorSymbol() {
+			return "M";
+		}
+
+		@Override
+		int getValue(int left, int right) {
+			return 0;
+		}
+	}
+	
+	private class MockNode2 extends PairNode {
+		MockNode2(Expression left, Expression right) {
+			super(left, right);
+		}
+
+		@Override
+		String getOperatorSymbol() {
+			return "M";
+		}
+
+		@Override
+		int getValue(int left, int right) {
+			return 0;
+		}
 	}
 }

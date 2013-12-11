@@ -6,8 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import com.reubenpeeris.wippen.expression.Building;
 import com.reubenpeeris.wippen.expression.Card;
@@ -16,9 +15,8 @@ import com.reubenpeeris.wippen.expression.Pile;
 import com.reubenpeeris.wippen.robotloader.RobotLoaderManager;
 import com.reubenpeeris.wippen.util.RoundIterable;
 
+@Slf4j
 public class Wippen {
-    private static final Logger logger = LoggerFactory.getLogger(Wippen.class);
-
     private final List<Player> players;
 
     private Wippen(List<Player> players) {
@@ -103,12 +101,10 @@ public class Wippen {
                         for (Player player : new RoundIterable<>(players, firstPlayer)) {
                             Move move = player.takeTurn(immutableTable);
 
-                            if (logger.isDebugEnabled()) {
-                                logger.debug(player.toString());
-                                logger.debug("Table: {}", table);
-                                logger.debug("Hand:  {}", player.getHand());
-                                logger.debug("Move:  {}", move);
-                            }
+                            log.debug("Player: {}", player);
+                            log.debug("Table: {}", table);
+                            log.debug("Hand:  {}", player.getHand());
+                            log.debug("Move:  {}", move);
 
                             if (move == null) {
                                 throw new IllegalStateException("Null Move returned by player: " + player);
@@ -166,7 +162,7 @@ public class Wippen {
             player.matchComplete(scoreKeeper.getScores());
         }
 
-        logger.info("Time: {}", (System.currentTimeMillis() - start));
+        log.info("Time: {}", (System.currentTimeMillis() - start));
         System.out.println(scoreKeeper);
     }
 }

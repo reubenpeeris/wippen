@@ -6,7 +6,7 @@ import org.junit.Test;
 
 import com.reubenpeeris.wippen.engine.Player;
 
-import static com.reubenpeeris.wippen.Cards.*;
+import static com.reubenpeeris.wippen.ObjectMother.*;
 import static org.junit.Assert.*;
 
 public class CardTest {

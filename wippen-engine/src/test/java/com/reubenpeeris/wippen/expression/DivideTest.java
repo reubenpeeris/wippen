@@ -1,9 +1,10 @@
 package com.reubenpeeris.wippen.expression;
 
+import static com.reubenpeeris.wippen.ObjectMother.*;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+
 import org.junit.Test;
-
-import static com.reubenpeeris.wippen.Cards.*;
-
 public class DivideTest extends OperatorTest {
     public DivideTest() {
         super(Divide.builder(), Divide.class);
@@ -19,13 +20,14 @@ public class DivideTest extends OperatorTest {
         return "/";
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test
     public void testConstructorNonDivisibleNumbers() {
+    	thrown.expect(IllegalArgumentException.class);
         new Divide(c2, c3);
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test
     public void testBuilderNonDivisibleNumbers() {
-        Divide.builder().build(c2, c3);
+        assertThat(Divide.builder().left(c2).right(c3).build(), is(nullValue()));
     }
 }

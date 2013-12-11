@@ -19,7 +19,7 @@ public final class Equals extends PairNode {
         }
 
         @Override
-        public boolean canParentEquals() {
+        public boolean canHaveLeftChildOfTypeEqual() {
             return true;
         }
     };

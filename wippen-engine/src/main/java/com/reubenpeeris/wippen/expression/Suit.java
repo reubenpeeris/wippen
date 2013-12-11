@@ -1,5 +1,7 @@
 package com.reubenpeeris.wippen.expression;
 
+import lombok.NonNull;
+
 public enum Suit {
 	CLUB("C"),
 	DIAMOND("D"),
@@ -17,13 +19,13 @@ public enum Suit {
 		return letter;
 	}
 	
-	public static Suit fromLetter(String shortName) {
+	public static Suit fromLetter(@NonNull String letter) {
 		for (Suit suit : Suit.values()) {
-			if (suit.letter.equals(shortName)) {
+			if (suit.letter.equals(letter)) {
 				return suit;
 			}
 		}
 		
-		throw new IllegalArgumentException("Invalid suit letter: " + shortName);
+		throw new IllegalArgumentException("Invalid suit letter: " + letter);
 	}
 }

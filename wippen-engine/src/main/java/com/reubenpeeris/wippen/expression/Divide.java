@@ -9,7 +9,7 @@ public final class Divide extends PairNode {
         }
 
         @Override
-        public boolean canParentEquals() {
+        public boolean canHaveLeftChildOfTypeEqual() {
             return false;
         }
     };

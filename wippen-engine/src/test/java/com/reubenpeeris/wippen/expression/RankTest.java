@@ -4,7 +4,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class TestRank {
+public class RankTest {
 	@Test
 	public void testConstructValid() {
 		for (int i = 1; i <=13; i++) {

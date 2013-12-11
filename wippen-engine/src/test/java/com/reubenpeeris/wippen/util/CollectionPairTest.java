@@ -1,13 +1,13 @@
 package com.reubenpeeris.wippen.util;
 
+import static org.junit.Assert.*;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 public class CollectionPairTest {
 	private final Collection<String> left = Arrays.asList("inLeft");
@@ -143,6 +143,17 @@ public class CollectionPairTest {
 		assertTrue(it.hasNext());
 		assertEquals("inRight2", it.next());
 		assertFalse(it.hasNext());
+	}
+	
+	@Test
+	public void assertThatTwoCollectionPairsWithSameLeftAndRightAreEqual() {
+		CollectionPair<String> leftAndRight2 = new CollectionPair<>(left, right);
+		assertTrue(leftAndRight.equals(leftAndRight2));
+	}
+	
+	@Test
+	public void assertThatTwoCollectionPairsWithDifferentLeftAndRightAreNotEqual() {
+		assertFalse(leftAndRight.equals(leftOnly));
 	}
 	
 	//Unsupported operations

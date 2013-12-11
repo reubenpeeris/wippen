@@ -2,7 +2,7 @@ package com.reubenpeeris.wippen.expression;
 
 import org.junit.Test;
 
-import static com.reubenpeeris.wippen.Cards.*;
+import static com.reubenpeeris.wippen.ObjectMother.*;
 
 import static org.junit.Assert.*;
 

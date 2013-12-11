@@ -7,9 +7,13 @@ import java.util.List;
 
 import org.junit.Test;
 
+import com.reubenpeeris.wippen.BaseTest;
+
 import static org.junit.Assert.*;
 
-public class RoundIterableTest {
+public class RoundIterableTest extends BaseTest {
+	private static final List<String> LIST = Collections.unmodifiableList(Arrays.asList("one", "two", "three", "four"));
+	
 	@Test(expected=IllegalArgumentException.class)
 	public void testConstructorNullList() {
 		new RoundIterable<>(null, "");
@@ -22,14 +26,12 @@ public class RoundIterableTest {
 
 	@Test(expected=IllegalArgumentException.class)
 	public void testConstructorItemNotPresent() {
-		new RoundIterable<>(Arrays.asList("some", "items"), "but not this one");
+		new RoundIterable<>(LIST, "does not contain this item");
 	}
 	
 	@Test
 	public void testStartAtStart() {
-		List<String> list = Arrays.asList("one", "two", "three", "four");
-		
-		RoundIterable<String> iterable = new RoundIterable<>(list, "one");
+		RoundIterable<String> iterable = new RoundIterable<>(LIST, "one");
 		
 		Iterator<String> it = iterable.iterator();
 
@@ -46,9 +48,7 @@ public class RoundIterableTest {
 	
 	@Test
 	public void testStartNotAtStart() {
-		List<String> list = Arrays.asList("one", "two", "three", "four");
-		
-		RoundIterable<String> iterable = new RoundIterable<>(list, "three");
+		RoundIterable<String> iterable = new RoundIterable<>(LIST, "three");
 		
 		Iterator<String> it = iterable.iterator();
 
@@ -61,5 +61,12 @@ public class RoundIterableTest {
 		assertTrue(it.hasNext());
 		assertEquals("two", it.next());
 		assertFalse(it.hasNext());
+	}
+	
+	@Test
+	public void iteratorRemoveIsUnsupported() {
+		thrown.expect(UnsupportedOperationException.class);
+		RoundIterable<String> iterable = new RoundIterable<>(LIST, "three");
+		iterable.iterator().remove();
 	}
 }
