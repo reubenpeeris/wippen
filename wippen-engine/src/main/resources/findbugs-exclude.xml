@@ -1,0 +1,11 @@
+<FindBugsFilter>
+ <Match>
+    <Or>
+      <Class name="~.*Test$"/>
+      <Class name="~.*[.$]Mock[^.]*$"/>
+    </Or>
+    <Not>
+      <Bug code="IJU" /> <!-- 'IJU' is the code for bugs related to JUnit test code -->
+    </Not>
+  </Match>
+</FindBugsFilter>
