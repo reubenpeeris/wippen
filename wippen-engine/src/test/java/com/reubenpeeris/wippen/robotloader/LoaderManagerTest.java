@@ -1,28 +1,28 @@
 package com.reubenpeeris.wippen.robotloader;
 
+import static org.junit.Assert.*;
+
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
 public class LoaderManagerTest {
 	private LoaderManager<ConstructorLoaderTest.AnInterface> loaderManager;
-	
+
 	@Before
 	public void setUp() {
 		loaderManager = new LoaderManager<>();
 	}
-	
-	@Test(expected=IllegalArgumentException.class)
+
+	@Test(expected = IllegalArgumentException.class)
 	public void testRegisterLoaderNull() {
 		loaderManager.registerLoader(null);
 	}
-	
-	@Test(expected=IllegalArgumentException.class)
+
+	@Test(expected = IllegalArgumentException.class)
 	public void testCreateInstanceNull() {
 		loaderManager.createInstance(null);
 	}
-	
+
 	@Test
 	public void testCreateInstanceNoRegisteredLoaders() {
 		String url = "unsupported://protocol";
@@ -32,7 +32,7 @@ public class LoaderManagerTest {
 			assertEquals("No suitable loader found for url: '" + url + "'", e.getMessage());
 		}
 	}
-	
+
 	@Test
 	public void testCreateInstanceValidURL() {
 		loaderManager.registerLoader(ConstructorLoaderTest.loader);
@@ -40,7 +40,7 @@ public class LoaderManagerTest {
 		ConstructorLoaderTest.AnInterface instance = loaderManager.createInstance(url);
 		assertEquals(ConstructorLoaderTest.Valid.class, instance.getClass());
 	}
-	
+
 	@Test
 	public void testCreateInstanceInvalidURL() {
 		String url = "unsupported://protocol";

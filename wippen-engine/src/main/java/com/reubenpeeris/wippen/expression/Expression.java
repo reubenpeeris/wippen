@@ -7,11 +7,15 @@ import java.util.Collection;
  */
 public abstract class Expression {
 	/**
-	 * Limit visibility of constructor to package. This way robot implementers cannot
-	 * create their own Expressions.
+	 * Limit visibility of constructor to package. This way robot implementers
+	 * cannot create their own Expressions.
 	 */
-	Expression() {}
+	Expression() {
+	}
+
 	public abstract int getValue();
+
 	public abstract Collection<Pile> getPiles();
+
 	public abstract Collection<Card> getCards();
 }

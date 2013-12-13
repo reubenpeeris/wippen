@@ -6,9 +6,9 @@ import java.util.Iterator;
 import lombok.EqualsAndHashCode;
 
 /**
- * A collection backed by 2 other collections. This is not thread safe.
- * None of the underlying Collections should be mutated when iterating over
- * this. If the underlying collections are immutable then so is this.
+ * A collection backed by 2 other collections. This is not thread safe. None of
+ * the underlying Collections should be mutated when iterating over this. If the
+ * underlying collections are immutable then so is this.
  */
 @EqualsAndHashCode
 public final class CollectionPair<E> implements Collection<E> {

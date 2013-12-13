@@ -1,14 +1,13 @@
 package com.reubenpeeris.wippen.examples;
 
+import static com.reubenpeeris.wippen.expression.Move.Type.*;
+
 import java.util.Collection;
 
 import com.reubenpeeris.wippen.expression.Card;
 import com.reubenpeeris.wippen.expression.Move;
 import com.reubenpeeris.wippen.expression.Pile;
 import com.reubenpeeris.wippen.robot.BaseRobot;
-
-import static com.reubenpeeris.wippen.expression.Move.Type.*;
-
 
 /**
  * Simplest working robot. Each go, simply discards the first card in its hand.

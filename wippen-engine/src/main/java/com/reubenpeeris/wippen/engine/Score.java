@@ -9,13 +9,13 @@ public class Score {
 	private int matchPoints;
 	private int setPoints;
 	private int gamePoints;
-	
+
 	void incrementPoints(int points) {
 		matchPoints += points;
 		setPoints += points;
 		gamePoints += points;
 	}
-	
+
 	void startMatch() {
 		matchPoints = 0;
 		startSet();

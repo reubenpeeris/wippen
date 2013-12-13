@@ -17,152 +17,154 @@ import com.reubenpeeris.wippen.util.RoundIterable;
 
 @Slf4j
 public class Wippen {
-    private final List<Player> players;
+	private final List<Player> players;
 
-    private Wippen(List<Player> players) {
-        this.players = players;
-    }
+	private Wippen(List<Player> players) {
+		this.players = players;
+	}
 
-    public static void main(String[] args) {
-        //System.setSecurityManager(new SecurityManager());//Make sure people cannot get our privates
-        //This should be more intelligent, to stop for example starting multiple threads too
-        List<Player> players = createPlayers(args);
+	public static void main(String[] args) {
+		// System.setSecurityManager(new SecurityManager());//Make sure people
+		// cannot get our privates
+		// This should be more intelligent, to stop for example starting
+		// multiple threads too
+		List<Player> players = createPlayers(args);
 
-        Wippen wippen = new Wippen(players);
-        wippen.run();
-    }
+		Wippen wippen = new Wippen(players);
+		wippen.run();
+	}
 
-    private static List<Player> createPlayers(String[] args) {
-        if (args.length < 2 || args.length > 4) {
-            throw new IllegalArgumentException("Must supply 2-4 robots to play");
-        }
+	private static List<Player> createPlayers(String[] args) {
+		if (args.length < 2 || args.length > 4) {
+			throw new IllegalArgumentException("Must supply 2-4 robots to play");
+		}
 
-        List<Player> players = new ArrayList<>();
+		List<Player> players = new ArrayList<>();
 
-        try {
-            Class.forName(com.reubenpeeris.wippen.robotloader.SpringRobotLoader.class.getName());
-            Class.forName(com.reubenpeeris.wippen.robotloader.ConstructorRobotLoader.class.getName());
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+		try {
+			Class.forName(com.reubenpeeris.wippen.robotloader.SpringRobotLoader.class.getName());
+			Class.forName(com.reubenpeeris.wippen.robotloader.ConstructorRobotLoader.class.getName());
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException(e);
+		}
 
-        int position = 0;
-        for (String arg : args) {
-            players.add(new Player(position++, RobotLoaderManager.createInstance(arg)));
-        }
+		int position = 0;
+		for (String arg : args) {
+			players.add(new Player(position++, RobotLoaderManager.createInstance(arg)));
+		}
 
-        return players;
-    }
+		return players;
+	}
 
-    private void run() {
-        final int sets = 100;
+	private void run() {
+		final int sets = 100;
 
-        System.out.println("Running");
-        System.out.println(" Sets:    " + sets);
-        System.out.println(" Players: " + players.size());
+		System.out.println("Running");
+		System.out.println(" Sets:    " + sets);
+		System.out.println(" Players: " + players.size());
 
-        Scorer scoreKeeper = new Scorer(players);
+		Scorer scoreKeeper = new Scorer(players);
 
-        //Match
-        for (Player player : players) {
-            player.startMatch(players, sets);
-        }
+		// Match
+		for (Player player : players) {
+			player.startMatch(players, sets);
+		}
 
-        //Set
-        long start = System.currentTimeMillis();
-        for (int set = 0; set < sets; set++) {
-            for (Player player : players) {
-                player.startSet();
-            }
+		// Set
+		long start = System.currentTimeMillis();
+		for (int set = 0; set < sets; set++) {
+			for (Player player : players) {
+				player.startSet();
+			}
 
-            //Game
-            for (Player firstPlayer : players) {
-                Deck deck = Deck.newDeck(new Random(set));
+			// Game
+			for (Player firstPlayer : players) {
+				Deck deck = Deck.newDeck(new Random(set));
 
-                Collection<Pile> table = new ArrayList<>();
-                for (int i = 0; i < 4; i++) {
-                    Card card = deck.nextCard();
-                    table.add(card);
-                }
-                Collection<Pile> immutableTable = Collections.unmodifiableCollection(table);
+				Collection<Pile> table = new ArrayList<>();
+				for (int i = 0; i < 4; i++) {
+					Card card = deck.nextCard();
+					table.add(card);
+				}
+				Collection<Pile> immutableTable = Collections.unmodifiableCollection(table);
 
-                for (Player player : players) {
-                    player.startGame(firstPlayer, immutableTable);
-                }
+				for (Player player : players) {
+					player.startGame(firstPlayer, immutableTable);
+				}
 
-                Player lastPlayerToTake = null;
-                while (!deck.isEmpty()) {
-                    //Deal
-                    for (Player p : players) {
-                        p.setHand(deck.nextCards(4));
-                    }
+				Player lastPlayerToTake = null;
+				while (!deck.isEmpty()) {
+					// Deal
+					for (Player p : players) {
+						p.setHand(deck.nextCards(4));
+					}
 
-                    while (!firstPlayer.isHandEmpty()) {
-                        for (Player player : new RoundIterable<>(players, firstPlayer)) {
-                            Move move = player.takeTurn(immutableTable);
+					while (!firstPlayer.isHandEmpty()) {
+						for (Player player : new RoundIterable<>(players, firstPlayer)) {
+							Move move = player.takeTurn(immutableTable);
 
-                            log.debug("Player: {}", player);
-                            log.debug("Table: {}", table);
-                            log.debug("Hand:  {}", player.getHand());
-                            log.debug("Move:  {}", move);
+							log.debug("Player: {}", player);
+							log.debug("Table: {}", table);
+							log.debug("Hand:  {}", player.getHand());
+							log.debug("Move:  {}", move);
 
-                            if (move == null) {
-                                throw new IllegalStateException("Null Move returned by player: " + player);
-                            }
+							if (move == null) {
+								throw new IllegalStateException("Null Move returned by player: " + player);
+							}
 
-                            //Inform players
-                            for (Player observer : players) {
-                                if (!observer.equals(player)) {
-                                    observer.turnPlayed(player, immutableTable, move);
-                                }
-                            }
+							// Inform players
+							for (Player observer : players) {
+								if (!observer.equals(player)) {
+									observer.turnPlayed(player, immutableTable, move);
+								}
+							}
 
-                            player.removeFromHand(move.getHandCard());
-                            table.removeAll(move.getTablePilesUsed());
-                            switch (move.getType()) {
-                            case BUILD:
-                                table.add(new Building(move, player));
-                                break;
-                            case DISCARD:
-                                table.add(move.getHandCard());
-                                break;
-                            case CAPTURE:
-                                player.addToCapturedCards(move.getCards());
-                                if (table.isEmpty()) {
-                                    player.addSweep();
-                                }
-                                lastPlayerToTake = player;
-                                break;
-                            default:
-                                throw new IllegalStateException();
-                            }
-                        }
-                    }
-                }
+							player.removeFromHand(move.getHandCard());
+							table.removeAll(move.getTablePilesUsed());
+							switch (move.getType()) {
+							case BUILD:
+								table.add(new Building(move, player));
+								break;
+							case DISCARD:
+								table.add(move.getHandCard());
+								break;
+							case CAPTURE:
+								player.addToCapturedCards(move.getCards());
+								if (table.isEmpty()) {
+									player.addSweep();
+								}
+								lastPlayerToTake = player;
+								break;
+							default:
+								throw new IllegalStateException();
+							}
+						}
+					}
+				}
 
-                if (lastPlayerToTake != null) {
-                    for (Pile pile : table) {
-                        lastPlayerToTake.addToCapturedCards(pile.getCards());
-                    }
-                }
+				if (lastPlayerToTake != null) {
+					for (Pile pile : table) {
+						lastPlayerToTake.addToCapturedCards(pile.getCards());
+					}
+				}
 
-                scoreKeeper.calculateGameScores();
+				scoreKeeper.calculateGameScores();
 
-                for (Player player : players) {
-                    player.gameComplete(scoreKeeper.getScores());
-                }
-            }
+				for (Player player : players) {
+					player.gameComplete(scoreKeeper.getScores());
+				}
+			}
 
-            for (Player player : players) {
-                player.setComplete(scoreKeeper.getScores());
-            }
-        }
+			for (Player player : players) {
+				player.setComplete(scoreKeeper.getScores());
+			}
+		}
 
-        for (Player player : players) {
-            player.matchComplete(scoreKeeper.getScores());
-        }
+		for (Player player : players) {
+			player.matchComplete(scoreKeeper.getScores());
+		}
 
-        log.info("Time: {}", (System.currentTimeMillis() - start));
-        System.out.println(scoreKeeper);
-    }
+		log.info("Time: {}", (System.currentTimeMillis() - start));
+		System.out.println(scoreKeeper);
+	}
 }

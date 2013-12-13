@@ -1,6 +1,5 @@
 package com.reubenpeeris.wippen.expression;
 
-
 /*
  * This should be fine as a top level option only. Take for example 3 equal value piles with an equal value card in the hand,
  * they could as a triple equals: H=A=B=C, but it is always also possible to do H=A+B-C or H=A*B/C
@@ -12,38 +11,38 @@ package com.reubenpeeris.wippen.expression;
  * This should not occur with even 1 moderately good player.
  */
 public final class Equals extends PairNode {
-    private static final Validator EQUALS_VALIDAOTR = new Validator() {
-        @Override
-        public boolean isValid(int left, int right) {
-            return left == right;
-        }
+	private static final Validator EQUALS_VALIDAOTR = new Validator() {
+		@Override
+		public boolean isValid(int left, int right) {
+			return left == right;
+		}
 
-        @Override
-        public boolean canHaveLeftChildOfTypeEqual() {
-            return true;
-        }
-    };
+		@Override
+		public boolean canHaveLeftChildOfTypeEqual() {
+			return true;
+		}
+	};
 
-    public static NodeBuilder builder() {
-        return new NodeBuilder(EQUALS_VALIDAOTR) {
-            @Override
-            protected PairNode build(Expression left, Expression right) {
-                return new Equals(left, right);
-            }
-        };
-    }
+	public static NodeBuilder builder() {
+		return new NodeBuilder(EQUALS_VALIDAOTR) {
+			@Override
+			protected PairNode build(Expression left, Expression right) {
+				return new Equals(left, right);
+			}
+		};
+	}
 
-    public Equals(Expression left, Expression right) {
-        super(left, right, EQUALS_VALIDAOTR);
-    }
+	public Equals(Expression left, Expression right) {
+		super(left, right, EQUALS_VALIDAOTR);
+	}
 
-    @Override
-    protected int getValue(int left, int right) {
-        return left;
-    }
+	@Override
+	protected int getValue(int left, int right) {
+		return left;
+	}
 
-    @Override
-    protected String getOperatorSymbol() {
-        return "=";
-    }
+	@Override
+	protected String getOperatorSymbol() {
+		return "=";
+	}
 }

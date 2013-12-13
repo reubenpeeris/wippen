@@ -138,17 +138,17 @@ public class ParserTest extends BaseTest {
 	public void testParseDiscardMove() {
 		assertParsesMove("DISCARD 9H", h9);
 	}
-	
+
 	@Test
 	public void parseMoveThrowsForInvalidExpression() {
 		expect(WippenIllegalFormatException.class, "Unable to parse move expression");
-		Parser.parseMove("invalid", Collections.<Pile>emptyList());
+		Parser.parseMove("invalid", Collections.<Pile> emptyList());
 	}
-	
+
 	@Test
 	public void parseMoveThrowsForInvalidType() {
 		expect(WippenIllegalFormatException.class, "Invalid card format");
-		Parser.parseMove("DISCARD 1K", Collections.<Pile>emptyList());
+		Parser.parseMove("DISCARD 1K", Collections.<Pile> emptyList());
 	}
 
 	@Test

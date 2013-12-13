@@ -6,7 +6,7 @@ public class ConstructorRobotLoader extends ConstructorLoader<Robot> {
 	static {
 		RobotLoaderManager.registerLoader(new ConstructorRobotLoader());
 	}
-	
+
 	public ConstructorRobotLoader() {
 		super(Robot.class);
 	}

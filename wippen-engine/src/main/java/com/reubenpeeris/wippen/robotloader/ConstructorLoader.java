@@ -33,7 +33,7 @@ public class ConstructorLoader<T> implements Loader<T> {
 		String className = url.substring(PROTOCOL.length());
 		try {
 			Class<?> clazz = Class.forName(className);
-			if (!Modifier.isPublic(clazz.getModifiers())){
+			if (!Modifier.isPublic(clazz.getModifiers())) {
 				throw new LoaderException("Class is not accessible: '" + className + "'");
 			}
 

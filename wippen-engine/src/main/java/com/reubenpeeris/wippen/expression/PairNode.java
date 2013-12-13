@@ -8,7 +8,7 @@ import lombok.Getter;
 import com.reubenpeeris.wippen.util.CollectionPair;
 
 @Getter
-@EqualsAndHashCode(callSuper=false)
+@EqualsAndHashCode(callSuper = false)
 abstract class PairNode extends Expression {
 	abstract static class Validator {
 		abstract boolean isValid(int left, int right);
@@ -24,10 +24,7 @@ abstract class PairNode extends Expression {
 				return false;
 			}
 
-			return (canHaveLeftChildOfTypeEqual()
-					|| (!left.getClass().equals(Equals.class)
-							&& !right
-					.getClass().equals(Equals.class)));
+			return (canHaveLeftChildOfTypeEqual() || (!left.getClass().equals(Equals.class) && !right.getClass().equals(Equals.class)));
 		}
 	}
 
@@ -43,8 +40,8 @@ abstract class PairNode extends Expression {
 		}
 	};
 
-	//Used for hashCode and equals 
-	private final Class<? extends PairNode>clazz = getClass();
+	// Used for hashCode and equals
+	private final Class<? extends PairNode> clazz = getClass();
 	private final Expression left;
 	private final Expression right;
 	private CollectionPair<Pile> piles;
@@ -84,7 +81,6 @@ abstract class PairNode extends Expression {
 	public final String toString() {
 		String expression = left + getOperatorSymbol() + right;
 
-		return !Equals.class.equals(getClass()) ? "(" + expression + ")"
-				: expression;
+		return !Equals.class.equals(getClass()) ? "(" + expression + ")" : expression;
 	}
 }

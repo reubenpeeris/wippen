@@ -6,7 +6,7 @@ public class SpringRobotLoader extends SpringLoader<Robot> {
 	static {
 		RobotLoaderManager.registerLoader(new SpringRobotLoader());
 	}
-	
+
 	public SpringRobotLoader() {
 		super(Robot.class, "robot");
 	}

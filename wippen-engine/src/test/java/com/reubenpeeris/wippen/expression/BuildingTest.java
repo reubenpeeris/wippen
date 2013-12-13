@@ -62,7 +62,6 @@ public class BuildingTest extends BaseTest {
 
 	@Test
 	public void verifyToStringFormat() {
-		assertThat(building.toString(), is(equalTo(build.getValue() + "B"
-				+ player1.getPosition())));
+		assertThat(building.toString(), is(equalTo(build.getValue() + "B" + player1.getPosition())));
 	}
 }

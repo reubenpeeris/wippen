@@ -1,9 +1,9 @@
 package com.reubenpeeris.wippen.expression;
 
-import org.junit.Test;
-
 import static com.reubenpeeris.wippen.ObjectMother.*;
 import static org.junit.Assert.*;
+
+import org.junit.Test;
 
 public class PairNodeTest {
 	private static final class MockPairNode extends PairNode {
@@ -37,23 +37,23 @@ public class PairNodeTest {
 	public void testPairNodeRightNull() {
 		new MockPairNode(s2, null);
 	}
-	
+
 	@Test
 	public void assertThatTwoPairNodesOfSameTypeWithEquivalentExpressionsAreEqual() {
 		PairNode node1 = new MockNode1(c1, new Add(c2, c3));
 		PairNode node2 = new MockNode1(c1, new Add(c2, c3));
-		
+
 		assertTrue(node1.equals(node2));
 	}
-	
+
 	@Test
 	public void assertThatTwoPairNodesOfDifferentTypeWithEquivalentExpressionsAreNotEqual() {
 		PairNode node1 = new MockNode1(c1, new Add(c2, c3));
 		PairNode node2 = new MockNode2(c1, new Add(c2, c3));
-		
+
 		assertFalse(node1.equals(node2));
 	}
-	
+
 	private class MockNode1 extends PairNode {
 		MockNode1(Expression left, Expression right) {
 			super(left, right);
@@ -69,7 +69,7 @@ public class PairNodeTest {
 			return 0;
 		}
 	}
-	
+
 	private class MockNode2 extends PairNode {
 		MockNode2(Expression left, Expression right) {
 			super(left, right);

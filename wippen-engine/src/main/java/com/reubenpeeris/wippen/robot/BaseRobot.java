@@ -11,14 +11,14 @@ import com.reubenpeeris.wippen.expression.Pile;
 
 public abstract class BaseRobot implements Robot {
 	private Player me;
-	
+
 	public Player getMe() {
 		if (me == null) {
 			throw new IllegalStateException();
 		}
 		return me;
 	}
-	
+
 	@Override
 	public String getName() {
 		return getClass().getSimpleName();

@@ -30,7 +30,7 @@ public class CardTest extends BaseTest {
 
 	@Test
 	public void getPiles_returns_collection_containing_itself() {
-		assertThat(s1.getPiles(), contains((Pile)s1));
+		assertThat(s1.getPiles(), contains((Pile) s1));
 	}
 
 	@Test

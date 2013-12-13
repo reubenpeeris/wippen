@@ -1,13 +1,13 @@
 package com.reubenpeeris.wippen.expression;
 
+import static com.reubenpeeris.wippen.ObjectMother.*;
+import static org.junit.Assert.*;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
 import org.junit.Test;
-
-import static com.reubenpeeris.wippen.ObjectMother.*;
-import static org.junit.Assert.*;
 
 public class PileTest {
 	static class MockPile extends Pile {
@@ -45,8 +45,7 @@ public class PileTest {
 
 	@Test
 	public void testGetCardsEmpty() {
-		assertEquals(Collections.<Card> emptyList(),
-				Pile.getCards(Collections.<Pile> emptySet()));
+		assertEquals(Collections.<Card> emptyList(), Pile.getCards(Collections.<Pile> emptySet()));
 	}
 
 	@Test
@@ -54,7 +53,6 @@ public class PileTest {
 		Pile pile1 = new MockPile(Arrays.asList(c1, c2));
 		Pile pile2 = new MockPile(Arrays.asList(h1, h2));
 
-		assertEquals(Arrays.asList(c1, c2, h1, h2),
-				Pile.getCards(Arrays.asList(pile1, pile2)));
+		assertEquals(Arrays.asList(c1, c2, h1, h2), Pile.getCards(Arrays.asList(pile1, pile2)));
 	}
 }

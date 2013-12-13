@@ -1,40 +1,32 @@
 package com.reubenpeeris.wippen.robotloader;
 
-import org.junit.Test;
-
 import static org.junit.Assert.*;
 
+import org.junit.Test;
+
 public class ConstructorLoaderTest {
-	static interface AnInterface {}
-	static class Private implements AnInterface {}
-	public static class WrongInterface {}
-	public static class Valid implements AnInterface {}
-	public static class NoNpArgConstructor implements AnInterface {
-		public NoNpArgConstructor(String string) {}
-	}
-	
-	static ConstructorLoader<AnInterface> loader = new ConstructorLoader<>(AnInterface.class);
-	
-	@Test(expected=IllegalArgumentException.class)
+	static final ConstructorLoader<AnInterface> loader = new ConstructorLoader<>(AnInterface.class);
+
+	@Test(expected = IllegalArgumentException.class)
 	public void testAcceptsNullURL() {
 		loader.acceptsURL(null);
 	}
-	
+
 	@Test
 	public void testAcceptURLInvalid() {
 		assertFalse(loader.acceptsURL("invalid://url"));
 	}
-	
+
 	@Test
 	public void testAcceptURLValidProtocol() {
 		assertTrue(loader.acceptsURL("class:some.random.class"));
 	}
-	
+
 	@Test
 	public void testCreateInstanceValid() {
 		assertEquals(Valid.class, loader.createInstance("class:" + Valid.class.getName()).getClass());
 	}
-	
+
 	@Test
 	public void testCreateInstanceMissing() {
 		String className = "FakeClassName";
@@ -45,7 +37,7 @@ public class ConstructorLoaderTest {
 			assertEquals("Class not found: '" + className + "'", e.getMessage());
 		}
 	}
-	
+
 	@Test
 	public void testCreateInstancePrivate() {
 		String className = Private.class.getName();
@@ -56,7 +48,7 @@ public class ConstructorLoaderTest {
 			assertEquals("Class is not accessible: '" + className + "'", e.getMessage());
 		}
 	}
-	
+
 	@Test
 	public void testCreateInstanceWrongInterface() {
 		String className = WrongInterface.class.getName();
@@ -67,7 +59,7 @@ public class ConstructorLoaderTest {
 			assertEquals("Class '" + className + "' does not implement interface '" + AnInterface.class.getName() + "'", e.getMessage());
 		}
 	}
-	
+
 	@Test
 	public void testCreateInstanceNoNpArgConstructor() {
 		String className = NoNpArgConstructor.class.getName();
@@ -78,7 +70,7 @@ public class ConstructorLoaderTest {
 			assertEquals("No public no-argument constructor found on class '" + className + "'", e.getMessage());
 		}
 	}
-	
+
 	@Test
 	public void testCreateInstanceInvalidURL() {
 		String url = "inavlid url";
@@ -87,6 +79,23 @@ public class ConstructorLoaderTest {
 			fail();
 		} catch (LoaderException e) {
 			assertEquals("Unsupported url: '" + url + "'", e.getMessage());
+		}
+	}
+
+	static interface AnInterface {
+	}
+
+	static class Private implements AnInterface {
+	}
+
+	public static class WrongInterface {
+	}
+
+	public static class Valid implements AnInterface {
+	}
+
+	public static class NoNpArgConstructor implements AnInterface {
+		public NoNpArgConstructor(String string) {
 		}
 	}
 }
