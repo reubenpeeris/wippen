@@ -19,7 +19,7 @@ public class PairAdder extends SingleValueMatcher {
                     Expression expression = new Add(pile1, pile2);
                     for (Card card : hand) {
                         if (expression.getValue() == card.getValue()) {
-                            return new Move(CAPTURE, card, expression);
+                            return new Move(CAPTURE, expression, card);
                         }
                     }
                 }

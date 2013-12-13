@@ -81,8 +81,10 @@ public class Move extends Expression {
 
     @Getter(AccessLevel.NONE)
     private final Expression expression;
+    @Getter(AccessLevel.NONE)
+    private final Expression coreExpression;
 
-    public Move(Type type, Card handCard, Expression expression) {
+    public Move(Type type, Expression expression, Card handCard) {
         this(type, handCard, expression, true);
     }
 
@@ -93,11 +95,9 @@ public class Move extends Expression {
         if (error != null) {
             throw new IllegalArgumentException(error);
         }
-        if (generateExpression) {
-            this.expression = type.createExpresion(handCard, expression);
-        } else {
-            this.expression = expression;
-        }
+        this.coreExpression = expression;
+        this.expression = type.createExpresion(handCard, expression);
+        
         this.type = type;
         this.handCard = handCard;
 
@@ -107,12 +107,10 @@ public class Move extends Expression {
     }
 
     private static String checkArgs(@NonNull Type type, @NonNull Card handCard, Expression expression, boolean generateExpression) {
-        if (generateExpression) {
-            expression = type.createExpresion(handCard, expression);
-        }
+        expression = type.createExpresion(handCard, expression);
 
         if (expression == null) {
-            return String.format("For %s type %s", type, type.getMessage());
+            return String.format("For %s type, %s", type, type.getMessage());
         }
 
         if (new HashSet<>(expression.getCards()).size() < expression.getCards().size()) {
@@ -155,20 +153,32 @@ public class Move extends Expression {
         }
 
         if (type == Type.BUILD) {
-            for (Pile pile : getPiles()) {
+            for (Pile pile: getPiles()) {
                 if (pile.getPlayer().equals(player) && pile.getValue() != getValue()) {
                     return false;
                 }
+            }
+            
+            boolean hasCardOfCorrectValue = false;
+            for (Card card: hand) {
+            	if (!card.equals(handCard) && card.getValue() == getValue()) {
+            		hasCardOfCorrectValue = true;
+            		break;
+            	}
+            }
+            
+            if (!hasCardOfCorrectValue) {
+            	return false;
             }
         }
 
         return true;
     }
 
-    public static Move create(@NonNull Type type, @NonNull Card handCard, Expression expression, @NonNull Collection<Pile> table,
+    public static Move create(@NonNull Type type, Expression expression, @NonNull Card handCard, @NonNull Collection<Pile> table,
             @NonNull Collection<Card> hand, @NonNull Player player) {
         if (checkArgs(type, handCard, expression, true) == null) {
-            Move move = new Move(type, handCard, expression);
+            Move move = new Move(type, expression, handCard);
             if (move.isValidFor(table, hand, player)) {
                 return move;
             }
@@ -178,6 +188,10 @@ public class Move extends Expression {
 
     @Override
     public String toString() {
-        return type + ":" + expression.toString();
+    	if (coreExpression != null) {
+    		return type + " " + coreExpression.toString() + " " + handCard;
+    	} else {
+    		return type + " " + handCard;
+    	}
     }
 }

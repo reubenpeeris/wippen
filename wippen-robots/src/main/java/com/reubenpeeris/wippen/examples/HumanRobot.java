@@ -12,8 +12,6 @@ import com.reubenpeeris.wippen.engine.Parser;
 import com.reubenpeeris.wippen.engine.Player;
 import com.reubenpeeris.wippen.engine.Score;
 import com.reubenpeeris.wippen.expression.Card;
-import com.reubenpeeris.wippen.expression.Expression;
-import com.reubenpeeris.wippen.expression.ExpressionVerifier;
 import com.reubenpeeris.wippen.expression.Move;
 import com.reubenpeeris.wippen.expression.Pile;
 import com.reubenpeeris.wippen.robot.BaseRobot;
@@ -43,20 +41,18 @@ public class HumanRobot extends BaseRobot {
     public Move takeTurn(Collection<Pile> table, Collection<Card> hand) {
         sendMessage(String.format("TAKE_TURN TABLE=%s HAND=%s", table.toString(), hand.toString()));
 
-        Move move = null;
-        boolean done = false;
-        do {
+        while (true) {
             String expression = receiveMessage();
             try {
-                Expression parsedExpression = Parser.parseExpression(expression, table);
-                move = ExpressionVerifier.verifyExpression(parsedExpression, getMe(), table, hand);
-                done = true;
+                Move move = Parser.parseMove(expression, table);
+                if (!move.isValidFor(table, hand, getMe())) {
+                	throw new IllegalStateException("Move not valid at this time");
+                }
+                return move;
             } catch (Exception e) {
                 sendMessage("TRY AGAIN (" + e.getMessage() + ")");
             }
-        } while (!done);
-
-        return move;
+        }
     }
 
     @Override

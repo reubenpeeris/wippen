@@ -14,7 +14,7 @@ public class SingleValueMatcher extends Discarder {
         for (Pile pile : table) {
             for (Card card : hand) {
                 if (pile.getValue() == card.getValue()) {
-                    return new Move(CAPTURE, card, pile);
+                    return new Move(CAPTURE, pile, card);
                 }
             }
         }

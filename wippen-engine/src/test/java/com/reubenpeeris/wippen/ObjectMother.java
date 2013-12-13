@@ -1,5 +1,8 @@
 package com.reubenpeeris.wippen;
 
+import static com.reubenpeeris.wippen.expression.Move.Type.*;
+
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
@@ -15,8 +18,6 @@ import com.reubenpeeris.wippen.expression.Rank;
 import com.reubenpeeris.wippen.expression.Suit;
 import com.reubenpeeris.wippen.robot.BaseRobot;
 import com.reubenpeeris.wippen.robot.Robot;
-
-import static com.reubenpeeris.wippen.expression.Move.Type.*;
 
 public final class ObjectMother {
     public static final Card c1 = new Card(Suit.CLUB, new Rank(1));
@@ -86,12 +87,14 @@ public final class ObjectMother {
     public static final Player player3 = new Player(3, robot);
     public static final Player player4 = new Player(4, robot);
 
-    public static final Building building_12B1_s6PlusD6 = new Building(new Move(BUILD, s6, new Add(s6, d6)), player1);
+    public static final Building building_12B1_s6PlusD6 = new Building(new Move(BUILD, new Add(s6, d6), s6), player1);
 
-    public static final Move build = new Move(Type.BUILD, s1, new Add(d7, s1));
+    public static final Move build = new Move(Type.BUILD, new Add(d7, s1), s1);
     public static final Building building = new Building(build, player1);
 
-    public static final Move discard = new Move(Type.DISCARD, s7, null);
+    public static final Move discard = new Move(Type.DISCARD, null, s7);
 
     public static final Set<Pile> emptyTable = Collections.emptySet();
+	public static final Collection<Pile> bigTable = Collections.unmodifiableCollection(Arrays.<Pile> asList(h1, h2, h3, h4, building_12B1_s6PlusD6));
+	public static final Collection<Card> exampleHand = Collections.unmodifiableCollection(Arrays.<Card> asList(s1, s3, s4, s12));
 }

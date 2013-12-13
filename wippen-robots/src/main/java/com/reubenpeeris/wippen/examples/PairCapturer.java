@@ -25,7 +25,7 @@ public class PairCapturer extends SingleValueMatcher {
                         Equals.builder())) {
                     Expression expression = nodeBuilder.left(pile1).right(pile2).build();
                     for (Card card : hand) {
-                        Move move = Move.create(CAPTURE, card, expression, table, hand, getMe());
+                        Move move = Move.create(CAPTURE, expression, card, table, hand, getMe());
                         if (move != null) {
                             return move;
                         }

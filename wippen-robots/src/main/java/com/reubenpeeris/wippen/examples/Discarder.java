@@ -16,6 +16,6 @@ import static com.reubenpeeris.wippen.expression.Move.Type.*;
 public class Discarder extends BaseRobot {
 	@Override
 	public Move takeTurn(Collection<Pile> table, Collection<Card> hand) {
-		return new Move(DISCARD, hand.iterator().next(), null);
+		return new Move(DISCARD, null, hand.iterator().next());
 	}
 }

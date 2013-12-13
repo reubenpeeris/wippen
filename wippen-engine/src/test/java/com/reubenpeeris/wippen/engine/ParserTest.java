@@ -1,25 +1,20 @@
 package com.reubenpeeris.wippen.engine;
 
-import java.util.Arrays;
-import java.util.Collection;
+import static com.reubenpeeris.wippen.ObjectMother.*;
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.collection.IsIterableContainingInAnyOrder.*;
+import static org.junit.Assert.*;
+
+import java.util.Collections;
 
 import org.junit.Test;
 
-import com.reubenpeeris.wippen.expression.Add;
-import com.reubenpeeris.wippen.expression.Building;
+import com.reubenpeeris.wippen.BaseTest;
 import com.reubenpeeris.wippen.expression.Expression;
 import com.reubenpeeris.wippen.expression.Move;
-import com.reubenpeeris.wippen.expression.Move.Type;
 import com.reubenpeeris.wippen.expression.Pile;
 
-import static com.reubenpeeris.wippen.ObjectMother.*;
-import static org.junit.Assert.*;
-
-public class ParserTest {
-	private final Player player1 = new Player(1, new MockRobot());
-	
-	private Collection<Pile> BIG_TABLE = Arrays.<Pile>asList(h3, d4, s2, new Building(new Move(Type.BUILD, s1, new Add(s1, d2)), player1));
-	
+public class ParserTest extends BaseTest {
 	@Test
 	public void testInfixToPostFixSimple() {
 		String output = Parser.infixToPostfix("3H*4D-2S");
@@ -31,59 +26,59 @@ public class ParserTest {
 		String output = Parser.infixToPostfix("3H*(4D-2S)");
 		assertEquals("3H 4D 2S - *", output);
 	}
-	
+
 	@Test
 	public void testParseMathPresidenceMultiplyVsMinus() throws Exception {
-		Expression output = Parser.parseMath("3H*4D-2S", BIG_TABLE);
+		Expression output = Parser.parseMath("3H*4D-2S", bigTable);
 		assertEquals("((3H*4D)-2S)", output.toString());
 		assertEquals(10, output.getValue());
 	}
-	
+
 	@Test
 	public void testParseMathPresidenceMinusVsMultiply() throws Exception {
-		Expression output = Parser.parseMath("12H-3D*2S", BIG_TABLE);
+		Expression output = Parser.parseMath("12H-3D*2S", bigTable);
 		assertEquals("(12H-(3D*2S))", output.toString());
 		assertEquals(6, output.getValue());
 	}
 
 	@Test
 	public void testParseMathPresidenceDivideVsMinus() throws Exception {
-		Expression output = Parser.parseMath("12H/4D-2S", BIG_TABLE);
+		Expression output = Parser.parseMath("12H/4D-2S", bigTable);
 		assertEquals("((12H/4D)-2S)", output.toString());
 		assertEquals(1, output.getValue());
 	}
 
 	@Test
 	public void testParseMathPresidenceMinusVsDivide() throws Exception {
-		Expression output = Parser.parseMath("4S-12H/4D", BIG_TABLE);
+		Expression output = Parser.parseMath("4S-12H/4D", bigTable);
 		assertEquals("(4S-(12H/4D))", output.toString());
 		assertEquals(1, output.getValue());
 	}
 
 	@Test
 	public void testParseMathPresidenceMultiplyVsPlus() throws Exception {
-		Expression output = Parser.parseMath("2H*3C+1S", BIG_TABLE);
+		Expression output = Parser.parseMath("2H*3C+1S", bigTable);
 		assertEquals("((2H*3C)+1S)", output.toString());
 		assertEquals(7, output.getValue());
 	}
 
 	@Test
 	public void testParseMathPresidencePlusVsMultiply() throws Exception {
-		Expression output = Parser.parseMath("2H+3C*1S", BIG_TABLE);
+		Expression output = Parser.parseMath("2H+3C*1S", bigTable);
 		assertEquals("(2H+(3C*1S))", output.toString());
 		assertEquals(5, output.getValue());
 	}
 
 	@Test
 	public void testParseMathPresidenceDivideVsPlus() throws Exception {
-		Expression output = Parser.parseMath("12H/4D+2S", BIG_TABLE);
+		Expression output = Parser.parseMath("12H/4D+2S", bigTable);
 		assertEquals("((12H/4D)+2S)", output.toString());
 		assertEquals(5, output.getValue());
 	}
 
 	@Test
 	public void testParseMathPresidencePlusVsDivide() throws Exception {
-		Expression output = Parser.parseMath("4S+12H/4D", BIG_TABLE);
+		Expression output = Parser.parseMath("4S+12H/4D", bigTable);
 		assertEquals("(4S+(12H/4D))", output.toString());
 		assertEquals(7, output.getValue());
 	}
@@ -96,7 +91,7 @@ public class ParserTest {
 
 	@Test
 	public void testParseMinusMinus() throws Exception {
-		Expression output = Parser.parseMath("3C-2D-1H", BIG_TABLE);
+		Expression output = Parser.parseMath("3C-2D-1H", bigTable);
 		assertEquals("((3C-2D)-1H)", output.toString());
 		assertEquals(0, output.getValue());
 	}
@@ -109,7 +104,7 @@ public class ParserTest {
 
 	@Test
 	public void testParseDivideMinusDivide() throws Exception {
-		Expression output = Parser.parseMath("4S/2C+6H/2D", BIG_TABLE);
+		Expression output = Parser.parseMath("4S/2C+6H/2D", bigTable);
 		assertEquals("((4S/2C)+(6H/2D))", output.toString());
 		assertEquals(5, output.getValue());
 		assertEquals("[4S, 2C, 6H, 2D]", output.getPiles().toString());
@@ -123,38 +118,44 @@ public class ParserTest {
 
 	@Test
 	public void testParseBuilding() throws Exception {
-		Expression output = Parser.parseMath("3B1", BIG_TABLE);
-		assertEquals("3B1", output.toString());
-		assertEquals(3, output.getValue());
-		assertEquals("[3B1]", output.getPiles().toString());
+		Expression output = Parser.parseMath("12B1", bigTable);
+		assertEquals("12B1", output.toString());
+		assertEquals(12, output.getValue());
+		assertEquals("[12B1]", output.getPiles().toString());
 	}
 
 	@Test
-	public void testParseActionBuild() throws Exception {
-		Expression expression = Parser.parseExpression("4S/2C+6H/2D", BIG_TABLE);
-		assertEquals("[4S, 2C, 6H, 2D]", expression.getPiles().toString());
-		assertEquals("((4S/2C)+(6H/2D))", expression.toString());
+	public void testParseBuildMove() {
+		assertParsesMove("BUILD ((4S/2C)+(6H/2D)) 6H", s4, c2, h6, d2);
 	}
 
 	@Test
-	public void testParseActionTake() throws Exception {
-		Expression expression = Parser.parseExpression("5C=4S/2C+6H/2D", BIG_TABLE);
-		assertEquals("[5C, 4S, 2C, 6H, 2D]", expression.getPiles().toString());
-		assertEquals("5C=((4S/2C)+(6H/2D))", expression.toString());
+	public void testParseCaptureMove() {
+		assertParsesMove("CAPTURE ((4S/2C)+(6H/2D)) 5C", c5, s4, c2, h6, d2);
 	}
 
 	@Test
-	public void testParseActionTakeA() throws Exception {
-		Expression expression = Parser.parseExpression("9H=(12D-11H)*9S", BIG_TABLE);
-		assertEquals("[9H, 12D, 11H, 9S]", expression.getPiles().toString());
-		assertEquals("9H=((12D-11H)*9S)", expression.toString());
+	public void testParseDiscardMove() {
+		assertParsesMove("DISCARD 9H", h9);
+	}
+	
+	@Test
+	public void parseMoveThrowsForInvalidExpression() {
+		expect(WippenIllegalFormatException.class, "Unable to parse move expression");
+		Parser.parseMove("invalid", Collections.<Pile>emptyList());
+	}
+	
+	@Test
+	public void parseMoveThrowsForInvalidType() {
+		expect(WippenIllegalFormatException.class, "Invalid card format");
+		Parser.parseMove("DISCARD 1K", Collections.<Pile>emptyList());
 	}
 
 	@Test
 	public void testParseMissingLeadingNumber() {
 		try {
-			Parser.parseMath("+3S", BIG_TABLE);
-		} catch (ParseException e) {
+			Parser.parseMath("+3S", bigTable);
+		} catch (WippenIllegalFormatException e) {
 			assertEquals("Invalid format parsing: '+3S'", e.getMessage());
 		}
 	}
@@ -162,9 +163,15 @@ public class ParserTest {
 	@Test
 	public void testParseMissingTrailingNumber() {
 		try {
-			Parser.parseMath("3S+", BIG_TABLE);
-		} catch (ParseException e) {
+			Parser.parseMath("3S+", bigTable);
+		} catch (WippenIllegalFormatException e) {
 			assertEquals("Invalid format parsing: '3S+'", e.getMessage());
 		}
+	}
+
+	private void assertParsesMove(String moveExpression, Pile... piles) {
+		Move move = Parser.parseMove(moveExpression, bigTable);
+		assertThat(move.getPiles(), containsInAnyOrder(piles));
+		assertThat(move.toString(), is(equalTo(moveExpression)));
 	}
 }
