@@ -1,6 +1,6 @@
 package com.reubenpeeris.wippen.expression;
 
-import static com.reubenpeeris.wippen.ObjectMother.*;
+import static com.reubenpeeris.wippen.TestData.*;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
@@ -12,7 +12,7 @@ public class DivideTest extends OperatorTest {
 	}
 
 	@Override
-	protected int getResult4And2() {
+	protected int getExpectedValue() {
 		return 2;
 	}
 
@@ -22,13 +22,13 @@ public class DivideTest extends OperatorTest {
 	}
 
 	@Test
-	public void testConstructorNonDivisibleNumbers() {
+	public void constructor_throws_for_non_divisible_numbers() {
 		thrown.expect(IllegalArgumentException.class);
 		new Divide(c2, c3);
 	}
 
 	@Test
-	public void testBuilderNonDivisibleNumbers() {
+	public void builder_returns_null_for_non_divisible_numbers() {
 		assertThat(Divide.builder().left(c2).right(c3).build(), is(nullValue()));
 	}
 }

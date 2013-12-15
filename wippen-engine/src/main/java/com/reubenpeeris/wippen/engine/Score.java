@@ -5,7 +5,7 @@ import lombok.ToString;
 
 @Getter
 @ToString
-public class Score {
+public final class Score {
 	private int matchPoints;
 	private int setPoints;
 	private int gamePoints;

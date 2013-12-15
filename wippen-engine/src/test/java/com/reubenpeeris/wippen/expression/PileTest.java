@@ -1,6 +1,8 @@
 package com.reubenpeeris.wippen.expression;
 
-import static com.reubenpeeris.wippen.ObjectMother.*;
+import static com.reubenpeeris.wippen.TestData.*;
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.collection.IsIterableContainingInOrder.*;
 import static org.junit.Assert.*;
 
 import java.util.Arrays;
@@ -9,12 +11,12 @@ import java.util.Collections;
 
 import org.junit.Test;
 
-public class PileTest {
-	static class MockPile extends Pile {
+public class PileTest extends BaseExpressionTest {
+	static final class MockPile extends Pile {
 		private final Collection<Card> cards;
 
-		public MockPile(Collection<Card> cards) {
-			this.cards = cards;
+		public MockPile(Card... cards) {
+			this.cards = Collections.unmodifiableCollection(Arrays.asList(cards));
 		}
 
 		@Override
@@ -34,25 +36,31 @@ public class PileTest {
 
 		@Override
 		public Collection<Pile> getPiles() {
-			return null;
+			return Collections.emptySet();
 		}
 	}
 
-	@Test(expected = IllegalArgumentException.class)
-	public void testGetCardsNull() {
+	@Override
+	protected Expression validInstance() {
+		return new MockPile();
+	}
+
+	@Test
+	public void getCards_throws_for_null_piles() {
+		expect(NullPointerException.class, "piles");
 		Pile.getCards(null);
 	}
 
 	@Test
-	public void testGetCardsEmpty() {
-		assertEquals(Collections.<Card> emptyList(), Pile.getCards(Collections.<Pile> emptySet()));
+	public void getCards_returns_empty_result_for_empty_input() {
+		assertThat(Pile.getCards(Collections.<Pile> emptySet()).size(), is(equalTo(0)));
 	}
 
 	@Test
-	public void testGetCardsCoupleOfPiles() {
-		Pile pile1 = new MockPile(Arrays.asList(c1, c2));
-		Pile pile2 = new MockPile(Arrays.asList(h1, h2));
+	public void getCards_returns_all_cards_from_multiple_piles() {
+		Pile pile1 = new MockPile(c1, c2);
+		Pile pile2 = new MockPile(h1, h2);
 
-		assertEquals(Arrays.asList(c1, c2, h1, h2), Pile.getCards(Arrays.asList(pile1, pile2)));
+		assertThat(Pile.getCards(Arrays.asList(pile1, pile2)), contains(c1, c2, h1, h2));
 	}
 }

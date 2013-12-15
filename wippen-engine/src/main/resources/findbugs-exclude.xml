@@ -1,11 +1,13 @@
 <FindBugsFilter>
 	<Match>
 		<Or>
-			<Class name="~.*Test$" />
-			<Class name="~.*[.$]Mock[^.]*$" />
+			<Class name="~.*(?:Test|Mock).*" />
 		</Or>
 		<Not>
 			<Bug code="IJU" /> <!-- 'IJU' is the code for bugs related to JUnit test code -->
 		</Not>
+	</Match>
+	<Match >
+		<Bug pattern="SLF4J_LOGGER_SHOULD_BE_NON_STATIC"/>
 	</Match>
 </FindBugsFilter>

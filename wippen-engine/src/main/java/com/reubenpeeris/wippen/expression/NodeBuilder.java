@@ -1,5 +1,7 @@
 package com.reubenpeeris.wippen.expression;
 
+import lombok.NonNull;
+
 import com.reubenpeeris.wippen.expression.PairNode.Validator;
 
 public abstract class NodeBuilder {
@@ -20,11 +22,7 @@ public abstract class NodeBuilder {
 		}
 	}
 
-	NodeBuilder(Validator validator) {
-		if (validator == null) {
-			throw new IllegalArgumentException();
-		}
-
+	NodeBuilder(@NonNull Validator validator) {
 		this.validator = validator;
 	}
 

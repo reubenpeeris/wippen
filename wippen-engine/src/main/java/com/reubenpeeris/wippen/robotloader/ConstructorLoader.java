@@ -4,6 +4,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 
+import lombok.NonNull;
+
 /**
  * Format: class://dotted.class.name
  */
@@ -16,29 +18,25 @@ public class ConstructorLoader<T> implements Loader<T> {
 	}
 
 	@Override
-	public boolean acceptsURL(String url) throws LoaderException {
-		if (url == null) {
-			throw new IllegalArgumentException();
-		}
-
+	public boolean acceptsUrl(@NonNull String url) throws WippenLoaderException {
 		return url.startsWith(PROTOCOL);
 	}
 
 	@Override
-	public T createInstance(String url) throws LoaderException {
-		if (!acceptsURL(url)) {
-			throw new LoaderException("Unsupported url: '" + url + "'");
+	public T createInstance(String url) throws WippenLoaderException {
+		if (!acceptsUrl(url)) {
+			throw new WippenLoaderException("Unsupported url: '" + url + "'");
 		}
 
 		String className = url.substring(PROTOCOL.length());
 		try {
 			Class<?> clazz = Class.forName(className);
 			if (!Modifier.isPublic(clazz.getModifiers())) {
-				throw new LoaderException("Class is not accessible: '" + className + "'");
+				throw new WippenLoaderException("Class is not accessible: '" + className + "'");
 			}
 
 			if (!tClazz.isAssignableFrom(clazz)) {
-				throw new LoaderException("Class '" + className + "' does not implement interface '" + tClazz.getName() + "'");
+				throw new WippenLoaderException("Class '" + className + "' does not implement interface '" + tClazz.getName() + "'");
 			}
 			@SuppressWarnings("unchecked")
 			Class<T> c = (Class<T>) clazz;
@@ -46,9 +44,9 @@ public class ConstructorLoader<T> implements Loader<T> {
 
 			return noArgConstructor.newInstance();
 		} catch (ClassNotFoundException e) {
-			throw new LoaderException("Class not found: '" + className + "'", e);
+			throw new WippenLoaderException("Class not found: '" + className + "'", e);
 		} catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException | InstantiationException e) {
-			throw new LoaderException("No public no-argument constructor found on class '" + className + "'", e);
+			throw new WippenLoaderException("No public no-argument constructor found on class '" + className + "'", e);
 		}
 	}
 

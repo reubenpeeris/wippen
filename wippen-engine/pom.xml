@@ -117,7 +117,8 @@
 				<configuration>
 					<xmlOutput>true</xmlOutput>
 					<includeTests>true</includeTests>
-					<effort>Default</effort>
+					<effort>Max</effort>
+					<threshold>Low</threshold>
 					<excludeFilterFile>src/main/resources/findbugs-exclude.xml</excludeFilterFile>
 					<plugins>
 						<plugin>

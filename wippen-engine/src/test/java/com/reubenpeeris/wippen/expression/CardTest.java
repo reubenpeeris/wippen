@@ -1,6 +1,6 @@
 package com.reubenpeeris.wippen.expression;
 
-import static com.reubenpeeris.wippen.ObjectMother.*;
+import static com.reubenpeeris.wippen.TestData.*;
 import static com.reubenpeeris.wippen.engine.Player.*;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.collection.IsIterableContainingInOrder.*;
@@ -8,9 +8,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import com.reubenpeeris.wippen.BaseTest;
-
-public class CardTest extends BaseTest {
+public class CardTest extends BaseExpressionTest {
 	@Test
 	public void construct_with_null_suit_throws() {
 		expect(NullPointerException.class, "suit");
@@ -82,5 +80,10 @@ public class CardTest extends BaseTest {
 	private void assertCardParses(Card card) {
 		Card parsed = Card.parseCard(card.toString());
 		assertThat(parsed, is(equalTo(card)));
+	}
+
+	@Override
+	protected Expression validInstance() {
+		return s1;
 	}
 }

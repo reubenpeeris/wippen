@@ -4,11 +4,11 @@ import java.util.Collection;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NonNull;
 
 import com.reubenpeeris.wippen.util.CollectionPair;
 
-@Getter
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(callSuper = false, of = { "left", "right", "clazz" })
 abstract class PairNode extends Expression {
 	abstract static class Validator {
 		abstract boolean isValid(int left, int right);
@@ -44,10 +44,13 @@ abstract class PairNode extends Expression {
 	private final Class<? extends PairNode> clazz = getClass();
 	private final Expression left;
 	private final Expression right;
-	private CollectionPair<Pile> piles;
+	private Collection<Pile> piles;
+	@Getter
+	private Collection<Card> cards;
+	@Getter
 	private final int value;
 
-	PairNode(Expression left, Expression right, Validator validator) {
+	PairNode(@NonNull Expression left, @NonNull Expression right, @NonNull Validator validator) {
 		if (!validator.isValid(left, right)) {
 			throw new IllegalArgumentException();
 		}
@@ -57,6 +60,7 @@ abstract class PairNode extends Expression {
 		this.value = getValue(left.getValue(), right.getValue());
 
 		this.piles = new CollectionPair<>(left.getPiles(), right.getPiles());
+		this.cards = Pile.getCards(this.piles);
 	}
 
 	PairNode(Expression left, Expression right) {
@@ -68,19 +72,12 @@ abstract class PairNode extends Expression {
 		return piles;
 	}
 
-	@Override
-	public Collection<Card> getCards() {
-		return Pile.getCards(getPiles());
-	}
-
 	abstract String getOperatorSymbol();
 
 	abstract int getValue(int left, int right);
 
 	@Override
 	public final String toString() {
-		String expression = left + getOperatorSymbol() + right;
-
-		return !Equals.class.equals(getClass()) ? "(" + expression + ")" : expression;
+		return "(" + left + getOperatorSymbol() + right + ")";
 	}
 }

@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import lombok.EqualsAndHashCode;
+import lombok.NonNull;
 
 /**
  * A collection backed by 2 other collections. This is not thread safe. None of
@@ -15,11 +16,7 @@ public final class CollectionPair<E> implements Collection<E> {
 	private final Collection<E> left;
 	private final Collection<E> right;
 
-	public CollectionPair(Collection<E> left, Collection<E> right) {
-		if (left == null || right == null) {
-			throw new IllegalArgumentException();
-		}
-
+	public CollectionPair(@NonNull Collection<E> left, @NonNull Collection<E> right) {
 		this.left = left;
 		this.right = right;
 	}
@@ -30,12 +27,8 @@ public final class CollectionPair<E> implements Collection<E> {
 	}
 
 	@Override
-	public boolean containsAll(Collection<?> c) {
-		if (c == null) {
-			throw new IllegalArgumentException();
-		}
-
-		for (Object o : c) {
+	public boolean containsAll(@NonNull Collection<?> collection) {
+		for (Object o : collection) {
 			if (!contains(o)) {
 				return false;
 			}

@@ -1,5 +1,6 @@
 package com.reubenpeeris.wippen.util;
 
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 import java.util.Arrays;
@@ -9,192 +10,192 @@ import java.util.Iterator;
 
 import org.junit.Test;
 
-public class CollectionPairTest {
-	private final Collection<String> left = Arrays.asList("inLeft");
-	private final Collection<String> right = Arrays.asList("inRight");
+import com.reubenpeeris.wippen.BaseTest;
+
+public class CollectionPairTest extends BaseTest {
+	private final Collection<String> left = Arrays.asList("inLeft1", "inLeft2");
+	private final Collection<String> right = Arrays.asList("inRight1", "inRight2");
 	private final Collection<String> empty = Collections.emptyList();
 
 	private final CollectionPair<String> emptyPair = new CollectionPair<>(empty, empty);
 	private final CollectionPair<String> leftOnly = new CollectionPair<>(left, empty);
 	private final CollectionPair<String> rightOnly = new CollectionPair<>(empty, right);
 	private final CollectionPair<String> leftAndRight = new CollectionPair<>(left, right);
-	private final CollectionPair<String> multipleLeftAndRight = new CollectionPair<>(Arrays.asList("inLeft1", "inLeft2"), Arrays.asList("inRight1",
-			"inRight2"));
 
-	@Test(expected = IllegalArgumentException.class)
-	public void testConstructorNullLeft() {
+	@Test
+	public void constructor_throws_for_null_left() {
+		expect(NullPointerException.class, "left");
 		new CollectionPair<>(null, Collections.emptyList());
 	}
 
-	@Test(expected = IllegalArgumentException.class)
-	public void testConstructorNullRight() {
+	@Test
+	public void constructor_throws_for_null_right() {
+		expect(NullPointerException.class, "right");
 		new CollectionPair<>(Collections.emptyList(), null);
 	}
 
 	@Test
-	public void testContainsNull() {
-		assertFalse(leftAndRight.contains(null));
+	public void contains_returns_false_for_null_input() {
+		assertThat(leftAndRight.contains(null), is(false));
 	}
 
 	@Test
-	public void testContainsNotInEithe() {
-		assertFalse(leftAndRight.contains("inNeither"));
+	public void contains_returns_false_if_not_in_left_nor_right() {
+		assertThat(leftAndRight.contains("inNeither"), is(false));
 	}
 
 	@Test
-	public void testContainsInLeft() {
-		assertTrue(leftAndRight.contains(left.iterator().next()));
+	public void contains_returns_true_present_if_in_left() {
+		assertThat(leftAndRight.contains(left.iterator().next()), is(true));
 	}
 
 	@Test
-	public void testContainsInRight() {
-		assertTrue(leftAndRight.contains(right.iterator().next()));
+	public void contains_returns_true_present_if_in_right() {
+		assertThat(leftAndRight.contains(right.iterator().next()), is(true));
 	}
 
 	@Test
-	public void testIsEmptyWhenEmpty() {
-		assertTrue(emptyPair.isEmpty());
+	public void isEmpty_returns_true_if_left_and_right_are_both_empty() {
+		assertThat(emptyPair.isEmpty(), is(true));
 	}
 
 	@Test
-	public void testIsEmptyOnlyLeft() {
-		assertFalse(leftOnly.isEmpty());
+	public void isEmpty_returns_false_if_elements_are_in_left() {
+		assertThat(leftOnly.isEmpty(), is(false));
 	}
 
 	@Test
-	public void testIsEmptyOnlyRight() {
-		assertFalse(rightOnly.isEmpty());
+	public void isEmpty_returns_false_if_elements_are_in_right() {
+		assertThat(rightOnly.isEmpty(), is(false));
 	}
 
 	@Test
-	public void testSizeEmpty() {
-		assertEquals(0, emptyPair.size());
+	public void size_is_zero_when_emty() {
+		assertThat(emptyPair.size(), is(equalTo(0)));
 	}
 
 	@Test
-	public void testSizeLeftOnly() {
-		assertEquals(1, leftOnly.size());
+	public void size_is_sum_of_left_and_right() {
+		assertThat(leftAndRight.size(), is(equalTo(left.size() + right.size())));
 	}
 
 	@Test
-	public void testSizeRightOnly() {
-		assertEquals(1, rightOnly.size());
-	}
-
-	@Test
-	public void testSizeLeftAndRight() {
-		assertEquals(2, leftAndRight.size());
-	}
-
-	@Test
-	public void testSizeLeftAndRightMoreThan1() {
-		CollectionPair<String> pair = new CollectionPair<>(Arrays.asList("1", "2"), Arrays.asList("3", "4"));
-		assertEquals(4, pair.size());
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void testContainsAllNull() {
+	public void containsAll_throws_for_null() {
+		expect(NullPointerException.class, "collection");
 		emptyPair.containsAll(null);
 	}
 
 	@Test
-	public void testContainsAllNotAllPresent() {
-		assertFalse(leftAndRight.containsAll(Arrays.asList("not present")));
+	public void containsAll_returns_false_if_an_element_is_not_present() {
+		assertThat(leftAndRight.containsAll(Arrays.asList(left.iterator().next(), "not present")), is(false));
 	}
 
 	@Test
-	public void testContainsAllInLeftAndRight() {
-		assertTrue(leftAndRight.containsAll(Arrays.asList(left.iterator().next(), right.iterator().next())));
+	public void containsAll_returns_true_when_all_items_present() {
+		assertThat(leftAndRight.containsAll(Arrays.asList(left.iterator().next(), right.iterator().next())), is(true));
 	}
 
 	@Test
-	public void testToStringEmpty() {
-		assertEquals("[]", empty.toString());
+	public void toString_for_empty_collection() {
+		assertThat(empty.toString(), is(equalTo("[]")));
 	}
 
 	@Test
-	public void testToStringLeftOnly() {
-		assertEquals("[inLeft]", leftOnly.toString());
+	public void toString_for_left_only() {
+		assertThat(left.toString(), is(equalTo("[inLeft1, inLeft2]")));
 	}
 
 	@Test
-	public void testToStringRightOnly() {
-		assertEquals("[inRight]", rightOnly.toString());
+	public void toString_for_right_only() {
+		assertThat(right.toString(), is(equalTo("[inRight1, inRight2]")));
 	}
 
 	@Test
-	public void testToStringMultiple() {
-		assertEquals("[inLeft1, inLeft2, inRight1, inRight2]", multipleLeftAndRight.toString());
+	public void toString_for_left_and_right() {
+		assertThat(leftAndRight.toString(), is(equalTo("[inLeft1, inLeft2, inRight1, inRight2]")));
 	}
 
-	@Test(expected = UnsupportedOperationException.class)
-	public void testIteratorRemove() {
+	@Test
+	public void iterator_remove_is_unsupported() {
+		thrown.expect(UnsupportedOperationException.class);
 		leftAndRight.iterator().remove();
 	}
 
 	@Test
-	public void testIterator() {
-		Iterator<String> it = multipleLeftAndRight.iterator();
-		assertTrue(it.hasNext());
-		assertEquals("inLeft1", it.next());
-		assertTrue(it.hasNext());
-		assertEquals("inLeft2", it.next());
-		assertTrue(it.hasNext());
-		assertEquals("inRight1", it.next());
-		assertTrue(it.hasNext());
-		assertEquals("inRight2", it.next());
-		assertFalse(it.hasNext());
+	public void can_iterate_over_all_elements() {
+		Iterator<String> it = leftAndRight.iterator();
+		assertThat(it.hasNext(), is(true));
+		assertThat(it.next(), is(equalTo("inLeft1")));
+		assertThat(it.hasNext(), is(true));
+		assertThat(it.next(), is(equalTo("inLeft2")));
+		assertThat(it.hasNext(), is(true));
+		assertThat(it.next(), is(equalTo("inRight1")));
+		assertThat(it.hasNext(), is(true));
+		assertThat(it.next(), is(equalTo("inRight2")));
+		assertThat(it.hasNext(), is(false));
 	}
 
 	@Test
-	public void assertThatTwoCollectionPairsWithSameLeftAndRightAreEqual() {
+	public void two_instances_are_equal_if_they_have_the_same_left_and_right() {
 		CollectionPair<String> leftAndRight2 = new CollectionPair<>(left, right);
-		assertTrue(leftAndRight.equals(leftAndRight2));
+		assertThat(leftAndRight.equals(leftAndRight2), is(true));
 	}
 
 	@Test
-	public void assertThatTwoCollectionPairsWithDifferentLeftAndRightAreNotEqual() {
-		assertFalse(leftAndRight.equals(leftOnly));
+	public void two_instances_are_equal_if_they_have_the_different_left() {
+		assertThat(leftAndRight.equals(rightOnly), is(false));
 	}
 
-	// Unsupported operations
-	@Test(expected = UnsupportedOperationException.class)
-	public void testToArray() {
+	@Test
+	public void two_instances_are_equal_if_they_have_the_different_right() {
+		assertThat(leftAndRight.equals(leftOnly), is(false));
+	}
+
+	@Test
+	public void toArray_is_unsupported() {
+		thrown.expect(UnsupportedOperationException.class);
 		emptyPair.toArray();
 	}
 
-	@Test(expected = UnsupportedOperationException.class)
-	public void testToArrayT() {
+	@Test
+	public void toArrayT_is_unsupported() {
+		thrown.expect(UnsupportedOperationException.class);
 		emptyPair.toArray(null);
 	}
 
-	@Test(expected = UnsupportedOperationException.class)
-	public void testAdd() {
+	@Test
+	public void add_is_unsupported() {
+		thrown.expect(UnsupportedOperationException.class);
 		emptyPair.add(null);
 	}
 
-	@Test(expected = UnsupportedOperationException.class)
-	public void testAddAll() {
+	@Test
+	public void addAll_is_unsupported() {
+		thrown.expect(UnsupportedOperationException.class);
 		emptyPair.addAll(null);
 	}
 
-	@Test(expected = UnsupportedOperationException.class)
-	public void testClear() {
+	@Test
+	public void clear_is_unsupported() {
+		thrown.expect(UnsupportedOperationException.class);
 		emptyPair.clear();
 	}
 
-	@Test(expected = UnsupportedOperationException.class)
-	public void testRemove() {
+	@Test
+	public void remove_is_unsupported() {
+		thrown.expect(UnsupportedOperationException.class);
 		emptyPair.remove(null);
 	}
 
-	@Test(expected = UnsupportedOperationException.class)
-	public void testRemoveAll() {
+	@Test
+	public void removeAll_is_unsupported() {
+		thrown.expect(UnsupportedOperationException.class);
 		emptyPair.removeAll(null);
 	}
 
-	@Test(expected = UnsupportedOperationException.class)
-	public void testRetainAll() {
+	@Test
+	public void retainAll_is_unsupported() {
+		thrown.expect(UnsupportedOperationException.class);
 		emptyPair.retainAll(null);
 	}
 }

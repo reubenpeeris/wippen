@@ -14,8 +14,8 @@ import lombok.NonNull;
 import com.reubenpeeris.wippen.engine.Player;
 
 @Getter
-@EqualsAndHashCode(callSuper = false)
-public class Move extends Expression {
+@EqualsAndHashCode(of = { "type", "expression", "handCard" }, callSuper = false)
+public final class Move extends Expression {
 	@AllArgsConstructor
 	@Getter
 	public enum Type {
@@ -85,13 +85,7 @@ public class Move extends Expression {
 	private final Expression coreExpression;
 
 	public Move(Type type, Expression expression, Card handCard) {
-		this(type, handCard, expression, true);
-	}
-
-	// The boolean generateExpression is not good, but is used by the parser for
-	// now.
-	Move(Type type, Card handCard, Expression expression, boolean generateExpression) {
-		String error = checkArgs(type, handCard, expression, generateExpression);
+		String error = checkArgs(type, expression, handCard);
 		if (error != null) {
 			throw new IllegalArgumentException(error);
 		}
@@ -106,7 +100,7 @@ public class Move extends Expression {
 		this.tablePilesUsed = Collections.unmodifiableSet(tablePilesUsed);
 	}
 
-	private static String checkArgs(@NonNull Type type, @NonNull Card handCard, Expression expression, boolean generateExpression) {
+	private static String checkArgs(@NonNull Type type, Expression expression, @NonNull Card handCard) {
 		expression = type.createExpresion(handCard, expression);
 
 		if (expression == null) {
@@ -177,7 +171,7 @@ public class Move extends Expression {
 
 	public static Move create(@NonNull Type type, Expression expression, @NonNull Card handCard, @NonNull Collection<Pile> table,
 			@NonNull Collection<Card> hand, @NonNull Player player) {
-		if (checkArgs(type, handCard, expression, true) == null) {
+		if (checkArgs(type, expression, handCard) == null) {
 			Move move = new Move(type, expression, handCard);
 			if (move.isValidFor(table, hand, player)) {
 				return move;
@@ -186,10 +180,14 @@ public class Move extends Expression {
 		return null;
 	}
 
+	public static Move parseMove(String moveExpression, Collection<Pile> table) {
+		return Parser.parseMove(moveExpression, table);
+	}
+
 	@Override
 	public String toString() {
 		if (coreExpression != null) {
-			return type + " " + coreExpression.toString() + " " + handCard;
+			return type + " " + coreExpression.toString() + " USING " + handCard;
 		} else {
 			return type + " " + handCard;
 		}

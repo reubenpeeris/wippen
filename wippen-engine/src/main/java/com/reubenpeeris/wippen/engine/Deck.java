@@ -53,6 +53,9 @@ final class Deck {
 	}
 
 	public Collection<Card> nextCards(int n) {
+		if (n < 1) {
+			throw new IllegalArgumentException("Must request at least one card");
+		}
 		if (n > cards.size()) {
 			throw new IllegalArgumentException("Requested more cards that available in deck");
 		}

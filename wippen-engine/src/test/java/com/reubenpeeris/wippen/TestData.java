@@ -19,7 +19,7 @@ import com.reubenpeeris.wippen.expression.Suit;
 import com.reubenpeeris.wippen.robot.BaseRobot;
 import com.reubenpeeris.wippen.robot.Robot;
 
-public final class ObjectMother {
+public final class TestData {
 	public static final Card c1 = new Card(Suit.CLUB, new Rank(1));
 	public static final Card d1 = new Card(Suit.DIAMOND, new Rank(1));
 	public static final Card h1 = new Card(Suit.HEART, new Rank(1));
@@ -73,7 +73,29 @@ public final class ObjectMother {
 	public static final Card h13 = new Card(Suit.HEART, new Rank(13));
 	public static final Card s13 = new Card(Suit.SPADE, new Rank(13));
 
+	public static final Set<Pile> emptyTable = Collections.emptySet();
+	public static final Collection<Card> exampleHand = Collections.unmodifiableCollection(Arrays.<Card> asList(s1, s3, s4, s12));
+	public static final Move discard = new Move(Type.DISCARD, null, s7);
+	public static final Move build = new Move(Type.BUILD, new Add(d7, s1), s1);
+
 	public static final Robot robot = new NullRobot();
+
+	public static final Player[] players = new Player[4];
+
+	public static Building building_12B1_s6PlusD6;
+	public static Building building;
+	public static Collection<Pile> bigTable;
+
+	public static void build() {
+		players[0] = new Player(1, robot);
+		players[1] = new Player(2, robot);
+		players[2] = new Player(3, robot);
+		players[3] = new Player(4, robot);
+
+		building_12B1_s6PlusD6 = new Building(new Move(BUILD, new Add(s6, d6), s6), players[0]);
+		building = new Building(build, players[0]);
+		bigTable = Collections.unmodifiableCollection(Arrays.<Pile> asList(h1, h2, h3, h4, building_12B1_s6PlusD6));
+	}
 
 	public static final class NullRobot extends BaseRobot {
 		@Override
@@ -81,20 +103,4 @@ public final class ObjectMother {
 			return null;
 		}
 	}
-
-	public static final Player player1 = new Player(1, robot);
-	public static final Player player2 = new Player(2, robot);
-	public static final Player player3 = new Player(3, robot);
-	public static final Player player4 = new Player(4, robot);
-
-	public static final Building building_12B1_s6PlusD6 = new Building(new Move(BUILD, new Add(s6, d6), s6), player1);
-
-	public static final Move build = new Move(Type.BUILD, new Add(d7, s1), s1);
-	public static final Building building = new Building(build, player1);
-
-	public static final Move discard = new Move(Type.DISCARD, null, s7);
-
-	public static final Set<Pile> emptyTable = Collections.emptySet();
-	public static final Collection<Pile> bigTable = Collections.unmodifiableCollection(Arrays.<Pile> asList(h1, h2, h3, h4, building_12B1_s6PlusD6));
-	public static final Collection<Card> exampleHand = Collections.unmodifiableCollection(Arrays.<Card> asList(s1, s3, s4, s12));
 }

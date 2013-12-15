@@ -8,7 +8,6 @@ import java.io.OutputStreamWriter;
 import java.util.Collection;
 import java.util.List;
 
-import com.reubenpeeris.wippen.engine.Parser;
 import com.reubenpeeris.wippen.engine.Player;
 import com.reubenpeeris.wippen.engine.Score;
 import com.reubenpeeris.wippen.expression.Card;
@@ -44,7 +43,7 @@ public class HumanRobot extends BaseRobot {
 		while (true) {
 			String expression = receiveMessage();
 			try {
-				Move move = Parser.parseMove(expression, table);
+				Move move = Move.parseMove(expression, table);
 				if (!move.isValidFor(table, hand, getMe())) {
 					throw new IllegalStateException("Move not valid at this time");
 				}

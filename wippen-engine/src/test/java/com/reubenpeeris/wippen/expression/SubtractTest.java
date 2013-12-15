@@ -6,7 +6,7 @@ public class SubtractTest extends OperatorTest {
 	}
 
 	@Override
-	protected int getResult4And2() {
+	protected int getExpectedValue() {
 		return 2;
 	}
 

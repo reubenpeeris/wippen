@@ -4,9 +4,18 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-public class RankTest {
+import com.reubenpeeris.wippen.BaseImmutableTest;
+
+public class RankTest extends BaseImmutableTest<Rank> {
+	private static final String OUT_OF_RANGE_MESSAGE = "Rank must be in the range 1 to 13";
+
+	@Override
+	protected Rank validInstance() {
+		return new Rank(5);
+	}
+
 	@Test
-	public void testConstructValid() {
+	public void has_value_and_toString_equivalent_to_constructor_value() {
 		for (int i = 1; i <= 13; i++) {
 			Rank rank = new Rank(i);
 			assertEquals(i, rank.getValue());
@@ -14,38 +23,15 @@ public class RankTest {
 		}
 	}
 
-	@Test(expected = IllegalArgumentException.class)
-	public void testConstructTooSmall() {
+	@Test
+	public void constructor_throws_for_small_value() {
+		expect(IllegalArgumentException.class, OUT_OF_RANGE_MESSAGE);
 		new Rank(0);
 	}
 
-	@Test(expected = IllegalArgumentException.class)
-	public void testConstructTooLarge() {
+	@Test
+	public void constructor_throws_for_large_value() {
+		expect(IllegalArgumentException.class, OUT_OF_RANGE_MESSAGE);
 		new Rank(14);
-	}
-
-	@Test
-	public void testDisplayValueAce() {
-		assertEquals("A", new Rank(1).getDisplayValue());
-	}
-
-	@Test
-	public void testDisplayValueNumber() {
-		assertEquals("2", new Rank(2).getDisplayValue());
-	}
-
-	@Test
-	public void testDisplayValueJack() {
-		assertEquals("J", new Rank(11).getDisplayValue());
-	}
-
-	@Test
-	public void testDisplayValueQueen() {
-		assertEquals("Q", new Rank(12).getDisplayValue());
-	}
-
-	@Test
-	public void testDisplayValueKing() {
-		assertEquals("K", new Rank(13).getDisplayValue());
 	}
 }

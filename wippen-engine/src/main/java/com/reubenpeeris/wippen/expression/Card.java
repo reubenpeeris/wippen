@@ -11,15 +11,16 @@ import lombok.NonNull;
 
 import com.reubenpeeris.wippen.engine.WippenIllegalFormatException;
 
-@EqualsAndHashCode(callSuper = false, doNotUseGetters = true)
 @Getter
+@EqualsAndHashCode(callSuper = false, of = { "suit", "rank" })
 public final class Card extends Pile {
 	private static final Pattern CARD_PATTERN = Pattern.compile("^([1-9]|1[0-3])([CDHS])$");
 	private final Suit suit;
 	private final Rank rank;
+	private final Collection<Card> cards = Collections.singleton(this);
+	private final Collection<Pile> piles = Collections.<Pile> singleton(this);
 
 	public Card(@NonNull Suit suit, @NonNull Rank rank) {
-
 		this.suit = suit;
 		this.rank = rank;
 	}
@@ -28,7 +29,7 @@ public final class Card extends Pile {
 		Matcher matcher = CARD_PATTERN.matcher(string);
 
 		if (!matcher.matches()) {
-			throw new WippenIllegalFormatException("Invalid card format in '" + string + "'");
+			throw new WippenIllegalFormatException("Invalid card format '" + string + "'");
 		}
 
 		Rank rank = new Rank(Integer.parseInt(matcher.group(1)));
@@ -38,22 +39,12 @@ public final class Card extends Pile {
 	}
 
 	@Override
-	public Collection<Card> getCards() {
-		return Collections.singleton(this);
+	public int getValue() {
+		return rank.getValue();
 	}
 
 	@Override
 	public String toString() {
 		return rank.toString() + suit.toString();
-	}
-
-	@Override
-	public Collection<Pile> getPiles() {
-		return Collections.<Pile> singleton(this);
-	}
-
-	@Override
-	public int getValue() {
-		return rank.getValue();
 	}
 }

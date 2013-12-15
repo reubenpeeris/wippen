@@ -5,12 +5,14 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import lombok.NonNull;
+
 import com.reubenpeeris.wippen.expression.Card;
 import com.reubenpeeris.wippen.expression.Move;
 import com.reubenpeeris.wippen.expression.Pile;
 import com.reubenpeeris.wippen.robot.Robot;
 
-public class Player {
+public final class Player {
 	public static final Player NOBODY = new Player(-1, new Robot() {
 		@Override
 		public void startMatch(List<Player> allPlayers, Player you, int numberOfSets) {
@@ -69,11 +71,7 @@ public class Player {
 	private Collection<Card> hand;
 	private int sweeps;
 
-	public Player(int position, Robot robot) {
-		if (robot == null) {
-			throw new IllegalArgumentException();
-		}
-
+	public Player(int position, @NonNull Robot robot) {
 		this.robot = robot;
 		this.position = position;
 	}
@@ -162,8 +160,7 @@ public class Player {
 	}
 
 	Move takeTurn(Collection<Pile> table) {
-		Collection<Card> hand = Collections.unmodifiableCollection(this.hand);
-		return robot.takeTurn(table, hand);
+		return robot.takeTurn(table, Collections.unmodifiableCollection(this.hand));
 	}
 
 	void turnPlayed(Player player, Collection<Pile> table, Move move) {

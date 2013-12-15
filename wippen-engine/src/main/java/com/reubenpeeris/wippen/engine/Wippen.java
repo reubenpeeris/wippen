@@ -1,170 +1,97 @@
 package com.reubenpeeris.wippen.engine;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 
-import lombok.extern.slf4j.Slf4j;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 
-import com.reubenpeeris.wippen.expression.Building;
-import com.reubenpeeris.wippen.expression.Card;
-import com.reubenpeeris.wippen.expression.Move;
-import com.reubenpeeris.wippen.expression.Pile;
+import com.beust.jcommander.IStringConverter;
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.Parameter;
+import com.beust.jcommander.ParameterException;
+import com.reubenpeeris.wippen.robot.Robot;
 import com.reubenpeeris.wippen.robotloader.RobotLoaderManager;
-import com.reubenpeeris.wippen.util.RoundIterable;
+import com.reubenpeeris.wippen.robotloader.WippenLoaderException;
 
-@Slf4j
 public class Wippen {
-	private final List<Player> players;
+	@Parameter(names = { "-s", "--sets" }, description = "The number of sets to play")
+	private Integer sets = 100;
 
-	private Wippen(List<Player> players) {
-		this.players = players;
-	}
+	@Parameter(names = { "-g", "--game" }, description = "The first game to play")
+	private Integer firstGame = 0;
 
-	public static void main(String[] args) {
-		// System.setSecurityManager(new SecurityManager());//Make sure people
-		// cannot get our privates
-		// This should be more intelligent, to stop for example starting
-		// multiple threads too
-		List<Player> players = createPlayers(args);
+	@Parameter(description = "robot1 robot2 [robot3 [robot4]]", required = true, converter = RobotConverter.class)
+	private List<Robot> robots;
 
-		Wippen wippen = new Wippen(players);
-		wippen.run();
-	}
+	@Parameter(names = { "-h", "--help" }, help = true, description = "Prints the help message")
+	private boolean help = false;
 
-	private static List<Player> createPlayers(String[] args) {
-		if (args.length < 2 || args.length > 4) {
-			throw new IllegalArgumentException("Must supply 2-4 robots to play");
+	private final JCommander commander;
+
+	public static class RobotConverter implements IStringConverter<Robot> {
+		@Override
+		public Robot convert(String value) {
+			try {
+				return RobotLoaderManager.createInstance(value);
+			} catch (WippenLoaderException e) {
+				throw new ParameterException("Unable to create robot for parameter, problem was: " + e.getMessage());
+			}
 		}
+	}
 
-		List<Player> players = new ArrayList<>();
+	public static void main(String... args) {
+		try {
+			new Wippen(args);
+		} catch (ExitRequest exitRequest) {
+			System.exit(exitRequest.getCode());
+		}
+	}
+
+	@Getter
+	@RequiredArgsConstructor
+	static class ExitRequest extends RuntimeException {
+		private static final long serialVersionUID = 1L;
+		private final int code;
+	}
+
+	@SneakyThrows(ClassNotFoundException.class)
+	Wippen(String... args) {
+		Class.forName(com.reubenpeeris.wippen.robotloader.SpringRobotLoader.class.getName());
+		Class.forName(com.reubenpeeris.wippen.robotloader.ConstructorRobotLoader.class.getName());
+		String programName = "java -jar Wippen.jar";
+		commander = new JCommander(this);
+		commander.setProgramName(programName);
 
 		try {
-			Class.forName(com.reubenpeeris.wippen.robotloader.SpringRobotLoader.class.getName());
-			Class.forName(com.reubenpeeris.wippen.robotloader.ConstructorRobotLoader.class.getName());
-		} catch (ClassNotFoundException e) {
-			throw new RuntimeException(e);
+			commander.parse(args);
+			if (help) {
+				commander.usage();
+				System.out.println("  Main arguments");
+				System.out.println("    robot1, robot2, robot3, robot4");
+				System.out.println("      RobotLoader strigs representing the robots to load");
+
+				System.out.println();
+				System.out.println("  Example");
+				System.out.println("    " + programName
+						+ " --sets 1000 -g 29 class:com.reubenpeeris.wippen.examples.PairAdder class:com.reubenpeeris.wippen.examples.PairCapturer");
+				System.out.println("      Execute a run of 1000 sets starting with game 29 for PairAdder vs PairCapturer");
+			} else {
+				validateParameters();
+			}
+		} catch (ParameterException e) {
+			System.out.println(e.getMessage());
+			throw new ExitRequest(1);
 		}
 
-		int position = 0;
-		for (String arg : args) {
-			players.add(new Player(position++, RobotLoaderManager.createInstance(arg)));
+		if (!help) {
+			new WippenRunner().playMatch(robots, firstGame, sets);
 		}
-
-		return players;
 	}
 
-	private void run() {
-		final int sets = 100;
-
-		System.out.println("Running");
-		System.out.println(" Sets:    " + sets);
-		System.out.println(" Players: " + players.size());
-
-		Scorer scoreKeeper = new Scorer(players);
-
-		// Match
-		for (Player player : players) {
-			player.startMatch(players, sets);
+	private void validateParameters() throws ParameterException {
+		if (robots.size() < 2 || robots.size() > 4) {
+			throw new ParameterException("Main parameters are required to have between 2 and 4 robots (\"robot1 robot2 [robot3 [robot4]]\")");
 		}
-
-		// Set
-		long start = System.currentTimeMillis();
-		for (int set = 0; set < sets; set++) {
-			for (Player player : players) {
-				player.startSet();
-			}
-
-			// Game
-			for (Player firstPlayer : players) {
-				Deck deck = Deck.newDeck(new Random(set));
-
-				Collection<Pile> table = new ArrayList<>();
-				for (int i = 0; i < 4; i++) {
-					Card card = deck.nextCard();
-					table.add(card);
-				}
-				Collection<Pile> immutableTable = Collections.unmodifiableCollection(table);
-
-				for (Player player : players) {
-					player.startGame(firstPlayer, immutableTable);
-				}
-
-				Player lastPlayerToTake = null;
-				while (!deck.isEmpty()) {
-					// Deal
-					for (Player p : players) {
-						p.setHand(deck.nextCards(4));
-					}
-
-					while (!firstPlayer.isHandEmpty()) {
-						for (Player player : new RoundIterable<>(players, firstPlayer)) {
-							Move move = player.takeTurn(immutableTable);
-
-							log.debug("Player: {}", player);
-							log.debug("Table: {}", table);
-							log.debug("Hand:  {}", player.getHand());
-							log.debug("Move:  {}", move);
-
-							if (move == null) {
-								throw new IllegalStateException("Null Move returned by player: " + player);
-							}
-
-							// Inform players
-							for (Player observer : players) {
-								if (!observer.equals(player)) {
-									observer.turnPlayed(player, immutableTable, move);
-								}
-							}
-
-							player.removeFromHand(move.getHandCard());
-							table.removeAll(move.getTablePilesUsed());
-							switch (move.getType()) {
-							case BUILD:
-								table.add(new Building(move, player));
-								break;
-							case DISCARD:
-								table.add(move.getHandCard());
-								break;
-							case CAPTURE:
-								player.addToCapturedCards(move.getCards());
-								if (table.isEmpty()) {
-									player.addSweep();
-								}
-								lastPlayerToTake = player;
-								break;
-							default:
-								throw new IllegalStateException();
-							}
-						}
-					}
-				}
-
-				if (lastPlayerToTake != null) {
-					for (Pile pile : table) {
-						lastPlayerToTake.addToCapturedCards(pile.getCards());
-					}
-				}
-
-				scoreKeeper.calculateGameScores();
-
-				for (Player player : players) {
-					player.gameComplete(scoreKeeper.getScores());
-				}
-			}
-
-			for (Player player : players) {
-				player.setComplete(scoreKeeper.getScores());
-			}
-		}
-
-		for (Player player : players) {
-			player.matchComplete(scoreKeeper.getScores());
-		}
-
-		log.info("Time: {}", (System.currentTimeMillis() - start));
-		System.out.println(scoreKeeper);
 	}
 }

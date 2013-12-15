@@ -2,14 +2,23 @@ package com.reubenpeeris.wippen.expression;
 
 import org.junit.Test;
 
-public class NodeBuilderTest {
-	@Test(expected = IllegalArgumentException.class)
-	public void testNodeBuilderWithNullValidator() {
-		new NodeBuilder(null) {
-			@Override
-			PairNode build(Expression left, Expression right) {
-				return null;
-			}
-		};
+import com.reubenpeeris.wippen.BaseTest;
+
+public class NodeBuilderTest extends BaseTest {
+	@Test
+	public void constructor_throws_for_null_validator() {
+		expect(NullPointerException.class, "validator");
+		new ValidatorlessNodeBuilder();
+	}
+
+	private static class ValidatorlessNodeBuilder extends NodeBuilder {
+		public ValidatorlessNodeBuilder() {
+			super(null);
+		}
+		
+		@Override
+		PairNode build(Expression left, Expression right) {
+			return null;
+		}
 	}
 }

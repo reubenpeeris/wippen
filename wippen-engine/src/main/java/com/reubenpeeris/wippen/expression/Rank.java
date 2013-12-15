@@ -17,21 +17,6 @@ public final class Rank {
 		return value;
 	}
 
-	public String getDisplayValue() {
-		switch (value) {
-		case 1:
-			return "A";
-		case 11:
-			return "J";
-		case 12:
-			return "Q";
-		case 13:
-			return "K";
-		default:
-			return Integer.toString(value);
-		}
-	}
-
 	@Override
 	public String toString() {
 		return Integer.toString(value);

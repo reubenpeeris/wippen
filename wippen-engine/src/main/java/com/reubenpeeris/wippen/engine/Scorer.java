@@ -11,7 +11,21 @@ import com.reubenpeeris.wippen.expression.Card;
 import com.reubenpeeris.wippen.expression.Rank;
 import com.reubenpeeris.wippen.expression.Suit;
 
-class Scorer {
+final class Scorer {
+	private static final CardFilter ALL_CARDS_FILTER = new CardFilter() {
+		@Override
+		public boolean matches(Card c) {
+			return true;
+		}
+	};
+	
+	private static final CardFilter SPADES_FILTER = new CardFilter() {
+		@Override
+		public boolean matches(Card c) {
+			return c.getSuit() == Suit.SPADE;
+		}
+	};
+	
 	private final List<Player> players = new ArrayList<>();
 	private final List<Score> scores = new ArrayList<>();
 	private final List<Score> unmodifiableScores = Collections.unmodifiableList(scores);
@@ -27,8 +41,8 @@ class Scorer {
 	}
 
 	public void calculateGameScores() {
-		incrementScoreForLargestNumberOfCards();
-		incrementScoreForLargestNumberOfSpades();
+		incrementScoreForLargestNumberOfCards(ALL_CARDS_FILTER);
+		incrementScoreForLargestNumberOfCards(SPADES_FILTER);
 		incrementScoreForValueCards();
 		incrementScoreForSweepsAndClearUp();
 	}
@@ -59,68 +73,43 @@ class Scorer {
 		}
 	}
 
-	private void incrementScoreForLargestNumberOfCards() {
-		int highestNumberOfCards = -1;
-		int playerCount = 0;
+	private void incrementScoreForLargestNumberOfCards(CardFilter filter) {
+		int highestNumberOfCards = 0;
+		List<Player> playersWithHighestScore = new ArrayList<>();
 
 		for (Player player : players) {
-			int playerCards = player.getCapturedCards().size();
+			int playerCards = filter(player.getCapturedCards(), filter).size();
 			if (highestNumberOfCards < playerCards) {
 				highestNumberOfCards = playerCards;
-				playerCount = 0;
-			} else if (highestNumberOfCards == playerCards) {
-				playerCount++;
+				playersWithHighestScore.clear();
+			}
+			if (highestNumberOfCards == playerCards) {
+				playersWithHighestScore.add(player);
 			}
 		}
 
-		if (playerCount < 3 && highestNumberOfCards > 0) {
-			int points = playerCount == 1 ? 2 : 1;
+		if (playersWithHighestScore.size() < 3 && highestNumberOfCards > 0) {
+			int points = playersWithHighestScore.size() == 1 ? 2 : 1;
 
-			for (Player player : players) {
-				int playerCards = player.getCapturedCards().size();
-
-				if (highestNumberOfCards == playerCards) {
-					player.getScore().incrementPoints(points);
-				}
+			for (Player player : playersWithHighestScore) {
+				player.getScore().incrementPoints(points);
 			}
 		}
 	}
 
-	private void incrementScoreForLargestNumberOfSpades() {
-		int highestNumberOfCards = -1;
-		int playerCount = 0;
-
-		for (Player player : players) {
-			int playerCards = countSpades(player.getCapturedCards());
-			if (highestNumberOfCards < playerCards) {
-				highestNumberOfCards = playerCards;
-				playerCount = 0;
-			} else if (highestNumberOfCards == playerCards) {
-				playerCount++;
-			}
-		}
-
-		if (playerCount < 3 && highestNumberOfCards > 0) {
-			int points = playerCount == 1 ? 2 : 1;
-
-			for (Player player : players) {
-				int playerCards = countSpades(player.getCapturedCards());
-
-				if (highestNumberOfCards == playerCards) {
-					player.getScore().incrementPoints(points);
-				}
-			}
-		}
-	}
-
-	private int countSpades(Collection<Card> cards) {
-		int spades = 0;
+	private Collection<Card> filter(Collection<Card> cards, CardFilter filter) {
+		List<Card> filtered = new ArrayList<>();
 		for (Card card : cards) {
-			if (card.getSuit() == Suit.SPADE)
-				spades++;
+			if (filter.matches(card)) {
+				filtered.add(card);
+			}
 		}
 
-		return spades;
+		return filtered;
+	}
+
+	private interface CardFilter {
+		boolean matches(Card c);
 	}
 
 	@Override

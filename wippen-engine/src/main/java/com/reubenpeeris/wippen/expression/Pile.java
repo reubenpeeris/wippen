@@ -2,7 +2,10 @@ package com.reubenpeeris.wippen.expression;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+
+import lombok.NonNull;
 
 import com.reubenpeeris.wippen.engine.Player;
 
@@ -20,17 +23,13 @@ public abstract class Pile extends Expression {
 		return Player.NOBODY;
 	}
 
-	public static Collection<Card> getCards(Collection<Pile> piles) {
-		if (piles == null) {
-			throw new IllegalArgumentException();
-		}
-
+	public static Collection<Card> getCards(@NonNull Collection<Pile> piles) {
 		List<Card> cards = new ArrayList<>();
 
 		for (Pile pile : piles) {
 			cards.addAll(pile.getCards());
 		}
 
-		return cards;
+		return Collections.unmodifiableCollection(cards);
 	}
 }

@@ -2,6 +2,8 @@ package com.reubenpeeris.wippen.robotloader;
 
 import java.io.FileNotFoundException;
 
+import lombok.NonNull;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.context.support.AbstractApplicationContext;
@@ -18,9 +20,9 @@ public class SpringLoader<T> implements Loader<T> {
 	private final Class<T> clazz;
 	private final String beanName;
 
-	protected SpringLoader(Class<T> clazz, String beanName) {
-		if (clazz == null || beanName == null || beanName.isEmpty()) {
-			throw new IllegalArgumentException();
+	protected SpringLoader(@NonNull Class<T> clazz, @NonNull String beanName) {
+		if (beanName.isEmpty()) {
+			throw new IllegalArgumentException("beanName must not be empty");
 		}
 
 		this.clazz = clazz;
@@ -28,18 +30,14 @@ public class SpringLoader<T> implements Loader<T> {
 	}
 
 	@Override
-	public boolean acceptsURL(String url) throws LoaderException {
-		if (url == null) {
-			throw new IllegalArgumentException();
-		}
-
+	public boolean acceptsUrl(@NonNull String url) throws WippenLoaderException {
 		return url.startsWith(PROTOCOL);
 	}
 
 	@Override
-	public T createInstance(String url) throws LoaderException {
-		if (!acceptsURL(url)) {
-			throw new LoaderException("Unsupported url: '" + url + "'");
+	public T createInstance(String url) throws WippenLoaderException {
+		if (!acceptsUrl(url)) {
+			throw new WippenLoaderException("Unsupported url: '" + url + "'");
 		}
 		String path = url.substring(PROTOCOL.length());
 		ClassPathResource resource = new ClassPathResource(path);
@@ -49,13 +47,13 @@ public class SpringLoader<T> implements Loader<T> {
 			try {
 				return context.getBean(beanName, clazz);
 			} catch (BeansException e) {
-				throw new LoaderException("Failed to load bean '" + beanName + "'", e);
+				throw new WippenLoaderException("Failed to load bean '" + beanName + "'", e);
 			}
 		} catch (BeanDefinitionStoreException e) {
 			if (e.getCause() instanceof FileNotFoundException) {
-				throw new LoaderException("Failed to find file: '" + path + "'", e);
+				throw new WippenLoaderException("Failed to find file: '" + path + "'", e);
 			} else {
-				throw new LoaderException("Failed to process file: '" + path + "'", e);
+				throw new WippenLoaderException("Failed to process file: '" + path + "'", e);
 			}
 		}
 

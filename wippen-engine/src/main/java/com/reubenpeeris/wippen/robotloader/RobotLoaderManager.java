@@ -12,7 +12,7 @@ public final class RobotLoaderManager {
 		INSTANCE.registerLoader(loader);
 	}
 
-	public static Robot createInstance(String url) throws LoaderException {
+	public static Robot createInstance(String url) throws WippenLoaderException {
 		return INSTANCE.createInstance(url);
 	}
 }

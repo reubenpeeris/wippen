@@ -1,28 +1,21 @@
-package com.reubenpeeris.wippen.engine;
+package com.reubenpeeris.wippen.expression;
 
 import java.util.Collection;
 import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.reubenpeeris.wippen.expression.Add;
-import com.reubenpeeris.wippen.expression.Card;
-import com.reubenpeeris.wippen.expression.Divide;
-import com.reubenpeeris.wippen.expression.Equals;
-import com.reubenpeeris.wippen.expression.Expression;
-import com.reubenpeeris.wippen.expression.Move;
+import com.reubenpeeris.wippen.engine.WippenIllegalFormatException;
 import com.reubenpeeris.wippen.expression.Move.Type;
-import com.reubenpeeris.wippen.expression.Multiply;
-import com.reubenpeeris.wippen.expression.NodeBuilder;
-import com.reubenpeeris.wippen.expression.Pile;
-import com.reubenpeeris.wippen.expression.Rank;
-import com.reubenpeeris.wippen.expression.Subtract;
 
-public final class Parser {
+final class Parser {
+	private Parser() {
+	}
+
 	// Order is significant, increasing precedence left to right.
 	private static final String OPERATORS = "=+-*/";
 	private static final Pattern BUILDING_PATTERN = Pattern.compile("^([1-9]|1[0-3])B(\\d+)$");
-	private static final Pattern MOVE_PATTERN = Pattern.compile("(BUILD|CAPTURE|DISCARD) (?:(.*) )?([^ ]*)$");
+	private static final Pattern MOVE_PATTERN = Pattern.compile("(BUILD|CAPTURE|DISCARD) (?:(.*) USING )?([^ ]*)$");
 
 	public static Move parseMove(String moveExpression, Collection<Pile> table) throws WippenIllegalFormatException {
 		Matcher matcher = MOVE_PATTERN.matcher(moveExpression);
@@ -44,7 +37,7 @@ public final class Parser {
 	// Using the shunting-yard algorithm
 	// http://en.wikipedia.org/wiki/Shunting_yard_algorithm
 	// http://www.chris-j.co.uk/parsing.php
-	static String infixToPostfix(String expression) {
+	private static String infixToPostfix(String expression) {
 		StringBuilder output = new StringBuilder();
 		Stack<Character> stack = new Stack<>();
 
@@ -84,10 +77,10 @@ public final class Parser {
 			output.append(stack.pop());
 		}
 
-		return output.toString();
+		return output.toString().trim();
 	}
 
-	static Expression parseMath(String expression, Collection<Pile> table) throws WippenIllegalFormatException {
+	private static Expression parseMath(String expression, Collection<Pile> table) throws WippenIllegalFormatException {
 		if (expression == null) {
 			return null;
 		}
@@ -97,7 +90,7 @@ public final class Parser {
 		Stack<Expression> stack = new Stack<>();
 
 		for (String token : tokens) {
-			if (token.length() == 1 && precedence(token.charAt(0)) != -1) {
+			if (token.length() == 1) {
 				// Operator
 				NodeBuilder nodeBuilder = null;
 				switch (token.charAt(0)) {
@@ -117,11 +110,11 @@ public final class Parser {
 					nodeBuilder = Equals.builder();
 					break;
 				default:
-					throw new IllegalStateException();
+					throw new WippenIllegalFormatException(expression);
 				}
 
 				if (stack.size() < 2) {
-					throw new IllegalStateException();
+					throw new WippenIllegalFormatException(expression);
 				}
 
 				nodeBuilder.right(stack.pop());
@@ -129,7 +122,7 @@ public final class Parser {
 
 				Expression e = nodeBuilder.build();
 				if (e == null) {
-					throw new WippenIllegalFormatException("Invalid format parsing: '" + expression + "'");
+					throw new WippenIllegalFormatException(expression);
 				}
 
 				stack.push(e);
@@ -137,19 +130,19 @@ public final class Parser {
 				try {
 					stack.push(parsePile(token, table));
 				} catch (WippenIllegalFormatException e) {
-					throw new WippenIllegalFormatException("Invalid format parsing: '" + expression + "'", e);
+					throw new WippenIllegalFormatException(expression, e);
 				}
 			}
 		}
 
 		if (stack.size() != 1) {
-			throw new WippenIllegalFormatException("Unable to parse input: " + expression);
+			throw new WippenIllegalFormatException(expression);
 		}
 
 		return stack.pop();
 	}
 
-	static Pile parsePile(String string, Collection<Pile> table) throws WippenIllegalFormatException {
+	private static Pile parsePile(String string, Collection<Pile> table) throws WippenIllegalFormatException {
 		Matcher matcher = BUILDING_PATTERN.matcher(string);
 
 		if (matcher.matches()) {
