@@ -18,4 +18,8 @@ public abstract class Expression {
 	public abstract Collection<Pile> getPiles();
 
 	public abstract Collection<Card> getCards();
+
+	boolean canHaveParent(Class<? extends Expression> clazz) {
+		return true;
+	}
 }

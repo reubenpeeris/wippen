@@ -1,15 +1,10 @@
 package com.reubenpeeris.wippen.expression;
 
 public final class Divide extends PairNode {
-	private static final Validator DIVIDE_VALIDATOR = new Validator() {
+	private static final Validator DIVIDE_VALIDATOR = new Validator(Divide.class) {
 		@Override
 		public boolean isValid(int left, int right) {
 			return left % right == 0;
-		}
-
-		@Override
-		public boolean canHaveLeftChildOfTypeEqual() {
-			return false;
 		}
 	};
 

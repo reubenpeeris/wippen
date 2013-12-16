@@ -6,7 +6,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-public class DivideTest extends OperatorTest {
+public class DivideTest extends BaseOperatorTest {
 	public DivideTest() {
 		super(Divide.builder(), Divide.class);
 	}

@@ -45,11 +45,6 @@ public class PairNodeTest extends BaseTest {
 	}
 
 	@Test
-	public void alway_valid_validator_cannot_have_left_child_of_type_equals() {
-		assertThat(PairNode.ALWAYS_VALID.canHaveLeftChildOfTypeEqual(), is(false));
-	}
-
-	@Test
 	public void constructor_throws_for_null_left() {
 		expect(NullPointerException.class, "left");
 		new MockPairNode(null, s2);

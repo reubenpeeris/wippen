@@ -1,6 +1,6 @@
 package com.reubenpeeris.wippen.expression;
 
-public class AddTest extends OperatorTest {
+public class AddTest extends BaseOperatorTest {
 	public AddTest() {
 		super(Add.builder(), Add.class);
 	}

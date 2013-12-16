@@ -11,15 +11,10 @@ package com.reubenpeeris.wippen.expression;
  * This should not occur with even 1 moderately good player.
  */
 public final class Equals extends PairNode {
-	private static final Validator EQUALS_VALIDAOTR = new Validator() {
+	private static final Validator EQUALS_VALIDAOTR = new Validator(Equals.class) {
 		@Override
 		public boolean isValid(int left, int right) {
 			return left == right;
-		}
-
-		@Override
-		public boolean canHaveLeftChildOfTypeEqual() {
-			return true;
 		}
 	};
 
@@ -34,6 +29,11 @@ public final class Equals extends PairNode {
 
 	public Equals(Expression left, Expression right) {
 		super(left, right, EQUALS_VALIDAOTR);
+	}
+
+	@Override
+	boolean canHaveParent(Class<? extends Expression> clazz) {
+		return clazz == Equals.class;
 	}
 
 	@Override

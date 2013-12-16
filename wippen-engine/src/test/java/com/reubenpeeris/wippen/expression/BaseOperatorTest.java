@@ -7,11 +7,11 @@ import static org.junit.Assume.*;
 
 import org.junit.Test;
 
-public abstract class OperatorTest extends BaseExpressionTest {
+public abstract class BaseOperatorTest extends BaseExpressionTest {
 	private final NodeBuilder nodeBuilder;
 	private final Class<? extends PairNode> clazz;
 
-	public OperatorTest(NodeBuilder nodeBuilder, Class<? extends PairNode> clazz) {
+	public BaseOperatorTest(NodeBuilder nodeBuilder, Class<? extends PairNode> clazz) {
 		this.nodeBuilder = nodeBuilder;
 		this.clazz = clazz;
 	}
@@ -49,15 +49,9 @@ public abstract class OperatorTest extends BaseExpressionTest {
 	}
 
 	@Test
-	public void setting_left_to_Equal_node_type_throws() {
+	public void setting_child_to_Equal_node_type_throws() {
 		assumeFalse("This test is applicable to operators except Equals", clazz == Equals.class);
 		assertThat(nodeBuilder.left(new Equals(c1, h1)).right(getRight()).build(), is(nullValue()));
-	}
-
-	@Test
-	public void setting_right_to_Equal_node_type_throws() {
-		assumeFalse("This test is applicable to operators except Equals", clazz == Equals.class);
-		assertThat(nodeBuilder.left(getLeft()).right(new Equals(c1, h1)).build(), is(nullValue()));
 	}
 
 	private PairNode build() {

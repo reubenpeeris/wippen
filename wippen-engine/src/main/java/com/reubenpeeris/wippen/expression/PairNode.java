@@ -5,38 +5,35 @@ import java.util.Collection;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 import com.reubenpeeris.wippen.util.CollectionPair;
 
 @EqualsAndHashCode(callSuper = false, of = { "left", "right", "clazz" })
 abstract class PairNode extends Expression {
+	@RequiredArgsConstructor
 	abstract static class Validator {
-		abstract boolean isValid(int left, int right);
+		private final Class<? extends Expression> clazz;
 
-		abstract boolean canHaveLeftChildOfTypeEqual();
+		abstract boolean isValid(int left, int right);
 
 		final boolean isValid(Expression left, Expression right) {
 			if (left == null || right == null) {
 				return false;
 			}
 
-			if (!isValid(left.getValue(), right.getValue())) {
+			if (!left.canHaveParent(clazz) || !right.canHaveParent(clazz)) {
 				return false;
 			}
 
-			return (canHaveLeftChildOfTypeEqual() || (!left.getClass().equals(Equals.class) && !right.getClass().equals(Equals.class)));
+			return isValid(left.getValue(), right.getValue());
 		}
 	}
 
-	static final Validator ALWAYS_VALID = new Validator() {
+	static final Validator ALWAYS_VALID = new Validator(Expression.class) {
 		@Override
 		public boolean isValid(int left, int right) {
 			return true;
-		}
-
-		@Override
-		public boolean canHaveLeftChildOfTypeEqual() {
-			return false;
 		}
 	};
 
