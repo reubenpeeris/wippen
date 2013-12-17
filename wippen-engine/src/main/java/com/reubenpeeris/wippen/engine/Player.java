@@ -68,7 +68,7 @@ public final class Player {
 	private final int position;
 	private final Robot robot;
 	private final Score score = new Score();
-	private Collection<Card> hand;
+	private Collection<Card> hand = Collections.emptyList();
 	private int sweeps;
 
 	public Player(int position, @NonNull Robot robot) {

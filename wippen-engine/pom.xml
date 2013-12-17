@@ -81,7 +81,13 @@
 				<configuration>
 					<source>1.7</source>
 					<target>1.7</target>
-					<compilerArgument>-Xlint:all</compilerArgument>
+					<compilerArguments>
+						<Werror />
+						<Xlint:-processing />
+						<Xlint:all />
+					</compilerArguments>
+					<showWarnings>true</showWarnings>
+					<showDeprecation>true</showDeprecation>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -101,22 +107,13 @@
 					</archive>
 				</configuration>
 			</plugin>
-		</plugins>
-	</build>
-
-	<reporting>
-		<plugins>
-			<plugin>
-				<artifactId>maven-project-info-reports-plugin</artifactId>
-				<version>2.7</version>
-			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>findbugs-maven-plugin</artifactId>
 				<version>2.5.3</version>
 				<configuration>
 					<xmlOutput>true</xmlOutput>
-					<includeTests>true</includeTests>
+					<includeTests>false</includeTests><!-- for verify phase classpath does not include test libs -->
 					<effort>Max</effort>
 					<threshold>Low</threshold>
 					<excludeFilterFile>src/main/resources/findbugs-exclude.xml</excludeFilterFile>
@@ -128,7 +125,15 @@
 						</plugin>
 					</plugins>
 				</configuration>
+				<executions>
+					<execution>
+						<phase>verify</phase> 
+						<goals>
+							<goal>check</goal> 
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
-	</reporting>
+	</build>
 </project>
