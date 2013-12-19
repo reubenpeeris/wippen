@@ -1,5 +1,10 @@
 <FindBugsFilter>
-	<Match >
+	<Match>
 		<Bug pattern="SLF4J_LOGGER_SHOULD_BE_NON_STATIC"/>
+	</Match>
+	<Match>
+		<Class name="com.reubenpeeris.wippen.engine.Wippen" />
+		<Method name="fail" />
+		<Bug pattern="DM_EXIT"/>
 	</Match>
 </FindBugsFilter>

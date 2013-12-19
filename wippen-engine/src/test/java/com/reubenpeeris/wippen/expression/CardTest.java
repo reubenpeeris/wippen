@@ -2,6 +2,8 @@ package com.reubenpeeris.wippen.expression;
 
 import static com.reubenpeeris.wippen.TestData.*;
 import static com.reubenpeeris.wippen.engine.Player.*;
+import static com.reubenpeeris.wippen.expression.Rank.*;
+import static com.reubenpeeris.wippen.expression.Suit.*;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.collection.IsIterableContainingInOrder.*;
 import static org.junit.Assert.*;
@@ -12,13 +14,13 @@ public class CardTest extends BaseExpressionTest {
 	@Test
 	public void construct_with_null_suit_throws() {
 		expect(NullPointerException.class, "suit");
-		new Card(null, new Rank(1));
+		new Card(ACE, null);
 	}
 
 	@Test
 	public void construct_with_null_rank_throws() {
 		expect(NullPointerException.class, "rank");
-		new Card(Suit.CLUB, null);
+		new Card(null, CLUB);
 	}
 
 	@Test
@@ -38,10 +40,8 @@ public class CardTest extends BaseExpressionTest {
 
 	@Test
 	public void getValue_returns_rank_value() {
-		for (int i = 1; i <= 13; i++) {
-			Rank rank = new Rank(i);
-			Card card = new Card(Suit.CLUB, rank);
-
+		for (Rank rank : Rank.values()) {
+			Card card = new Card(rank, CLUB);
 			assertEquals(rank.getValue(), card.getValue());
 		}
 	}
@@ -49,14 +49,12 @@ public class CardTest extends BaseExpressionTest {
 	@Test
 	public void parseCard_throws_NullPointerException_for_null_input() {
 		expect(NullPointerException.class, "string");
-
 		Card.parseCard(null);
 	}
 
 	@Test
 	public void parseCard_throws_IllegalArgumentException_for_invalid_input() {
 		expect(IllegalArgumentException.class, "Invalid card format");
-
 		Card.parseCard("invalid");
 	}
 
@@ -73,8 +71,23 @@ public class CardTest extends BaseExpressionTest {
 	@Test
 	public void parseCard_returns_correct_card_for_each_suit() {
 		for (Suit suit : Suit.values()) {
-			assertCardParses(new Card(suit, new Rank(1)));
+			assertCardParses(new Card(ACE, suit));
 		}
+	}
+
+	@Test
+	public void cards_are_equal_if_rank_and_suit_match() {
+		assertThat(new Card(ACE, CLUB).equals(c1), is(true));
+	}
+
+	@Test
+	public void cards_are_not_equal_if_rank_is_different() {
+		assertThat(new Card(TWO, CLUB).equals(c1), is(false));
+	}
+
+	@Test
+	public void cards_are_not_equal_if_suit_is_different() {
+		assertThat(new Card(ACE, SPADE).equals(c1), is(false));
 	}
 
 	private void assertCardParses(Card card) {

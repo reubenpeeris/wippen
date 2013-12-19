@@ -1,5 +1,6 @@
 package com.reubenpeeris.wippen;
 
+import static com.reubenpeeris.wippen.WippenMatchers.*;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
@@ -11,9 +12,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import org.hamcrest.BaseMatcher;
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
 import org.junit.Test;
 
 import com.reubenpeeris.wippen.engine.Player;
@@ -115,10 +113,6 @@ public abstract class BaseImmutableTest<T> extends BaseTest {
 		return false;
 	}
 
-	private <C extends Collection<?>> Matcher<C> unmodifiable() {
-		return new Unmodifiable<>();
-	}
-
 	public static class MethodSignature {
 		private final Class<?> returnType;
 		private final String methodName;
@@ -133,31 +127,6 @@ public abstract class BaseImmutableTest<T> extends BaseTest {
 		public boolean equivalentTo(Method method) {
 			return method.getReturnType() == returnType && method.getName().equals(methodName)
 					&& Arrays.equals(method.getParameterTypes(), parameterTypes);
-		}
-	}
-
-	private static class Unmodifiable<T extends Collection<?>> extends BaseMatcher<T> {
-		private final String[] UNMODIFIABLE_COLLECTION_CLASS_PREFIXES = { com.reubenpeeris.wippen.util.CollectionPair.class.getCanonicalName(),
-				"java.util.Collections.Unmodifiable", "java.util.Collections.SingletonSet", "java.util.Collections.EmptySet" };
-
-		@Override
-		public boolean matches(Object item) {
-			if (item != null) {
-				String className = item.getClass().getCanonicalName();
-				for (String unmodifiableCollectionPrefix : UNMODIFIABLE_COLLECTION_CLASS_PREFIXES) {
-					if (className.startsWith(unmodifiableCollectionPrefix)) {
-						return true;
-					}
-				}
-			}
-
-			return false;
-		}
-
-		@Override
-		public void describeTo(Description description) {
-			description.appendText("class should start with one of the following prefixes: "
-					+ Arrays.toString(UNMODIFIABLE_COLLECTION_CLASS_PREFIXES));
 		}
 	}
 }

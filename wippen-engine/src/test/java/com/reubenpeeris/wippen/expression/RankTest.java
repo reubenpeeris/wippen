@@ -4,20 +4,15 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import com.reubenpeeris.wippen.BaseImmutableTest;
+import com.reubenpeeris.wippen.BaseTest;
 
-public class RankTest extends BaseImmutableTest<Rank> {
+public class RankTest extends BaseTest {
 	private static final String OUT_OF_RANGE_MESSAGE = "Rank must be in the range 1 to 13";
-
-	@Override
-	protected Rank validInstance() {
-		return new Rank(5);
-	}
 
 	@Test
 	public void has_value_and_toString_equivalent_to_constructor_value() {
 		for (int i = 1; i <= 13; i++) {
-			Rank rank = new Rank(i);
+			Rank rank = Rank.fromInt(i);
 			assertEquals(i, rank.getValue());
 			assertEquals(Integer.toString(i), rank.toString());
 		}
@@ -26,12 +21,12 @@ public class RankTest extends BaseImmutableTest<Rank> {
 	@Test
 	public void constructor_throws_for_small_value() {
 		expect(IllegalArgumentException.class, OUT_OF_RANGE_MESSAGE);
-		new Rank(0);
+		Rank.fromInt(0);
 	}
 
 	@Test
 	public void constructor_throws_for_large_value() {
 		expect(IllegalArgumentException.class, OUT_OF_RANGE_MESSAGE);
-		new Rank(14);
+		Rank.fromInt(14);
 	}
 }

@@ -31,4 +31,9 @@ public class DivideTest extends BaseOperatorTest {
 	public void builder_returns_null_for_non_divisible_numbers() {
 		assertThat(Divide.builder().left(c2).right(c3).build(), is(nullValue()));
 	}
+
+	@Test
+	public void builder_returns_null_for_div_by_zero() {
+		assertThat(Divide.builder().left(c2).right(create.newSubtract(c3, s3)).build(), is(nullValue()));
+	}
 }

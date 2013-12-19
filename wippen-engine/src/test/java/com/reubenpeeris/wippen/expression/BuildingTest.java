@@ -8,6 +8,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import com.reubenpeeris.wippen.engine.Player;
+import com.reubenpeeris.wippen.expression.Move.Type;
 
 public class BuildingTest extends BaseExpressionTest {
 	@Test
@@ -52,7 +53,22 @@ public class BuildingTest extends BaseExpressionTest {
 
 	@Test
 	public void getPile_returns_collection_containing_itself() {
-		assertThat(building.getPiles(), contains((Pile) building));
+		assertThat(building.getPiles(), contains(building));
+	}
+
+	@Test
+	public void buildings_are_equal_for_equivalent_expression_and_same_player() {
+		assertThat(new Building(build, players[0]).equals(building), is(true));
+	}
+
+	@Test
+	public void buildings_are_not_equal_if_player_is_different() {
+		assertThat(new Building(build, players[1]).equals(building), is(false));
+	}
+
+	@Test
+	public void buildings_are_not_equal_if_expression_is_different() {
+		assertThat(new Building(create.newMove(Type.BUILD, create.newMultiply(s3, h4), s3), players[0]).equals(building), is(false));
 	}
 
 	@Test

@@ -3,12 +3,14 @@ package com.reubenpeeris.wippen.expression;
 import static com.reubenpeeris.wippen.TestData.*;
 import static com.reubenpeeris.wippen.expression.Move.Type.*;
 import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.collection.IsIterableContainingInAnyOrder.*;
 import static org.hamcrest.collection.IsIterableContainingInOrder.*;
 import static org.junit.Assert.*;
 
-import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -20,14 +22,14 @@ public class MoveTest extends BaseExpressionTest {
 	private Player player;
 
 	@Override
-	protected Expression validInstance() {
-		return new Move(CAPTURE, h1, s1);
+	protected Move validInstance() {
+		return newValidMove(CAPTURE, h1, s1);
 	}
 
 	@Override
 	protected List<MethodSignature> methodsExemptFromImmutabilityCheck() {
 		List<MethodSignature> exemptMethods = super.methodsExemptFromImmutabilityCheck();
-		exemptMethods.add(new MethodSignature(Boolean.TYPE, "isValidFor", Collection.class, Collection.class, Player.class));
+		exemptMethods.add(new MethodSignature(Boolean.TYPE, "isSound", Set.class, Set.class, Player.class));
 
 		return exemptMethods;
 	}
@@ -38,128 +40,12 @@ public class MoveTest extends BaseExpressionTest {
 	}
 
 	@Test
-	public void construct_with_null_type_throws() {
-		expect(NullPointerException.class, "type");
-		new Move(null, c1, c1);
-	}
-
-	@Test
-	public void construct_with_null_handCard_throws() {
-		expect(NullPointerException.class, "handCard");
-		new Move(DISCARD, c1, null);
-	}
-
-	@Test
-	public void verify_properties_of_discard_move() {
-		Card card = c1;
-		Move move = new Move(DISCARD, null, card);
-		assertThat(move.getCards(), contains(card));
-		assertThat(move.getHandCard(), is(equalTo(card)));
-		assertThat(move.getPiles(), contains((Pile) card));
-		assertThat(move.getType(), is(equalTo(DISCARD)));
-		assertThat(move.getValue(), is(equalTo(card.getValue())));
-		assertThat(move.isPileGenerated(), is(true));
-		assertThat(move.toString(), is(equalTo("DISCARD 1C")));
-	}
-
-	@Test
-	public void construct_discard_with_non_null_expression_throws() {
-		expect(IllegalArgumentException.class, "For DISCARD type, expression must be null");
-		new Move(DISCARD, d1, c1);
-	}
-
-	@Test
-	public void verify_properties_of_capture_move() {
-		Card handCard = c8;
-		Card[] tableCards = { c1, c7 };
-		Expression expression = new Add(tableCards[0], tableCards[1]);
-		Move move = new Move(CAPTURE, expression, handCard);
-		assertThat(move.getCards(), contains(handCard, tableCards[0], tableCards[1]));
-		assertThat(move.getHandCard(), is(equalTo(handCard)));
-		assertThat(move.getPiles(), contains((Pile) handCard, tableCards[0], tableCards[1]));
-		assertThat(move.getType(), is(equalTo(CAPTURE)));
-		assertThat(move.getValue(), is(equalTo(handCard.getValue())));
-		assertThat(move.isPileGenerated(), is(false));
-		assertThat(move.toString(), is(equalTo("CAPTURE (1C+7C) USING 8C")));
-	}
-
-	@Test
-	public void construct_capture_with_null_expression_throws() {
-		expect(IllegalArgumentException.class, "For CAPTURE type, hand card must have same value as expression");
-		new Move(CAPTURE, null, c1);
-	}
-
-	@Test
-	public void construct_capture_with_hand_card_not_equal_to_expression_throws() {
-		expect(IllegalArgumentException.class, "For CAPTURE type, hand card must have same value as expression");
-		new Move(CAPTURE, c2, c1);
-	}
-
-	@Test
-	public void verify_properties_of_build_move() {
-		Card handCard = c8;
-		Card tableCard = c7;
-		Expression expression = new Subtract(handCard, tableCard);
-		Move move = new Move(BUILD, expression, handCard);
-		assertThat(move.getCards(), contains(handCard, tableCard));
-		assertThat(move.getHandCard(), is(equalTo(handCard)));
-		assertThat(move.getPiles(), contains((Pile) handCard, tableCard));
-		assertThat(move.getType(), is(equalTo(BUILD)));
-		assertThat(move.getValue(), is(equalTo(expression.getValue())));
-		assertThat(move.isPileGenerated(), is(true));
-		assertThat(move.toString(), is(equalTo("BUILD (8C-7C) USING 8C")));
-	}
-
-	@Test
-	public void construct_build_with_null_expression_throws() {
-		expect(IllegalArgumentException.class, "For BUILD type, expression must contain handCard");
-		new Move(BUILD, null, c1);
-	}
-
-	@Test
-	public void construct_build_with_expression_that_does_not_contain_hand_card_throws() {
-		expect(IllegalArgumentException.class, "For BUILD type, expression must contain handCard");
-		new Move(BUILD, c2, c1);
-	}
-
-	@Test
-	public void construct_using_card_multiple_times_throws() {
-		expect(IllegalArgumentException.class, "Trying to use card multiple times");
-		new Move(CAPTURE, new Divide(c10, c10), c1);
-	}
-
-	@Test
 	public void create_returns_move_for_valid_arguments() {
 		Type type = DISCARD;
 		Expression expression = null;
-		Card handCard = c1;
-		Move move = Move.create(type, expression, handCard, Collections.<Pile> emptySet(), Collections.singleton(c1), players[0]);
-		assertThat(move, is(equalTo(new Move(type, expression, handCard))));
-	}
-
-	@Test
-	public void create_throws_for_null_type() {
-		assertExceptionForCreate(null, c1, null, Collections.<Pile> emptySet(), Collections.singleton(c1), players[0], "type");
-	}
-
-	@Test
-	public void create_throws_for_null_hand_card() {
-		assertExceptionForCreate(DISCARD, null, null, Collections.<Pile> emptySet(), Collections.singleton(c1), players[0], "handCard");
-	}
-
-	@Test
-	public void create_throws_for_null_table() {
-		assertExceptionForCreate(DISCARD, c1, null, null, Collections.singleton(c1), players[0], "table");
-	}
-
-	@Test
-	public void create_throws_for_null_hand() {
-		assertExceptionForCreate(DISCARD, c1, null, Collections.<Pile> emptySet(), null, players[0], "hand");
-	}
-
-	@Test
-	public void create_throws_for_null_player() {
-		assertExceptionForCreate(DISCARD, c1, null, Collections.<Pile> emptySet(), Collections.singleton(c1), null, "player");
+		Card handCard = s1;
+		Move move = Move.create(type, expression, handCard, Collections.<Pile> emptySet(), Collections.singleton(handCard), players[0]);
+		assertThat(move, is(equalTo(new Move(type, expression, handCard, bigTable, exampleHand, players[0]))));
 	}
 
 	@Test
@@ -175,15 +61,134 @@ public class MoveTest extends BaseExpressionTest {
 	}
 
 	@Test
-	public void parseMove_returns_same_as_Parser_parseMove() {
-		String moveExpression = "DISCARD 1S";
-		assertThat(Move.parseMove(moveExpression, bigTable), is(equalTo(Parser.parseMove(moveExpression, bigTable))));
+	public void create_returns_null_when_type_is_invalid() {
+		Move move = Move.create(INVALID, null, c1, Collections.<Pile> emptySet(), Collections.singleton(c1), players[0]);
+		assertThat(move, is(nullValue()));
+	}
+
+	@Test
+	public void construct_with_null_type_throws() {
+		expect(NullPointerException.class, "type");
+		newValidMove(null, c1, c1);
+	}
+
+	@Test
+	public void construct_with_null_handCard_throws() {
+		expect(NullPointerException.class, "handCard");
+		newValidMove(DISCARD, c1, null);
+	}
+
+	@Test
+	public void verify_properties_of_discard_move() {
+		Card card = s1;
+		Move move = newValidMove(DISCARD, null, card);
+		assertThat(move.getCards(), contains(card));
+		assertThat(move.getHandCard(), is(equalTo(card)));
+		assertThat(move.getPiles(), contains((Pile) card));
+		assertThat(move.getType(), is(equalTo(DISCARD)));
+		assertThat(move.getValue(), is(equalTo(card.getValue())));
+		assertThat(move.toString(), is(equalTo("DISCARD 1S")));
+	}
+
+	@Test
+	public void construct_discard_with_non_null_expression_throws() {
+		expect(IllegalArgumentException.class, "For DISCARD type, expression must be null");
+		newValidMove(DISCARD, d1, c1);
+	}
+
+	@Test
+	public void verify_properties_of_capture_move() {
+		Card handCard = s12;
+		Card[] tableCards = { h3, h4 };
+		Expression expression = new Multiply(tableCards[0], tableCards[1]);
+		Move move = newValidMove(CAPTURE, expression, handCard);
+		assertThat(move.getCards(), contains(handCard, tableCards[0], tableCards[1]));
+		assertThat(move.getHandCard(), is(equalTo(handCard)));
+		assertThat(move.getPiles(), contains((Pile) handCard, tableCards[0], tableCards[1]));
+		assertThat(move.getType(), is(equalTo(CAPTURE)));
+		assertThat(move.getValue(), is(equalTo(handCard.getValue())));
+		assertThat(move.toString(), is(equalTo("CAPTURE (3H*4H) USING 12S")));
+	}
+
+	@Test
+	public void construct_capture_with_null_expression_throws() {
+		expect(IllegalArgumentException.class, "For CAPTURE type, hand card must have same value as expression");
+		newValidMove(CAPTURE, null, c1);
+	}
+
+	@Test
+	public void construct_capture_with_hand_card_not_equal_to_expression_throws() {
+		expect(IllegalArgumentException.class, "For CAPTURE type, hand card must have same value as expression");
+		newValidMove(CAPTURE, c2, c1);
+	}
+
+	@Test
+	public void verify_properties_of_build_move() {
+		Card handCard = s1;
+		Card tableCard = h4;
+		Expression expression = new Multiply(handCard, tableCard);
+		Move move = newValidMove(BUILD, expression, handCard);
+		assertThat(move.getCards(), contains(handCard, tableCard));
+		assertThat(move.getHandCard(), is(equalTo(handCard)));
+		assertThat(move.getPiles(), contains((Pile) handCard, tableCard));
+		assertThat(move.getType(), is(equalTo(BUILD)));
+		assertThat(move.getValue(), is(equalTo(expression.getValue())));
+		assertThat(move.toString(), is(equalTo("BUILD (1S*4H) USING 1S")));
+	}
+
+	@Test
+	public void construct_build_with_null_expression_throws() {
+		expect(IllegalArgumentException.class, "For BUILD type, expression must contain handCard");
+		newValidMove(BUILD, null, c1);
+	}
+
+	@Test
+	public void construct_build_with_null_table_throws() {
+		expect(NullPointerException.class, "table");
+		new Move(DISCARD, c1, c1, null, exampleHand, players[0]);
+	}
+
+	@Test
+	public void construct_build_with_null_player_throws() {
+		expect(NullPointerException.class, "player");
+		new Move(DISCARD, c1, c1, bigTable, exampleHand, null);
+	}
+
+	@Test
+	public void construct_build_with_expression_that_does_not_contain_hand_card_throws() {
+		expect(IllegalArgumentException.class, "For BUILD type, expression must contain handCard");
+		newValidMove(BUILD, c2, c1);
+	}
+
+	@Test
+	public void construct_with_invalid_type_throws() {
+		expect(IllegalArgumentException.class, "For INVALID type, no parameters are valid");
+		newValidMove(INVALID, d1, c1);
+	}
+
+	@Test
+	public void construct_using_card_multiple_times_throws() {
+		expect(IllegalArgumentException.class, "Trying to use card multiple times");
+		newValidMove(CAPTURE, new Divide(c2, c2), c1);
 	}
 
 	// Discard
 	@Test
 	public void simple_discard_is_valid() {
-		assertValid(DISCARD, null, s1);
+		Move move = assertValid(DISCARD, null, s1);
+		Pile pile = move.getPileCreated();
+		assertEquals(Card.class, pile.getClass());
+		assertThat(pile.getCards(), containsInAnyOrder(s1));
+	}
+
+	@Test
+	public void discard_is_no_longer_valid_if_card_has_been_used() {
+		Card card = s1;
+		Move move = assertValid(DISCARD, null, card);
+		Set<Card> hand = new HashSet<>(exampleHand);
+		assertThat(move.isSound(bigTable, hand, player), is(true));
+		hand.remove(card);
+		assertThat(move.isSound(bigTable, hand, player), is(false));
 	}
 
 	@Test
@@ -194,7 +199,8 @@ public class MoveTest extends BaseExpressionTest {
 	// Capture
 	@Test
 	public void single_capture_is_valid() {
-		assertValid(CAPTURE, h1, s1);
+		Move move = assertValid(CAPTURE, h1, s1);
+		assertThat(move.getPileCreated(), is(nullValue()));
 	}
 
 	@Test
@@ -210,7 +216,10 @@ public class MoveTest extends BaseExpressionTest {
 	// Build
 	@Test
 	public void simple_build_is_valid() {
-		assertValid(BUILD, new Add(s1, h2), s1);
+		Move move = assertValid(BUILD, new Add(s1, h2), s1);
+		Pile pile = move.getPileCreated();
+		assertEquals(Building.class, pile.getClass());
+		assertThat(pile.getCards(), containsInAnyOrder(s1, h2));
 	}
 
 	@Test
@@ -229,14 +238,14 @@ public class MoveTest extends BaseExpressionTest {
 	}
 
 	@Test
-	public void build_to_new_value_using_own_building_is_invalid() {
-		assertInvalid(BUILD, new Divide(building_12B1_s6PlusD6, s3), s3);
+	public void build_to_new_value_using_own_building_throws() {
+		expect(IllegalArgumentException.class, "A building cannot be made using your own building of a different value");
+		newValidMove(BUILD, new Divide(building_12B1_s6PlusD6, s3), s3);
 	}
 
 	@Test
-	public void build_to_new_value_using_someoneelses_building_is_valid() {
-		player = players[1];
-		assertValid(BUILD, new Divide(building_12B1_s6PlusD6, s3), s3);
+	public void build_to_new_value_using_someone_elses_building_is_valid() {
+		new Move(BUILD, new Divide(building_12B1_s6PlusD6, s3), s3, bigTable, exampleHand, players[1]);
 	}
 
 	@Test
@@ -246,48 +255,68 @@ public class MoveTest extends BaseExpressionTest {
 	}
 
 	@Test
-	public void build_to_value_not_held_in_hand_is_invalid() {
-		assertInvalid(BUILD, new Add(h4, s3), s3);
+	public void build_to_value_not_held_in_hand_throws() {
+		expect(IllegalArgumentException.class, "Player must have hand card of the value of the building being created: ");
+		newValidMove(BUILD, new Add(h4, s3), s3);
 	}
 
 	@Test
-	public void build_to_value_not_held_in_hand_one_card_played_is_invalid() {
-		assertInvalid(BUILD, new Multiply(h1, s1), s1);
+	public void build_to_value_not_held_in_hand_after_move_throws() {
+		expect(IllegalArgumentException.class, "Player must have hand card of the value of the building being created: ");
+		newValidMove(BUILD, new Multiply(h1, s1), s1);
 	}
 
 	// General
 	@Test
-	public void move_with_hand_card_not_in_hand_is_invalid() {
-		assertInvalid(DISCARD, null, c1);
+	public void move_with_hand_card_not_in_hand_throws() {
+		expect(IllegalArgumentException.class, "Hand does not contain handCard: ");
+		newValidMove(DISCARD, null, c1);
+	}
+
+	@Test
+	public void move_with_no_hand_is_fine_ie_does_not_throw() {
+		new Move(DISCARD, null, c1, bigTable, null, player);
 	}
 
 	@Test
 	public void move_using_multiple_hand_cards_is_invalid() {
-		assertInvalid(CAPTURE, new Subtract(s4, s3), s1);
+		expect(IllegalArgumentException.class, "Non-hand pile not present on table: ");
+		newValidMove(CAPTURE, new Subtract(s4, s3), s1);
 	}
 
 	@Test
-	public void move_with_table_card_not_on_table_is_invalid() {
-		assertInvalid(CAPTURE, c1, s1);
+	public void move_with_table_card_not_on_table_throws() {
+		expect(IllegalArgumentException.class, "Non-hand pile not present on table: ");
+		newValidMove(CAPTURE, c1, s1);
 	}
 
-	private void assertValid(Type type, Expression expression, Card handCard) {
-		assertMove(type, expression, handCard, true);
+	@Test
+	public void isValidFor_throws_for_null_table() {
+		assertIsValidForThrows("table", null, exampleHand, player);
 	}
 
-	private void assertInvalid(Type type, Expression expression, Card handCard) {
-		assertMove(type, expression, handCard, false);
+	@Test
+	public void isValidFor_throws_for_null_hand() {
+		assertIsValidForThrows("hand", bigTable, null, player);
 	}
 
-	private void assertMove(Type type, Expression expression, Card handCard, boolean valid) {
-		Move move = new Move(type, expression, handCard);
-		assertThat(move.isValidFor(bigTable, exampleHand, player), is(valid));
+	@Test
+	public void isValidFor_throws_for_null_player() {
+		assertIsValidForThrows("player", bigTable, exampleHand, null);
 	}
 
-	private void assertExceptionForCreate(Type type, Card handCard, Expression expression, Collection<Pile> table, Collection<Card> hand,
-			Player player, String message) {
-		expect(NullPointerException.class, message);
+	private void assertIsValidForThrows(String field, Set<Pile> table, Set<Card> hand, Player player) {
+		expect(NullPointerException.class, field);
+		validInstance().isSound(table, hand, player);
+	}
 
-		Move.create(type, expression, handCard, table, hand, player);
+	private Move assertValid(Type type, Expression expression, Card handCard) {
+		Move move = newValidMove(type, expression, handCard);
+		assertThat(move.isSound(bigTable, exampleHand, player), is(true));
+		return move;
+	}
+
+	private Move newValidMove(Type type, Expression expression, Card handCard) {
+		return new Move(type, expression, handCard, bigTable, exampleHand, players[0]);
 	}
 }

@@ -20,22 +20,22 @@ public final class Card extends Pile {
 	private final Collection<Card> cards = Collections.singleton(this);
 	private final Collection<Pile> piles = Collections.<Pile> singleton(this);
 
-	public Card(@NonNull Suit suit, @NonNull Rank rank) {
+	public Card(@NonNull Rank rank, @NonNull Suit suit) {
 		this.suit = suit;
 		this.rank = rank;
 	}
 
-	public static Card parseCard(@NonNull String string) {
+	static Card parseCard(@NonNull String string) {
 		Matcher matcher = CARD_PATTERN.matcher(string);
 
 		if (!matcher.matches()) {
 			throw new WippenIllegalFormatException("Invalid card format '" + string + "'");
 		}
 
-		Rank rank = new Rank(Integer.parseInt(matcher.group(1)));
+		Rank rank = Rank.fromInt(Integer.parseInt(matcher.group(1)));
 		String suit = matcher.group(2);
 
-		return new Card(Suit.fromLetter(suit), rank);
+		return new Card(rank, Suit.fromLetter(suit));
 	}
 
 	@Override

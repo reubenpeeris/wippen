@@ -12,14 +12,14 @@ import com.reubenpeeris.wippen.expression.Card;
 import com.reubenpeeris.wippen.expression.Rank;
 import com.reubenpeeris.wippen.expression.Suit;
 
-final class Deck {
+class Deck {
 	public static final List<Card> FULL_DECK;
 
 	static {
 		List<Card> deck = new ArrayList<>(52);
 		for (Suit suit : Suit.values()) {
-			for (int rank = 1; rank <= 13; rank++) {
-				deck.add(new Card(suit, new Rank(rank)));
+			for (Rank rank : Rank.values()) {
+				deck.add(new Card(rank, suit));
 			}
 		}
 

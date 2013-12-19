@@ -97,17 +97,17 @@ public class CollectionPairTest extends BaseTest {
 
 	@Test
 	public void toString_for_empty_collection() {
-		assertThat(empty.toString(), is(equalTo("[]")));
+		assertThat(emptyPair.toString(), is(equalTo("[]")));
 	}
 
 	@Test
 	public void toString_for_left_only() {
-		assertThat(left.toString(), is(equalTo("[inLeft1, inLeft2]")));
+		assertThat(leftOnly.toString(), is(equalTo("[inLeft1, inLeft2]")));
 	}
 
 	@Test
 	public void toString_for_right_only() {
-		assertThat(right.toString(), is(equalTo("[inRight1, inRight2]")));
+		assertThat(rightOnly.toString(), is(equalTo("[inRight1, inRight2]")));
 	}
 
 	@Test

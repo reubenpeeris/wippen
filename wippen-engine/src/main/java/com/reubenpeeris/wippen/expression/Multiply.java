@@ -1,6 +1,6 @@
 package com.reubenpeeris.wippen.expression;
 
-public final class Multiply extends PairNode {
+final class Multiply extends PairNode {
 	public static NodeBuilder builder() {
 		return new NodeBuilder() {
 			@Override
@@ -10,7 +10,7 @@ public final class Multiply extends PairNode {
 		};
 	}
 
-	public Multiply(Expression left, Expression right) {
+	Multiply(Expression left, Expression right) {
 		super(left, right);
 	}
 

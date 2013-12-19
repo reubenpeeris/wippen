@@ -1,10 +1,10 @@
 package com.reubenpeeris.wippen.expression;
 
-public final class Divide extends PairNode {
+final class Divide extends PairNode {
 	private static final Validator DIVIDE_VALIDATOR = new Validator(Divide.class) {
 		@Override
 		public boolean isValid(int left, int right) {
-			return left % right == 0;
+			return right != 0 && left % right == 0;
 		}
 	};
 
@@ -17,7 +17,7 @@ public final class Divide extends PairNode {
 		};
 	}
 
-	public Divide(Expression left, Expression right) {
+	Divide(Expression left, Expression right) {
 		super(left, right, DIVIDE_VALIDATOR);
 	}
 

@@ -4,19 +4,20 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 
+@EqualsAndHashCode
 public class RoundIterable<T> implements Iterable<T> {
 	private final List<T> list;
 	private final int startPosition;
 
-	public RoundIterable(@NonNull List<T> list, @NonNull T start) {
-		this.list = list;
-
-		startPosition = list.indexOf(start);
-		if (startPosition == -1) {
-			throw new IllegalArgumentException("element not found in list: " + start);
+	public RoundIterable(@NonNull List<T> list, int startPosition) {
+		if (startPosition < 0 || startPosition > list.size()) {
+			throw new IndexOutOfBoundsException(String.format("list size: %d index: %d", list.size(), startPosition));
 		}
+		this.list = list;
+		this.startPosition = startPosition;
 	}
 
 	@Override

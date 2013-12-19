@@ -50,6 +50,18 @@ public class ScoreTest extends BaseImmutableTest<Score> {
 		assertValues(0, 0, 0);
 	}
 
+	@Test
+	public void constructor_sets_fields() {
+		int match = 1;
+		int set = 2;
+		int game = 3;
+
+		Score score = new Score(match, set, game);
+		assertThat(score.getMatchPoints(), is(equalTo(match)));
+		assertThat(score.getSetPoints(), is(equalTo(set)));
+		assertThat(score.getGamePoints(), is(equalTo(game)));
+	}
+
 	private void assertValues(int match, int set, int game) {
 		assertThat(score.getMatchPoints(), is(equalTo(match)));
 		assertThat(score.getSetPoints(), is(equalTo(set)));

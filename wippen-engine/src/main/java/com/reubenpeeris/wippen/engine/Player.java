@@ -3,7 +3,9 @@ package com.reubenpeeris.wippen.engine;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import lombok.NonNull;
 
@@ -12,10 +14,10 @@ import com.reubenpeeris.wippen.expression.Move;
 import com.reubenpeeris.wippen.expression.Pile;
 import com.reubenpeeris.wippen.robot.Robot;
 
-public final class Player {
+public class Player {
 	public static final Player NOBODY = new Player(-1, new Robot() {
 		@Override
-		public void startMatch(List<Player> allPlayers, Player you, int numberOfSets) {
+		public void startMatch(Set<Pile> table, Set<Card> hand, List<Player> allPlayers, Player you, int numberOfSets) {
 		}
 
 		@Override
@@ -44,22 +46,17 @@ public final class Player {
 		}
 
 		@Override
-		public void startGame(Player first, Collection<Pile> table) {
+		public void startGame(Player first, Set<Pile> table) {
 			throw new UnsupportedOperationException();
 		}
 
 		@Override
-		public void cardsDealt(Collection<Card> hand) {
+		public Move takeTurn(Set<Pile> table, Set<Card> hand) {
 			throw new UnsupportedOperationException();
 		}
 
 		@Override
-		public Move takeTurn(Collection<Pile> table, Collection<Card> hand) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public void turnPlayed(Player player, Collection<Pile> table, Move move) {
+		public void turnPlayed(Player player, Set<Pile> table, Move move) {
 			throw new UnsupportedOperationException();
 		}
 	});
@@ -68,7 +65,9 @@ public final class Player {
 	private final int position;
 	private final Robot robot;
 	private final Score score = new Score();
-	private Collection<Card> hand = Collections.emptyList();
+	private final Set<Card> hand = new LinkedHashSet<>();
+	private final Set<Card> unmodifiableHand = Collections.unmodifiableSet(hand);
+	private Set<Pile> unmodifiableTable;
 	private int sweeps;
 
 	public Player(int position, @NonNull Robot robot) {
@@ -80,16 +79,16 @@ public final class Player {
 		return position;
 	}
 
-	Collection<Card> getHand() {
+	Set<Card> getHand() {
 		return hand;
+	}
+
+	void addToHand(Collection<Card> cards) {
+		this.hand.addAll(cards);
 	}
 
 	boolean removeFromHand(Card card) {
 		return hand.remove(card);
-	}
-
-	void setHand(Collection<Card> hand) {
-		this.hand = hand;
 	}
 
 	boolean isHandEmpty() {
@@ -128,9 +127,10 @@ public final class Player {
 	}
 
 	// Robot like methods
-	void startMatch(List<Player> allPlayers, int numberOfSets) {
+	void startMatch(Set<Pile> table, List<Player> allPlayers, int numberOfSets) {
 		score.startMatch();
-		robot.startMatch(allPlayers, this, numberOfSets);
+		unmodifiableTable = Collections.unmodifiableSet(table);
+		robot.startMatch(unmodifiableTable, unmodifiableHand, Collections.unmodifiableList(allPlayers), this, numberOfSets);
 	}
 
 	void startSet() {
@@ -138,9 +138,9 @@ public final class Player {
 		robot.startSet();
 	}
 
-	void startGame(Player first, Collection<Pile> table) {
+	void startGame(Player first) {
 		score.startGame();
-		robot.startGame(first, table);
+		robot.startGame(first, unmodifiableTable);
 	}
 
 	void gameComplete(List<Score> scores) {
@@ -155,15 +155,11 @@ public final class Player {
 		robot.matchComplete(scores);
 	}
 
-	void cardsDealt(Collection<Card> hand) {
-		robot.cardsDealt(hand);
+	Move takeTurn() {
+		return robot.takeTurn(unmodifiableTable, unmodifiableHand);
 	}
 
-	Move takeTurn(Collection<Pile> table) {
-		return robot.takeTurn(table, Collections.unmodifiableCollection(this.hand));
-	}
-
-	void turnPlayed(Player player, Collection<Pile> table, Move move) {
-		robot.turnPlayed(player, table, move);
+	void turnPlayed(Player player, Move move) {
+		robot.turnPlayed(player, unmodifiableTable, move);
 	}
 }

@@ -1,0 +1,19 @@
+Usage: java -jar Wippen.jar [options] robot1 robot2 [robot3 [robot4]]
+  Options:
+    -f, --first-set
+       The first set to play
+       Default: 0
+    -h, --help
+       Prints the help message
+       Default: false
+    -s, --sets
+       The number of sets to play
+       Default: 100
+
+  Main arguments
+    robot1 robot2 [robot3 [robot4]]
+      RobotLoader strigs representing the robots to load
+
+  Example
+    java -jar Wippen.jar --sets 1000 -g 29 class:com.reubenpeeris.wippen.examples.PairAdder class:com.reubenpeeris.wippen.examples.PairCapturer
+      Execute a run of 1000 sets starting with game 29 for PairAdder vs PairCapturer

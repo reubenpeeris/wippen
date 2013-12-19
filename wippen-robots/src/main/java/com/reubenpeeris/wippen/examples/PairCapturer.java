@@ -2,30 +2,23 @@ package com.reubenpeeris.wippen.examples;
 
 import static com.reubenpeeris.wippen.expression.Move.Type.*;
 
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.Set;
 
-import com.reubenpeeris.wippen.expression.Add;
 import com.reubenpeeris.wippen.expression.Card;
-import com.reubenpeeris.wippen.expression.Divide;
-import com.reubenpeeris.wippen.expression.Equals;
 import com.reubenpeeris.wippen.expression.Expression;
 import com.reubenpeeris.wippen.expression.Move;
-import com.reubenpeeris.wippen.expression.Multiply;
 import com.reubenpeeris.wippen.expression.NodeBuilder;
 import com.reubenpeeris.wippen.expression.Pile;
-import com.reubenpeeris.wippen.expression.Subtract;
 
 public class PairCapturer extends SingleValueMatcher {
 	@Override
-	public Move takeTurn(Collection<Pile> table, Collection<Card> hand) {
+	public Move takeTurn(Set<Pile> table, Set<Card> hand) {
 		for (Pile pile1 : table) {
 			for (Pile pile2 : table) {
-				for (NodeBuilder nodeBuilder : Arrays.asList(Add.builder(), Subtract.builder(), Multiply.builder(), Divide.builder(),
-						Equals.builder())) {
+				for (NodeBuilder nodeBuilder : factory().newBuilders()) {
 					Expression expression = nodeBuilder.left(pile1).right(pile2).build();
 					for (Card card : hand) {
-						Move move = Move.create(CAPTURE, expression, card, table, hand, getMe());
+						Move move = factory().tryMove(CAPTURE, expression, card);
 						if (move != null) {
 							return move;
 						}

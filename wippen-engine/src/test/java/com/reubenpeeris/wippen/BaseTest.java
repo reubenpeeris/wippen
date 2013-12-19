@@ -10,7 +10,7 @@ public abstract class BaseTest {
 
 	@Before
 	public void buildTestData() {
-		TestData.build();
+		TestData.buildTestData();
 	}
 
 	public void expect(Class<? extends Exception> clazz, String message) {

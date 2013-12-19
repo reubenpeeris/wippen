@@ -2,10 +2,18 @@ package com.reubenpeeris.wippen.engine;
 
 import java.util.List;
 
+import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
+import lombok.NonNull;
+import lombok.Setter;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.stereotype.Component;
+
+import com.beust.jcommander.IParameterValidator;
 import com.beust.jcommander.IStringConverter;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
@@ -14,20 +22,34 @@ import com.reubenpeeris.wippen.robot.Robot;
 import com.reubenpeeris.wippen.robotloader.RobotLoaderManager;
 import com.reubenpeeris.wippen.robotloader.WippenLoaderException;
 
+@Component
+@Scope("prototype")
+@Getter
+@Setter
 public class Wippen {
-	@Parameter(names = { "-s", "--sets" }, description = "The number of sets to play")
-	private Integer sets = 100;
+	private static final ApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
+	private static final int FAIL_EXIT_CODE = 1;
 
-	@Parameter(names = { "-g", "--game" }, description = "The first game to play")
-	private Integer firstGame = 0;
+	@Parameter(names = { "-s", "--sets" }, description = "The number of sets to play", validateWith = PositiveInteger.class)
+	private int sets = 100;
 
+	@Parameter(names = { "-f", "--first-set" }, description = "The first set to play")
+	private int firstSet = 0;
+
+	@NonNull
 	@Parameter(description = "robot1 robot2 [robot3 [robot4]]", required = true, converter = RobotConverter.class)
 	private List<Robot> robots;
 
 	@Parameter(names = { "-h", "--help" }, help = true, description = "Prints the help message")
 	private boolean help = false;
 
+	@Getter(AccessLevel.NONE)
+	@Setter(AccessLevel.NONE)
 	private final JCommander commander;
+
+	@Getter(AccessLevel.NONE)
+	@Setter(AccessLevel.NONE)
+	private final MatchRunner matchRunner;
 
 	public static class RobotConverter implements IStringConverter<Robot> {
 		@Override
@@ -40,27 +62,29 @@ public class Wippen {
 		}
 	}
 
-	public static void main(String... args) {
-		try {
-			new Wippen(args);
-		} catch (ExitRequest exitRequest) {
-			System.exit(exitRequest.getCode());
-		}
+	public static void main(@NonNull String... args) {
+		Wippen wippen = create();
+		wippen.run(args);
 	}
 
-	@Getter
-	@RequiredArgsConstructor
-	static class ExitRequest extends RuntimeException {
-		private static final long serialVersionUID = 1L;
-		private final int code;
+	public static Wippen create() {
+		return context.getBean(Wippen.class);
 	}
 
-	@SneakyThrows(ClassNotFoundException.class)
-	Wippen(String... args) {
-		Class.forName(com.reubenpeeris.wippen.robotloader.SpringRobotLoader.class.getName());
-		Class.forName(com.reubenpeeris.wippen.robotloader.ConstructorRobotLoader.class.getName());
-		String programName = "java -jar Wippen.jar";
+	@Autowired
+	Wippen(@NonNull MatchRunner matchRunner) {
+		this.matchRunner = matchRunner;
 		commander = new JCommander(this);
+	}
+
+	void run(@NonNull String... args) {
+		try {
+			Class.forName(com.reubenpeeris.wippen.robotloader.SpringRobotLoader.class.getName());
+			Class.forName(com.reubenpeeris.wippen.robotloader.ConstructorRobotLoader.class.getName());
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException(e);
+		}
+		String programName = "java -jar Wippen.jar";
 		commander.setProgramName(programName);
 
 		try {
@@ -68,7 +92,7 @@ public class Wippen {
 			if (help) {
 				commander.usage();
 				System.out.println("  Main arguments");
-				System.out.println("    robot1, robot2, robot3, robot4");
+				System.out.println("    robot1 robot2 [robot3 [robot4]]");
 				System.out.println("      RobotLoader strigs representing the robots to load");
 
 				System.out.println();
@@ -80,18 +104,62 @@ public class Wippen {
 				validateParameters();
 			}
 		} catch (ParameterException e) {
-			System.out.println(e.getMessage());
-			throw new ExitRequest(1);
+			System.err.println(e.getMessage());
+			fail();
 		}
 
 		if (!help) {
-			new WippenRunner().playMatch(robots, firstGame, sets);
+			try {
+				runMatch();
+			} catch (Exception e) {
+				if (e instanceof WippenRuleException) {
+					System.err.println(e.getMessage());
+				} else {
+					e.printStackTrace();
+				}
+				fail();
+			}
 		}
+	}
+
+	public List<Score> runMatch() {
+		validateParameters();
+		System.out.println("Running");
+		System.out.println(" Sets:      " + sets);
+		System.out.println(" First set: " + firstSet);
+		System.out.println(" Players:   " + robots.size());
+
+		ScoreKeeper scoreKeeper = matchRunner.runMatch(robots, firstSet, sets);
+		System.out.print(scoreKeeper);
+
+		return scoreKeeper.getScores();
 	}
 
 	private void validateParameters() throws ParameterException {
 		if (robots.size() < 2 || robots.size() > 4) {
 			throw new ParameterException("Main parameters are required to have between 2 and 4 robots (\"robot1 robot2 [robot3 [robot4]]\")");
 		}
+	}
+
+	public static class PositiveInteger implements IParameterValidator {
+		@Override
+		public void validate(String name, String value) throws ParameterException {
+			try {
+				int parsedValue = Integer.parseInt(value);
+				if (parsedValue < 0) {
+					throw new ParameterException(String.format("\"%s\": couldn't convert \"%s\" to a positive integer", name, value));
+				}
+			} catch (NumberFormatException e) {
+				throw new ParameterException(String.format("\"%s\": couldn't convert \"%s\" to an integer", name, value));
+			}
+		}
+	}
+
+	/*
+	 * EMMA code coverage will consider this method any any branch that executes
+	 * this method to have not been touched!
+	 */
+	private void fail() {
+		System.exit(FAIL_EXIT_CODE);
 	}
 }

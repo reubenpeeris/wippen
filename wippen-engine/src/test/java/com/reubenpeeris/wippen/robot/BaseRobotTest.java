@@ -4,14 +4,18 @@ import static com.reubenpeeris.wippen.TestData.*;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
+import java.util.Collections;
+
 import org.junit.Test;
 
 import com.reubenpeeris.wippen.BaseTest;
 import com.reubenpeeris.wippen.TestData.NullRobot;
+import com.reubenpeeris.wippen.expression.Card;
+import com.reubenpeeris.wippen.expression.Pile;
 
 public class BaseRobotTest extends BaseTest {
 	@Test
-	public void n_ame_is_simple_ame_of_lass() {
+	public void name_is_simple_name_of_class() {
 		assertThat(new NullRobot().getName(), is(equalTo(NullRobot.class.getSimpleName())));
 	}
 
@@ -22,9 +26,9 @@ public class BaseRobotTest extends BaseTest {
 	}
 
 	@Test
-	public void getMe_retruns_the_same_instance_passed_to_start_match() {
+	public void getMe_retuns_the_same_instance_passed_to_start_match() {
 		BaseRobot robot = new NullRobot();
-		robot.startMatch(null, players[0], 0);
+		robot.startMatch(Collections.<Pile> emptySet(), Collections.<Card> emptySet(), playerList, players[0], 0);
 
 		assertThat(robot.getMe(), is(sameInstance(players[0])));
 	}

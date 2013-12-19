@@ -1,22 +1,34 @@
 package com.reubenpeeris.wippen.robot;
 
-import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import com.reubenpeeris.wippen.engine.Player;
 import com.reubenpeeris.wippen.engine.Score;
 import com.reubenpeeris.wippen.expression.Card;
+import com.reubenpeeris.wippen.expression.ExpressionFactory;
 import com.reubenpeeris.wippen.expression.Move;
 import com.reubenpeeris.wippen.expression.Pile;
 
 public abstract class BaseRobot implements Robot {
+	private boolean matchStarted = false;
 	private Player me;
+	private ExpressionFactory factory;
 
-	public Player getMe() {
-		if (me == null) {
-			throw new IllegalStateException();
-		}
+	protected Player getMe() {
+		assertMatchStarted();
 		return me;
+	}
+
+	protected ExpressionFactory factory() {
+		assertMatchStarted();
+		return factory;
+	}
+
+	private void assertMatchStarted() {
+		if (!matchStarted) {
+			throw new IllegalStateException("Match has not yet started");
+		}
 	}
 
 	@Override
@@ -25,8 +37,10 @@ public abstract class BaseRobot implements Robot {
 	}
 
 	@Override
-	public void startMatch(List<Player> allPlayers, Player me, int numberOfSets) {
+	public void startMatch(Set<Pile> table, Set<Card> hand, List<Player> allPlayers, Player me, int numberOfSets) {
+		this.matchStarted = true;
 		this.me = me;
+		this.factory = new ExpressionFactory(table, hand, me);
 	}
 
 	@Override
@@ -34,15 +48,11 @@ public abstract class BaseRobot implements Robot {
 	}
 
 	@Override
-	public void startGame(Player first, Collection<Pile> table) {
+	public void startGame(Player first, Set<Pile> table) {
 	}
 
 	@Override
-	public void cardsDealt(Collection<Card> hand) {
-	}
-
-	@Override
-	public void turnPlayed(Player player, Collection<Pile> table, Move move) {
+	public void turnPlayed(Player player, Set<Pile> table, Move move) {
 	}
 
 	@Override

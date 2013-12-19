@@ -13,8 +13,7 @@ import lombok.NonNull;
 
 import com.reubenpeeris.wippen.engine.Player;
 
-@Getter
-@EqualsAndHashCode(of = { "type", "expression", "handCard" }, callSuper = false)
+@EqualsAndHashCode(of = { "type", "coreExpression", "handCard", "player" }, callSuper = false)
 public final class Move extends Expression {
 	@AllArgsConstructor
 	@Getter
@@ -65,6 +64,18 @@ public final class Move extends Expression {
 			String getMessage() {
 				return "expression must be null";
 			}
+		},
+
+		INVALID(false) {
+			@Override
+			Expression createExpresion(Card handCard, Expression expression) {
+				return null;
+			}
+
+			@Override
+			String getMessage() {
+				return "no parameters are valid";
+			}
 		};
 
 		private final boolean pileGenerated;
@@ -74,21 +85,25 @@ public final class Move extends Expression {
 		abstract String getMessage();
 	}
 
+	@Getter
 	private final Type type;
+	@Getter
 	private final Card handCard;
-
+	@Getter
 	private final Set<Pile> tablePilesUsed;
+	private final Player player;
 
 	@Getter(AccessLevel.NONE)
 	private final Expression expression;
 	@Getter(AccessLevel.NONE)
 	private final Expression coreExpression;
 
-	public Move(Type type, Expression expression, Card handCard) {
-		String error = checkArgs(type, expression, handCard);
+	Move(Type type, Expression expression, Card handCard, @NonNull Set<Pile> table, Set<Card> hand, @NonNull Player player) {
+		String error = checkArgs(type, expression, handCard, table, hand, player);
 		if (error != null) {
 			throw new IllegalArgumentException(error);
 		}
+
 		this.coreExpression = expression;
 		this.expression = type.createExpresion(handCard, expression);
 
@@ -98,9 +113,10 @@ public final class Move extends Expression {
 		Set<Pile> tablePilesUsed = new HashSet<>(this.expression.getPiles());
 		tablePilesUsed.remove(handCard);
 		this.tablePilesUsed = Collections.unmodifiableSet(tablePilesUsed);
+		this.player = player;
 	}
 
-	private static String checkArgs(@NonNull Type type, Expression expression, @NonNull Card handCard) {
+	static String checkArgs(@NonNull Type type, Expression expression, @NonNull Card handCard, Set<Pile> table, Set<Card> hand, Player player) {
 		expression = type.createExpresion(handCard, expression);
 
 		if (expression == null) {
@@ -109,6 +125,40 @@ public final class Move extends Expression {
 
 		if (new HashSet<>(expression.getCards()).size() < expression.getCards().size()) {
 			return "Trying to use card multiple times: " + expression;
+		}
+
+		if (hand != null && !hand.contains(handCard)) {
+			return "Hand does not contain handCard: " + handCard;
+		}
+
+		for (Pile pile : expression.getPiles()) {
+			if (!pile.equals(handCard)) {
+				if (!table.contains(pile)) {
+					return "Non-hand pile not present on table: " + pile;
+				}
+			}
+		}
+
+		if (type == Type.BUILD) {
+			for (Pile pile : expression.getPiles()) {
+				if (pile.getPlayer().equals(player) && pile.getValue() != expression.getValue()) {
+					return "A building cannot be made using your own building of a different value";
+				}
+			}
+
+			if (hand != null) {
+				boolean hasCardOfCorrectValue = false;
+				for (Card card : hand) {
+					if (!card.equals(handCard) && card.getValue() == expression.getValue()) {
+						hasCardOfCorrectValue = true;
+						break;
+					}
+				}
+
+				if (!hasCardOfCorrectValue) {
+					return "Player must have hand card of the value of the building being created: " + expression.getValue();
+				}
+			}
 		}
 
 		return null;
@@ -129,59 +179,18 @@ public final class Move extends Expression {
 		return expression.getCards();
 	}
 
-	public boolean isPileGenerated() {
-		return type.isPileGenerated();
-	}
-
-	public boolean isValidFor(Collection<Pile> table, Collection<Card> hand, Player player) {
-		if (!hand.contains(handCard)) {
-			return false;
-		}
-
-		for (Pile pile : getPiles()) {
-			if (!pile.equals(handCard)) {
-				if (!table.contains(pile)) {
-					return false;
-				}
-			}
-		}
-
+	public Pile getPileCreated() {
 		if (type == Type.BUILD) {
-			for (Pile pile : getPiles()) {
-				if (pile.getPlayer().equals(player) && pile.getValue() != getValue()) {
-					return false;
-				}
-			}
-
-			boolean hasCardOfCorrectValue = false;
-			for (Card card : hand) {
-				if (!card.equals(handCard) && card.getValue() == getValue()) {
-					hasCardOfCorrectValue = true;
-					break;
-				}
-			}
-
-			if (!hasCardOfCorrectValue) {
-				return false;
-			}
+			return new Building(this, player);
+		} else if (type == Type.DISCARD) {
+			return getHandCard();
+		} else {
+			return null;
 		}
-
-		return true;
 	}
 
-	public static Move create(@NonNull Type type, Expression expression, @NonNull Card handCard, @NonNull Collection<Pile> table,
-			@NonNull Collection<Card> hand, @NonNull Player player) {
-		if (checkArgs(type, expression, handCard) == null) {
-			Move move = new Move(type, expression, handCard);
-			if (move.isValidFor(table, hand, player)) {
-				return move;
-			}
-		}
-		return null;
-	}
-
-	public static Move parseMove(String moveExpression, Collection<Pile> table) {
-		return Parser.parseMove(moveExpression, table);
+	public boolean isSound(@NonNull Set<Pile> table, @NonNull Set<Card> hand, @NonNull Player player) {
+		return checkArgs(type, coreExpression, handCard, table, hand, player) == null;
 	}
 
 	@Override
@@ -191,5 +200,13 @@ public final class Move extends Expression {
 		} else {
 			return type + " " + handCard;
 		}
+	}
+
+	static Move create(@NonNull Type type, Expression expression, @NonNull Card handCard, @NonNull Set<Pile> table, @NonNull Set<Card> hand,
+			@NonNull Player player) {
+		if (Move.checkArgs(type, expression, handCard, table, hand, player) == null) {
+			return new Move(type, expression, handCard, table, hand, player);
+		}
+		return null;
 	}
 }

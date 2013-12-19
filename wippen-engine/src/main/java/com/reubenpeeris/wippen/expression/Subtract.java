@@ -1,6 +1,6 @@
 package com.reubenpeeris.wippen.expression;
 
-public final class Subtract extends PairNode {
+final class Subtract extends PairNode {
 	public static NodeBuilder builder() {
 		return new NodeBuilder() {
 			@Override
@@ -10,7 +10,7 @@ public final class Subtract extends PairNode {
 		};
 	}
 
-	public Subtract(Expression left, Expression right) {
+	Subtract(Expression left, Expression right) {
 		super(left, right);
 	}
 

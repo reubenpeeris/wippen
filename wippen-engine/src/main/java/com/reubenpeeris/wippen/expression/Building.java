@@ -25,9 +25,9 @@ public final class Building extends Pile {
 	private final Collection<Pile> piles;
 	private final Player player;
 
-	public Building(@NonNull Move move, @NonNull Player player) {
+	Building(@NonNull Move move, @NonNull Player player) {
 		if (move.getType() != BUILD) {
-			throw new IllegalArgumentException("Move must have type BUILD");
+			throw new IllegalArgumentException("Move must have type BUILD but was: " + move.getType());
 		}
 		if (player == Player.NOBODY) {
 			throw new IllegalArgumentException("Player cannot be NOBODY");
@@ -50,7 +50,7 @@ public final class Building extends Pile {
 
 	@Override
 	public Rank getRank() {
-		return new Rank(move.getValue());
+		return Rank.fromInt(move.getValue());
 	}
 
 	@Override

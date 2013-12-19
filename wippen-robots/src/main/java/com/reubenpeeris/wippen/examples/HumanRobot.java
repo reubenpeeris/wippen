@@ -5,8 +5,8 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import com.reubenpeeris.wippen.engine.Player;
 import com.reubenpeeris.wippen.engine.Score;
@@ -37,16 +37,13 @@ public class HumanRobot extends BaseRobot {
 	}
 
 	@Override
-	public Move takeTurn(Collection<Pile> table, Collection<Card> hand) {
+	public Move takeTurn(Set<Pile> table, Set<Card> hand) {
 		sendMessage(String.format("TAKE_TURN TABLE=%s HAND=%s", table.toString(), hand.toString()));
 
 		while (true) {
 			String expression = receiveMessage();
 			try {
-				Move move = Move.parseMove(expression, table);
-				if (!move.isValidFor(table, hand, getMe())) {
-					throw new IllegalStateException("Move not valid at this time");
-				}
+				Move move = factory().newMove(expression);
 				return move;
 			} catch (Exception e) {
 				sendMessage("TRY AGAIN (" + e.getMessage() + ")");
@@ -55,7 +52,7 @@ public class HumanRobot extends BaseRobot {
 	}
 
 	@Override
-	public void turnPlayed(Player player, Collection<Pile> table, Move move) {
+	public void turnPlayed(Player player, Set<Pile> table, Move move) {
 		sendMessage(String.format("TURN_PLAYED PLAYER=%d TABLE=%s ACTION=%s", player.getPosition(), table, move));
 	}
 

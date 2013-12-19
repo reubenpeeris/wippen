@@ -30,6 +30,7 @@ public class LoaderManagerTest extends BaseTest {
 
 	@Test
 	public void createInstance_throws_when_there_are_no_suitable_loaders_registered() {
+		loaderManager.registerLoader(ConstructorLoaderTest.loader);
 		String url = "unsupported://protocol";
 		expect(WippenLoaderException.class, "No suitable loader found for url: '" + url + "'");
 		loaderManager.createInstance(url);

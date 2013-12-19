@@ -1,6 +1,7 @@
 package com.reubenpeeris.wippen.expression;
 
 import static com.reubenpeeris.wippen.TestData.*;
+import static com.reubenpeeris.wippen.expression.Rank.*;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.collection.IsIterableContainingInOrder.*;
 import static org.junit.Assert.*;
@@ -20,23 +21,23 @@ public class PileTest extends BaseExpressionTest {
 		}
 
 		@Override
-		public Rank getRank() {
-			return null;
-		}
-
-		@Override
 		public Collection<Card> getCards() {
 			return cards;
 		}
 
 		@Override
 		public int getValue() {
-			return 0;
+			return getRank().getValue();
 		}
 
 		@Override
 		public Collection<Pile> getPiles() {
 			return Collections.emptySet();
+		}
+
+		@Override
+		public Rank getRank() {
+			return ACE;
 		}
 	}
 

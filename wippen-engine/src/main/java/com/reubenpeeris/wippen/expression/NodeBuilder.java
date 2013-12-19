@@ -1,17 +1,21 @@
 package com.reubenpeeris.wippen.expression;
 
+import lombok.AccessLevel;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 import com.reubenpeeris.wippen.expression.PairNode.Validator;
 
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 public abstract class NodeBuilder {
+	@NonNull
 	private final Validator validator;
 	private Expression left;
 	private Expression right;
 
-	abstract PairNode build(Expression left, Expression right);
+	abstract Expression build(Expression left, Expression right);
 
-	public PairNode build() {
+	public Expression build() {
 		Expression left = this.left;
 		Expression right = this.right;
 
@@ -20,10 +24,6 @@ public abstract class NodeBuilder {
 		} else {
 			return null;
 		}
-	}
-
-	NodeBuilder(@NonNull Validator validator) {
-		this.validator = validator;
 	}
 
 	NodeBuilder() {

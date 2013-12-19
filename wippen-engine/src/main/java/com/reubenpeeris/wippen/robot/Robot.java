@@ -1,7 +1,7 @@
 package com.reubenpeeris.wippen.robot;
 
-import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import com.reubenpeeris.wippen.engine.Player;
 import com.reubenpeeris.wippen.engine.Score;
@@ -12,17 +12,15 @@ import com.reubenpeeris.wippen.expression.Pile;
 public interface Robot {
 	String getName();
 
-	void startMatch(List<Player> allPlayers, Player you, int numberOfSets);
+	void startMatch(Set<Pile> table, Set<Card> hand, List<Player> allPlayers, Player you, int numberOfSets);
 
 	void startSet();
 
-	void startGame(Player first, Collection<Pile> table);
+	void startGame(Player first, Set<Pile> table);
 
-	void cardsDealt(Collection<Card> hand);
+	Move takeTurn(Set<Pile> table, Set<Card> hand);
 
-	Move takeTurn(Collection<Pile> table, Collection<Card> hand);
-
-	void turnPlayed(Player player, Collection<Pile> table, Move move);
+	void turnPlayed(Player player, Set<Pile> table, Move move);
 
 	void gameComplete(List<Score> scores);
 

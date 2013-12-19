@@ -1,37 +1,45 @@
 package com.reubenpeeris.wippen.expression;
 
 import java.util.Collection;
+import java.util.Set;
 import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.reubenpeeris.wippen.engine.Player;
 import com.reubenpeeris.wippen.engine.WippenIllegalFormatException;
 import com.reubenpeeris.wippen.expression.Move.Type;
 
-final class Parser {
-	private Parser() {
+final class MoveParser {
+	private MoveParser() {
 	}
 
-	// Order is significant, increasing precedence left to right.
-	private static final String OPERATORS = "=+-*/";
+	private static final String OPERATOR_PRESEDENCE = "=+-*/";
 	private static final Pattern BUILDING_PATTERN = Pattern.compile("^([1-9]|1[0-3])B(\\d+)$");
 	private static final Pattern MOVE_PATTERN = Pattern.compile("(BUILD|CAPTURE|DISCARD) (?:(.*) USING )?([^ ]*)$");
 
-	public static Move parseMove(String moveExpression, Collection<Pile> table) throws WippenIllegalFormatException {
-		Matcher matcher = MOVE_PATTERN.matcher(moveExpression);
-		if (!matcher.matches()) {
-			throw new WippenIllegalFormatException("Unable to parse move expression: " + moveExpression);
+	public static Move parseMove(String moveExpression, Set<Pile> table, Set<Card> hand, Player player) throws WippenIllegalFormatException {
+		try {
+			Matcher matcher = MOVE_PATTERN.matcher(moveExpression);
+			if (!matcher.matches()) {
+				throw new WippenIllegalFormatException();
+			}
+
+			Type type = Type.valueOf(matcher.group(1));
+			Expression expression = parseMath(matcher.group(2), table);
+			Card handCard = Card.parseCard(matcher.group(3));
+			if (Move.checkArgs(type, expression, handCard, table, hand, player) == null) {
+				return new Move(type, expression, handCard, table, hand, player);
+			} else {
+				return null;
+			}
+		} catch (WippenIllegalFormatException e) {
+			return null;
 		}
-
-		Type type = Type.valueOf(matcher.group(1));
-		Expression expression = parseMath(matcher.group(2), table);
-		Card handCard = Card.parseCard(matcher.group(3));
-
-		return new Move(type, expression, handCard);
 	}
 
 	private static int precedence(char c) {
-		return OPERATORS.indexOf(c);
+		return OPERATOR_PRESEDENCE.indexOf(c);
 	}
 
 	// Using the shunting-yard algorithm
@@ -110,33 +118,28 @@ final class Parser {
 					nodeBuilder = Equals.builder();
 					break;
 				default:
-					throw new WippenIllegalFormatException(expression);
+					return null;
 				}
 
 				if (stack.size() < 2) {
-					throw new WippenIllegalFormatException(expression);
+					return null;
 				}
 
 				nodeBuilder.right(stack.pop());
 				nodeBuilder.left(stack.pop());
 
-				Expression e = nodeBuilder.build();
-				if (e == null) {
-					throw new WippenIllegalFormatException(expression);
-				}
-
-				stack.push(e);
+				stack.push(nodeBuilder.build());
 			} else {
 				try {
 					stack.push(parsePile(token, table));
 				} catch (WippenIllegalFormatException e) {
-					throw new WippenIllegalFormatException(expression, e);
+					return null;
 				}
 			}
 		}
 
 		if (stack.size() != 1) {
-			throw new WippenIllegalFormatException(expression);
+			return null;
 		}
 
 		return stack.pop();
@@ -146,7 +149,7 @@ final class Parser {
 		Matcher matcher = BUILDING_PATTERN.matcher(string);
 
 		if (matcher.matches()) {
-			Rank rank = new Rank(Integer.parseInt(matcher.group(1)));
+			Rank rank = Rank.fromInt(Integer.parseInt(matcher.group(1)));
 			int position = Integer.parseInt(matcher.group(2));
 
 			for (Pile pile : table) {
