@@ -1,0 +1,3 @@
+#!/bin/bash
+dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+java -cp "${dir}/lib/*:${dir}/robots/*:${dir}/etc/" com.reubenpeeris.wippen.engine.Wippen "$@"
