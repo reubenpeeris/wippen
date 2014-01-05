@@ -5,7 +5,7 @@ import lombok.NonNull;
 import com.reubenpeeris.wippen.engine.WippenIllegalFormatException;
 
 public enum Suit {
-	CLUB("C"), DIAMOND("D"), HEART("H"), SPADE("S");
+	CLUBS("C"), DIAMONDS("D"), HEARTS("H"), SPADES("S");
 
 	private final String letter;
 

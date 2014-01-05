@@ -1,5 +1,6 @@
 package com.reubenpeeris.wippen;
 
+import static com.reubenpeeris.wippen.expression.AnonymousExpressionFactory.*;
 import static com.reubenpeeris.wippen.expression.Move.Type.*;
 import static com.reubenpeeris.wippen.expression.Rank.*;
 import static com.reubenpeeris.wippen.expression.Suit.*;
@@ -13,7 +14,6 @@ import java.util.List;
 import java.util.Set;
 
 import com.reubenpeeris.wippen.engine.Player;
-import com.reubenpeeris.wippen.expression.AnonymousExpressionFactory;
 import com.reubenpeeris.wippen.expression.Card;
 import com.reubenpeeris.wippen.expression.Expression;
 import com.reubenpeeris.wippen.expression.ExpressionFactory;
@@ -23,61 +23,60 @@ import com.reubenpeeris.wippen.robot.BaseRobot;
 import com.reubenpeeris.wippen.robot.Robot;
 
 public final class TestData {
-	private static AnonymousExpressionFactory createAnon = new AnonymousExpressionFactory();
 	public static ExpressionFactory create;
 
-	public static final Card c1 = createAnon.newCard(ACE, CLUB);
-	public static final Card d1 = createAnon.newCard(ACE, DIAMOND);
-	public static final Card h1 = createAnon.newCard(ACE, HEART);
-	public static final Card s1 = createAnon.newCard(ACE, SPADE);
-	public static final Card c2 = createAnon.newCard(TWO, CLUB);
-	public static final Card d2 = createAnon.newCard(TWO, DIAMOND);
-	public static final Card h2 = createAnon.newCard(TWO, HEART);
-	public static final Card s2 = createAnon.newCard(TWO, SPADE);
-	public static final Card c3 = createAnon.newCard(THREE, CLUB);
-	public static final Card d3 = createAnon.newCard(THREE, DIAMOND);
-	public static final Card h3 = createAnon.newCard(THREE, HEART);
-	public static final Card s3 = createAnon.newCard(THREE, SPADE);
-	public static final Card c4 = createAnon.newCard(FOUR, CLUB);
-	public static final Card d4 = createAnon.newCard(FOUR, DIAMOND);
-	public static final Card h4 = createAnon.newCard(FOUR, HEART);
-	public static final Card s4 = createAnon.newCard(FOUR, SPADE);
-	public static final Card c5 = createAnon.newCard(FIVE, CLUB);
-	public static final Card d5 = createAnon.newCard(FIVE, DIAMOND);
-	public static final Card h5 = createAnon.newCard(FIVE, HEART);
-	public static final Card s5 = createAnon.newCard(FIVE, SPADE);
-	public static final Card c6 = createAnon.newCard(SIX, CLUB);
-	public static final Card d6 = createAnon.newCard(SIX, DIAMOND);
-	public static final Card h6 = createAnon.newCard(SIX, HEART);
-	public static final Card s6 = createAnon.newCard(SIX, SPADE);
-	public static final Card c7 = createAnon.newCard(SEVEN, CLUB);
-	public static final Card d7 = createAnon.newCard(SEVEN, DIAMOND);
-	public static final Card h7 = createAnon.newCard(SEVEN, HEART);
-	public static final Card s7 = createAnon.newCard(SEVEN, SPADE);
-	public static final Card c8 = createAnon.newCard(EIGHT, CLUB);
-	public static final Card d8 = createAnon.newCard(EIGHT, DIAMOND);
-	public static final Card h8 = createAnon.newCard(EIGHT, HEART);
-	public static final Card s8 = createAnon.newCard(EIGHT, SPADE);
-	public static final Card c9 = createAnon.newCard(NINE, CLUB);
-	public static final Card d9 = createAnon.newCard(NINE, DIAMOND);
-	public static final Card h9 = createAnon.newCard(NINE, HEART);
-	public static final Card s9 = createAnon.newCard(NINE, SPADE);
-	public static final Card c10 = createAnon.newCard(TEN, CLUB);
-	public static final Card d10 = createAnon.newCard(TEN, DIAMOND);
-	public static final Card h10 = createAnon.newCard(TEN, HEART);
-	public static final Card s10 = createAnon.newCard(TEN, SPADE);
-	public static final Card c11 = createAnon.newCard(JACK, CLUB);
-	public static final Card d11 = createAnon.newCard(JACK, DIAMOND);
-	public static final Card h11 = createAnon.newCard(JACK, HEART);
-	public static final Card s11 = createAnon.newCard(JACK, SPADE);
-	public static final Card c12 = createAnon.newCard(QUEEN, CLUB);
-	public static final Card d12 = createAnon.newCard(QUEEN, DIAMOND);
-	public static final Card h12 = createAnon.newCard(QUEEN, HEART);
-	public static final Card s12 = createAnon.newCard(QUEEN, SPADE);
-	public static final Card c13 = createAnon.newCard(KING, CLUB);
-	public static final Card d13 = createAnon.newCard(KING, DIAMOND);
-	public static final Card h13 = createAnon.newCard(KING, HEART);
-	public static final Card s13 = createAnon.newCard(KING, SPADE);
+	public static final Card c1 = factory().newCard(ACE, CLUBS);
+	public static final Card d1 = factory().newCard(ACE, DIAMONDS);
+	public static final Card h1 = factory().newCard(ACE, HEARTS);
+	public static final Card s1 = factory().newCard(ACE, SPADES);
+	public static final Card c2 = factory().newCard(TWO, CLUBS);
+	public static final Card d2 = factory().newCard(TWO, DIAMONDS);
+	public static final Card h2 = factory().newCard(TWO, HEARTS);
+	public static final Card s2 = factory().newCard(TWO, SPADES);
+	public static final Card c3 = factory().newCard(THREE, CLUBS);
+	public static final Card d3 = factory().newCard(THREE, DIAMONDS);
+	public static final Card h3 = factory().newCard(THREE, HEARTS);
+	public static final Card s3 = factory().newCard(THREE, SPADES);
+	public static final Card c4 = factory().newCard(FOUR, CLUBS);
+	public static final Card d4 = factory().newCard(FOUR, DIAMONDS);
+	public static final Card h4 = factory().newCard(FOUR, HEARTS);
+	public static final Card s4 = factory().newCard(FOUR, SPADES);
+	public static final Card c5 = factory().newCard(FIVE, CLUBS);
+	public static final Card d5 = factory().newCard(FIVE, DIAMONDS);
+	public static final Card h5 = factory().newCard(FIVE, HEARTS);
+	public static final Card s5 = factory().newCard(FIVE, SPADES);
+	public static final Card c6 = factory().newCard(SIX, CLUBS);
+	public static final Card d6 = factory().newCard(SIX, DIAMONDS);
+	public static final Card h6 = factory().newCard(SIX, HEARTS);
+	public static final Card s6 = factory().newCard(SIX, SPADES);
+	public static final Card c7 = factory().newCard(SEVEN, CLUBS);
+	public static final Card d7 = factory().newCard(SEVEN, DIAMONDS);
+	public static final Card h7 = factory().newCard(SEVEN, HEARTS);
+	public static final Card s7 = factory().newCard(SEVEN, SPADES);
+	public static final Card c8 = factory().newCard(EIGHT, CLUBS);
+	public static final Card d8 = factory().newCard(EIGHT, DIAMONDS);
+	public static final Card h8 = factory().newCard(EIGHT, HEARTS);
+	public static final Card s8 = factory().newCard(EIGHT, SPADES);
+	public static final Card c9 = factory().newCard(NINE, CLUBS);
+	public static final Card d9 = factory().newCard(NINE, DIAMONDS);
+	public static final Card h9 = factory().newCard(NINE, HEARTS);
+	public static final Card s9 = factory().newCard(NINE, SPADES);
+	public static final Card c10 = factory().newCard(TEN, CLUBS);
+	public static final Card d10 = factory().newCard(TEN, DIAMONDS);
+	public static final Card h10 = factory().newCard(TEN, HEARTS);
+	public static final Card s10 = factory().newCard(TEN, SPADES);
+	public static final Card c11 = factory().newCard(JACK, CLUBS);
+	public static final Card d11 = factory().newCard(JACK, DIAMONDS);
+	public static final Card h11 = factory().newCard(JACK, HEARTS);
+	public static final Card s11 = factory().newCard(JACK, SPADES);
+	public static final Card c12 = factory().newCard(QUEEN, CLUBS);
+	public static final Card d12 = factory().newCard(QUEEN, DIAMONDS);
+	public static final Card h12 = factory().newCard(QUEEN, HEARTS);
+	public static final Card s12 = factory().newCard(QUEEN, SPADES);
+	public static final Card c13 = factory().newCard(KING, CLUBS);
+	public static final Card d13 = factory().newCard(KING, DIAMONDS);
+	public static final Card h13 = factory().newCard(KING, HEARTS);
+	public static final Card s13 = factory().newCard(KING, SPADES);
 
 	public static final Set<Pile> emptyTable = Collections.emptySet();
 	public static final Set<Card> exampleHand = Collections.unmodifiableSet(new LinkedHashSet<>(Arrays.<Card> asList(s1, s3, s4, s12)));
@@ -105,15 +104,15 @@ public final class TestData {
 		playerList.addAll(Arrays.asList(players));
 
 		create = new ExpressionFactory(Collections.<Pile> singleton(d6), new HashSet<>(Arrays.asList(s6, s12)), players[0]);
-		building_12B1_s6PlusD6 = create.newMove(BUILD, createAnon.newAdd(s6, d6), s6).getPileCreated();
+		building_12B1_s6PlusD6 = create.newMove(BUILD, factory().newAdd(s6, d6), s6).getPileCreated();
 		bigTable = new LinkedHashSet<>(Arrays.<Pile> asList(h1, h2, h3, h4, building_12B1_s6PlusD6));
 		create = new ExpressionFactory(bigTable, exampleHand, players[0]);
 
 		discard = create.newMove(DISCARD, null, s1);
-		build = create.newMove(BUILD, createAnon.newMultiply(h3, s4), s4);
+		build = create.newMove(BUILD, factory().newMultiply(h3, s4), s4);
 		building = build.getPileCreated();
 
-		equals = createAnon.newEquals(h1, c1);
+		equals = factory().newEquals(h1, c1);
 	}
 
 	public static final class NullRobot extends BaseRobot {

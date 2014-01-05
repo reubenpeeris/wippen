@@ -20,7 +20,7 @@ public final class Card extends Pile {
 	private final Collection<Card> cards = Collections.singleton(this);
 	private final Collection<Pile> piles = Collections.<Pile> singleton(this);
 
-	public Card(@NonNull Rank rank, @NonNull Suit suit) {
+	Card(@NonNull Rank rank, @NonNull Suit suit) {
 		this.suit = suit;
 		this.rank = rank;
 	}

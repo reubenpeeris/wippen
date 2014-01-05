@@ -168,7 +168,7 @@ public class MoveParserTest extends BaseTest {
 	}
 
 	private String toCaptureMoveExpression(String expression, int value) {
-		return String.format("CAPTURE %s USING %s", expression, new Card(Rank.fromInt(value), SPADE));
+		return String.format("CAPTURE %s USING %s", expression, new Card(Rank.fromInt(value), SPADES));
 	}
 
 	private Move parseMove(String moveExpression) {

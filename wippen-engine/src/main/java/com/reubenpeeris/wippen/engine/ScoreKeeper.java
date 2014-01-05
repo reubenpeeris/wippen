@@ -1,5 +1,6 @@
 package com.reubenpeeris.wippen.engine;
 
+import static com.reubenpeeris.wippen.expression.AnonymousExpressionFactory.*;
 import static com.reubenpeeris.wippen.expression.Rank.*;
 import static com.reubenpeeris.wippen.expression.Suit.*;
 
@@ -24,7 +25,7 @@ public class ScoreKeeper {
 	private static final CardFilter SPADES_FILTER = new CardFilter() {
 		@Override
 		public boolean matches(Card c) {
-			return c.getSuit() == SPADE;
+			return c.getSuit() == SPADES;
 		}
 	};
 
@@ -72,8 +73,8 @@ public class ScoreKeeper {
 		}
 	}
 
-	private static final Card THE_GOOD_TWO = new Card(TWO, SPADE);
-	private static final Card THE_GOOD_TEN = new Card(TEN, DIAMOND);
+	private static final Card THE_GOOD_TWO = factory().newCard(TWO, SPADES);
+	private static final Card THE_GOOD_TEN = factory().newCard(TEN, DIAMONDS);
 
 	private void incrementScoreForValueCards() {
 		for (Player player : players) {

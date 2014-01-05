@@ -202,6 +202,11 @@ public class ExpressionFactoryTest extends BaseTest {
 	public void invalid_tryMove_string_returns_null() {
 		assertThat(create.tryMove("DISCARD BOB"), is(nullValue()));
 	}
+	
+	@Test
+	public void static_returns_same_instance_each_time() {
+		assertThat(AnonymousExpressionFactory.factory(), is(sameInstance(AnonymousExpressionFactory.factory())));
+	}
 
 	private void assertValueBuilt(NodeBuilder builder, Expression expected) {
 		assertThat(builder.left(LEFT).right(RIGHT).build(), is(equalTo(expected)));

@@ -4,6 +4,12 @@ import java.util.Arrays;
 import java.util.Collection;
 
 public class AnonymousExpressionFactory {
+	private static final AnonymousExpressionFactory INSTANCE = new AnonymousExpressionFactory();
+	
+	//Can be accessed by the static factory() method
+	AnonymousExpressionFactory() {
+	}
+	
 	public NodeBuilder addBuilder() {
 		return Add.builder();
 	}
@@ -72,6 +78,10 @@ public class AnonymousExpressionFactory {
 		return new Card(rank, suit);
 	}
 
+	public static AnonymousExpressionFactory factory() {
+		return INSTANCE;
+	}
+	
 	protected <T extends Expression> T throwIfNull(T t) {
 		if (t == null) {
 			throw new IllegalStateException("Expression is invalid");

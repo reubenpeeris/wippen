@@ -20,7 +20,7 @@ public class CardTest extends BaseExpressionTest {
 	@Test
 	public void construct_with_null_rank_throws() {
 		expect(NullPointerException.class, "rank");
-		new Card(null, CLUB);
+		new Card(null, CLUBS);
 	}
 
 	@Test
@@ -41,7 +41,7 @@ public class CardTest extends BaseExpressionTest {
 	@Test
 	public void getValue_returns_rank_value() {
 		for (Rank rank : Rank.values()) {
-			Card card = new Card(rank, CLUB);
+			Card card = new Card(rank, CLUBS);
 			assertEquals(rank.getValue(), card.getValue());
 		}
 	}
@@ -77,17 +77,17 @@ public class CardTest extends BaseExpressionTest {
 
 	@Test
 	public void cards_are_equal_if_rank_and_suit_match() {
-		assertThat(new Card(ACE, CLUB).equals(c1), is(true));
+		assertThat(new Card(ACE, CLUBS).equals(c1), is(true));
 	}
 
 	@Test
 	public void cards_are_not_equal_if_rank_is_different() {
-		assertThat(new Card(TWO, CLUB).equals(c1), is(false));
+		assertThat(new Card(TWO, CLUBS).equals(c1), is(false));
 	}
 
 	@Test
 	public void cards_are_not_equal_if_suit_is_different() {
-		assertThat(new Card(ACE, SPADE).equals(c1), is(false));
+		assertThat(new Card(ACE, SPADES).equals(c1), is(false));
 	}
 
 	private void assertCardParses(Card card) {
