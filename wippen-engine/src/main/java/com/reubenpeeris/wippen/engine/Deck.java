@@ -1,7 +1,5 @@
 package com.reubenpeeris.wippen.engine;
 
-import static com.reubenpeeris.wippen.expression.AnonymousExpressionFactory.*;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -14,11 +12,15 @@ import com.reubenpeeris.wippen.expression.Card;
 import com.reubenpeeris.wippen.expression.Rank;
 import com.reubenpeeris.wippen.expression.Suit;
 
+import static com.reubenpeeris.wippen.expression.AnonymousExpressionFactory.*;
+
 class Deck {
+	private static final int CARDS_PER_DECK = 52;
+
 	public static final List<Card> FULL_DECK;
 
 	static {
-		List<Card> deck = new ArrayList<>(52);
+		List<Card> deck = new ArrayList<>(CARDS_PER_DECK);
 		for (Suit suit : Suit.values()) {
 			for (Rank rank : Rank.values()) {
 				deck.add(factory().newCard(rank, suit));

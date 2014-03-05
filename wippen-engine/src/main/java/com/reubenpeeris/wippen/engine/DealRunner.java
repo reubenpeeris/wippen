@@ -15,16 +15,18 @@ import com.reubenpeeris.wippen.expression.Pile;
 @Component
 @RequiredArgsConstructor(onConstructor = @_(@Autowired))
 class DealRunner {
+	private static final int CARDS_PER_DEAL = 4;
+
 	@NonNull
 	private final MoveRunner moveRunner;
 
 	public void runDeal(@NonNull Set<Pile> table, @NonNull Iterable<Player> players, @NonNull ScoreKeeper scoreKeeper, @NonNull Deck deck) {
 		log.debug("runDeal");
-		
+
 		Player firstPlayer = players.iterator().next();
-	
+
 		for (Player p : players) {
-			p.addToHand(deck.nextCards(4));
+			p.addToHand(deck.nextCards(CARDS_PER_DEAL));
 		}
 
 		while (!firstPlayer.isHandEmpty()) {

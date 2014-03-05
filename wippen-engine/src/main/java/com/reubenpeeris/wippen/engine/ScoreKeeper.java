@@ -1,9 +1,5 @@
 package com.reubenpeeris.wippen.engine;
 
-import static com.reubenpeeris.wippen.expression.AnonymousExpressionFactory.*;
-import static com.reubenpeeris.wippen.expression.Rank.*;
-import static com.reubenpeeris.wippen.expression.Suit.*;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -14,7 +10,19 @@ import lombok.NonNull;
 import com.reubenpeeris.wippen.expression.Card;
 import com.reubenpeeris.wippen.expression.Pile;
 
+import static com.reubenpeeris.wippen.expression.AnonymousExpressionFactory.*;
+import static com.reubenpeeris.wippen.expression.Rank.*;
+import static com.reubenpeeris.wippen.expression.Suit.*;
+
 public class ScoreKeeper {
+	private static final int POINTS_FOR_ACE = 1;
+	private static final int POINTS_FOR_GOOD_TWO = 1;
+	private static final int POINTS_FOR_GOOD_TEN = 2;
+	private static final int MAX_PLAYERS_TO_GET_POINTS_FOR_CARD_COUNT = 2;
+	private static final int POINTS_FOR_SHARED_CARD_COUNT = 1;
+	private static final int POINTS_FOR_CARD_COUNT = 2;
+	private static final double CENT = 100D;
+
 	private static final CardFilter ALL_CARDS_FILTER = new CardFilter() {
 		@Override
 		public boolean matches(Card c) {
@@ -81,11 +89,11 @@ public class ScoreKeeper {
 			Score score = player.getScore();
 			for (Card card : player.getCapturedCards()) {
 				if (card.getRank() == ACE) {
-					score.incrementPoints(1);
+					score.incrementPoints(POINTS_FOR_ACE);
 				} else if (card.equals(THE_GOOD_TWO)) {
-					score.incrementPoints(1);
+					score.incrementPoints(POINTS_FOR_GOOD_TWO);
 				} else if (card.equals(THE_GOOD_TEN)) {
-					score.incrementPoints(2);
+					score.incrementPoints(POINTS_FOR_GOOD_TEN);
 				}
 			}
 		}
@@ -106,8 +114,8 @@ public class ScoreKeeper {
 			}
 		}
 
-		if (playersWithHighestScore.size() < 3 && highestNumberOfCards > 0) {
-			int points = playersWithHighestScore.size() == 1 ? 2 : 1;
+		if (playersWithHighestScore.size() <= MAX_PLAYERS_TO_GET_POINTS_FOR_CARD_COUNT && highestNumberOfCards > 0) {
+			int points = playersWithHighestScore.size() == 1 ? POINTS_FOR_CARD_COUNT : POINTS_FOR_SHARED_CARD_COUNT;
 
 			for (Player player : playersWithHighestScore) {
 				player.getScore().incrementPoints(points);
@@ -141,7 +149,7 @@ public class ScoreKeeper {
 
 		for (Player player : players) {
 			int score = player.getScore().getMatchPoints();
-			double percentage = score == 0 ? 0 : 100D * score / total;
+			double percentage = score == 0 ? 0 : CENT * score / total;
 			sb.append(String.format("%-50s %8s %5.1f%%%n", player, score, percentage));
 		}
 

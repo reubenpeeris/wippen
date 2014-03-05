@@ -12,7 +12,7 @@ public class LoaderManager<T> {
 		loaders.add(loader);
 	}
 
-	protected T createInstance(@NonNull String url) throws WippenLoaderException {
+	protected T createInstance(@NonNull String url) {
 		for (Loader<T> loader : loaders) {
 			if (loader.acceptsUrl(url)) {
 				return loader.createInstance(url);

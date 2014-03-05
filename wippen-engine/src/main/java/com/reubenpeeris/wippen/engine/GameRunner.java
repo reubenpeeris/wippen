@@ -15,6 +15,8 @@ import com.reubenpeeris.wippen.expression.Pile;
 @Component
 @RequiredArgsConstructor(onConstructor = @_(@Autowired))
 class GameRunner {
+	private static final int CARDS_FOR_TABLE = 4;
+
 	@NonNull
 	private final DealRunner dealRunner;
 
@@ -25,16 +27,16 @@ class GameRunner {
 		if (!players.iterator().hasNext()) {
 			throw new IllegalArgumentException("No players supplied");
 		}
-		
+
 		log.debug("runGame");
 		Player firstPlayer = players.iterator().next();
 
-		table.addAll(deck.nextCards(4));
+		table.addAll(deck.nextCards(CARDS_FOR_TABLE));
 
 		for (Player player : players) {
 			player.startGame(firstPlayer);
 		}
-		
+
 		while (!deck.isEmpty()) {
 			dealRunner.runDeal(table, players, scoreKeeper, deck);
 		}

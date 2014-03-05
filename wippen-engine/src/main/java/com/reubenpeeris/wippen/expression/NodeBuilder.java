@@ -16,11 +16,11 @@ public abstract class NodeBuilder {
 	abstract Expression build(Expression left, Expression right);
 
 	public Expression build() {
-		Expression left = this.left;
-		Expression right = this.right;
+		Expression unchangableLeft = this.left;
+		Expression unchangableRight = this.right;
 
-		if (validator.isValid(left, right)) {
-			return build(left, right);
+		if (validator.isValid(unchangableLeft, unchangableRight)) {
+			return build(unchangableLeft, unchangableRight);
 		} else {
 			return null;
 		}

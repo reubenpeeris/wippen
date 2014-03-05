@@ -90,7 +90,8 @@
 				<directory>src/main/resources</directory>
 				<excludes>
 					<exclude>logback.xml</exclude>
-					<exclude>findbugs-exclude.xml</exclude>
+					<exclude>findbugs*</exclude>
+					<exclude>checkstyle*</exclude>
 				</excludes>
 			</resource>
 		</resources>
@@ -109,6 +110,27 @@
 					<showWarnings>true</showWarnings>
 					<showDeprecation>true</showDeprecation>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<version>2.9.1</version>
+				<configuration>
+					<violationSeverity>info</violationSeverity>
+					<logViolationsToConsole>true</logViolationsToConsole>
+					<!-- By default, CheckStyle is configured per project in Eclipse, including tests, so this replicates the behaviour -->
+					<includeTestSourceDirectory>true</includeTestSourceDirectory>
+					<configLocation>${project.basedir}/src/main/resources/checkstyle.xml</configLocation>
+					<!-- Translate Eclipse project_loc property to equivalent maven property -->
+					<propertyExpansion>project_loc=${project.basedir}</propertyExpansion>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
@@ -130,7 +152,6 @@
 				</configuration>
 				<executions>
 					<execution>
-						<phase>verify</phase>
 						<goals>
 							<goal>check</goal>
 						</goals>

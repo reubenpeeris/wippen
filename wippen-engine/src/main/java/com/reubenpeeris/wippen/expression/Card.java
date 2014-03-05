@@ -15,6 +15,9 @@ import com.reubenpeeris.wippen.engine.WippenIllegalFormatException;
 @EqualsAndHashCode(callSuper = false, of = { "suit", "rank" })
 public final class Card extends Pile {
 	private static final Pattern CARD_PATTERN = Pattern.compile("^([1-9]|1[0-3])([CDHS])$");
+	private static final int RANK_GROUP = 1;
+	private static final int SUIT_GROUP = 2;
+
 	private final Suit suit;
 	private final Rank rank;
 	private final Collection<Card> cards = Collections.singleton(this);
@@ -32,8 +35,8 @@ public final class Card extends Pile {
 			throw new WippenIllegalFormatException("Invalid card format '" + string + "'");
 		}
 
-		Rank rank = Rank.fromInt(Integer.parseInt(matcher.group(1)));
-		String suit = matcher.group(2);
+		Rank rank = Rank.fromInt(Integer.parseInt(matcher.group(RANK_GROUP)));
+		String suit = matcher.group(SUIT_GROUP);
 
 		return new Card(rank, Suit.fromLetter(suit));
 	}

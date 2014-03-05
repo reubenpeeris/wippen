@@ -18,7 +18,7 @@ public enum Rank {
 	}
 
 	public static Rank fromInt(int value) {
-		if (value < 1 || value > 13) {
+		if (value < ACE.getValue() || value > KING.getValue()) {
 			throw new IllegalArgumentException("Rank must be in the range 1 to 13");
 		}
 		return values()[value - 1];

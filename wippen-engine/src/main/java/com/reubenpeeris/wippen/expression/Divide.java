@@ -11,7 +11,7 @@ final class Divide extends PairNode {
 	public static NodeBuilder builder() {
 		return new NodeBuilder(DIVIDE_VALIDATOR) {
 			@Override
-			protected final PairNode build(Expression left, Expression right) {
+			protected PairNode build(Expression left, Expression right) {
 				return new Divide(left, right);
 			}
 		};

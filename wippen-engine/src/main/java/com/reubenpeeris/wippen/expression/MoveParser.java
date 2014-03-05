@@ -11,23 +11,29 @@ import com.reubenpeeris.wippen.engine.WippenIllegalFormatException;
 import com.reubenpeeris.wippen.expression.Move.Type;
 
 final class MoveParser {
+	private static final Pattern MOVE_PATTERN = Pattern.compile("(BUILD|CAPTURE|DISCARD) (?:(.*) USING )?([^ ]*)$");
+	private static final int TYPE_GROUP = 1;
+	private static final int EXPRESSION_GROUP = 2;
+	private static final int CARD_GROUP = 3;
+	private static final String OPERATOR_PRESEDENCE = "=+-*/";
+	private static final Pattern BUILDING_PATTERN = Pattern.compile("^([1-9]|1[0-3])B(\\d+)$");
+	private static final int RANK_GROUP = 1;
+	private static final int PLAYER_POSITION_GROUP = 2;
+	private static final int CARDS_NEEDED_FOR_PAIR = 2;
+
 	private MoveParser() {
 	}
 
-	private static final String OPERATOR_PRESEDENCE = "=+-*/";
-	private static final Pattern BUILDING_PATTERN = Pattern.compile("^([1-9]|1[0-3])B(\\d+)$");
-	private static final Pattern MOVE_PATTERN = Pattern.compile("(BUILD|CAPTURE|DISCARD) (?:(.*) USING )?([^ ]*)$");
-
-	public static Move parseMove(String moveExpression, Set<Pile> table, Set<Card> hand, Player player) throws WippenIllegalFormatException {
+	public static Move parseMove(String moveExpression, Set<Pile> table, Set<Card> hand, Player player) {
 		try {
 			Matcher matcher = MOVE_PATTERN.matcher(moveExpression);
 			if (!matcher.matches()) {
 				throw new WippenIllegalFormatException();
 			}
 
-			Type type = Type.valueOf(matcher.group(1));
-			Expression expression = parseMath(matcher.group(2), table);
-			Card handCard = Card.parseCard(matcher.group(3));
+			Type type = Type.valueOf(matcher.group(TYPE_GROUP));
+			Expression expression = parseMath(matcher.group(EXPRESSION_GROUP), table);
+			Card handCard = Card.parseCard(matcher.group(CARD_GROUP));
 			if (Move.checkArgs(type, expression, handCard, table, hand, player) == null) {
 				return new Move(type, expression, handCard, table, hand, player);
 			} else {
@@ -88,7 +94,7 @@ final class MoveParser {
 		return output.toString().trim();
 	}
 
-	private static Expression parseMath(String expression, Collection<Pile> table) throws WippenIllegalFormatException {
+	private static Expression parseMath(String expression, Collection<Pile> table) {
 		if (expression == null) {
 			return null;
 		}
@@ -121,7 +127,7 @@ final class MoveParser {
 					return null;
 				}
 
-				if (stack.size() < 2) {
+				if (stack.size() < CARDS_NEEDED_FOR_PAIR) {
 					return null;
 				}
 
@@ -145,12 +151,12 @@ final class MoveParser {
 		return stack.pop();
 	}
 
-	private static Pile parsePile(String string, Collection<Pile> table) throws WippenIllegalFormatException {
+	private static Pile parsePile(String string, Collection<Pile> table) {
 		Matcher matcher = BUILDING_PATTERN.matcher(string);
 
 		if (matcher.matches()) {
-			Rank rank = Rank.fromInt(Integer.parseInt(matcher.group(1)));
-			int position = Integer.parseInt(matcher.group(2));
+			Rank rank = Rank.fromInt(Integer.parseInt(matcher.group(RANK_GROUP)));
+			int position = Integer.parseInt(matcher.group(PLAYER_POSITION_GROUP));
 
 			for (Pile pile : table) {
 				if (pile.getValue() == rank.getValue() && pile.getPlayer().getPosition() == position) {

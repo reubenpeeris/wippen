@@ -30,12 +30,12 @@ public class SpringLoader<T> implements Loader<T> {
 	}
 
 	@Override
-	public boolean acceptsUrl(@NonNull String url) throws WippenLoaderException {
+	public boolean acceptsUrl(@NonNull String url) {
 		return url.startsWith(PROTOCOL);
 	}
 
 	@Override
-	public T createInstance(String url) throws WippenLoaderException {
+	public T createInstance(String url) {
 		if (!acceptsUrl(url)) {
 			throw new WippenLoaderException("Unsupported url: '" + url + "'");
 		}
@@ -43,7 +43,9 @@ public class SpringLoader<T> implements Loader<T> {
 		ClassPathResource resource = new ClassPathResource(path);
 
 		try (@SuppressWarnings("resource")
-		AbstractApplicationContext context = resource.exists() ? new ClassPathXmlApplicationContext(path) : new FileSystemXmlApplicationContext(path)) {
+		AbstractApplicationContext context = resource.exists()
+				? new ClassPathXmlApplicationContext(path)
+				: new FileSystemXmlApplicationContext(path)) {
 			try {
 				return context.getBean(beanName, clazz);
 			} catch (BeansException e) {

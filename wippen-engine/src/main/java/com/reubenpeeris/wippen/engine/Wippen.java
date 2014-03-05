@@ -27,14 +27,18 @@ import com.reubenpeeris.wippen.robotloader.WippenLoaderException;
 @Getter
 @Setter
 public class Wippen {
-	private static final ApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
+	private static final int MIN_ROBOTS = 2;
+	private static final int MAX_ROBOTS = 4;
+	private static final int DEFAULT_SETS = 100;
+	private static final int DEFAULT_FIRST_SET = 0;
 	private static final int FAIL_EXIT_CODE = 1;
+	private static final ApplicationContext CONTEXT = new ClassPathXmlApplicationContext("beans.xml");
 
 	@Parameter(names = { "-s", "--sets" }, description = "The number of sets to play", validateWith = PositiveInteger.class)
-	private int sets = 100;
+	private int sets = DEFAULT_SETS;
 
 	@Parameter(names = { "-f", "--first-set" }, description = "The first set to play")
-	private int firstSet = 0;
+	private int firstSet = DEFAULT_FIRST_SET;
 
 	@NonNull
 	@Parameter(description = "robot1 robot2 [robot3 [robot4]]", required = true, converter = RobotConverter.class)
@@ -68,7 +72,7 @@ public class Wippen {
 	}
 
 	public static Wippen create() {
-		return context.getBean(Wippen.class);
+		return CONTEXT.getBean(Wippen.class);
 	}
 
 	@Autowired
@@ -98,7 +102,9 @@ public class Wippen {
 				System.out.println();
 				System.out.println("  Example");
 				System.out.println("    " + programName
-						+ " --sets 1000 -g 29 class:com.reubenpeeris.wippen.examples.PairAdder class:com.reubenpeeris.wippen.examples.PairCapturer");
+						+ " --sets 1000 -g 29 "
+						+ "class:com.reubenpeeris.wippen.examples.PairAdder "
+						+ "class:com.reubenpeeris.wippen.examples.PairCapturer");
 				System.out.println("      Execute a run of 1000 sets starting with game 29 for PairAdder vs PairCapturer");
 			} else {
 				validateParameters();
@@ -135,19 +141,21 @@ public class Wippen {
 		return scoreKeeper.getScores();
 	}
 
-	private void validateParameters() throws ParameterException {
-		if (robots.size() < 2 || robots.size() > 4) {
-			throw new ParameterException("Main parameters are required to have between 2 and 4 robots (\"robot1 robot2 [robot3 [robot4]]\")");
+	private void validateParameters() {
+		if (robots.size() < MIN_ROBOTS || robots.size() > MAX_ROBOTS) {
+			throw new ParameterException("Main parameters are required to have between 2 and 4 robots "
+					+ "(\"robot1 robot2 [robot3 [robot4]]\")");
 		}
 	}
 
 	public static class PositiveInteger implements IParameterValidator {
 		@Override
-		public void validate(String name, String value) throws ParameterException {
+		public void validate(String name, String value) {
 			try {
 				int parsedValue = Integer.parseInt(value);
 				if (parsedValue < 0) {
-					throw new ParameterException(String.format("\"%s\": couldn't convert \"%s\" to a positive integer", name, value));
+					throw new ParameterException(
+						String.format("\"%s\": couldn't convert \"%s\" to a positive integer", name, value));
 				}
 			} catch (NumberFormatException e) {
 				throw new ParameterException(String.format("\"%s\": couldn't convert \"%s\" to an integer", name, value));

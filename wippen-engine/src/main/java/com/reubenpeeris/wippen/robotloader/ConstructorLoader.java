@@ -18,12 +18,12 @@ public class ConstructorLoader<T> implements Loader<T> {
 	}
 
 	@Override
-	public boolean acceptsUrl(@NonNull String url) throws WippenLoaderException {
+	public boolean acceptsUrl(@NonNull String url) {
 		return url.startsWith(PROTOCOL);
 	}
 
 	@Override
-	public T createInstance(String url) throws WippenLoaderException {
+	public T createInstance(String url) {
 		if (!acceptsUrl(url)) {
 			throw new WippenLoaderException("Unsupported url: '" + url + "'");
 		}

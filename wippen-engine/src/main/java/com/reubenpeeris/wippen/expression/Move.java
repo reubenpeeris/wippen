@@ -110,9 +110,9 @@ public final class Move extends Expression {
 		this.type = type;
 		this.handCard = handCard;
 
-		Set<Pile> tablePilesUsed = new HashSet<>(this.expression.getPiles());
-		tablePilesUsed.remove(handCard);
-		this.tablePilesUsed = Collections.unmodifiableSet(tablePilesUsed);
+		Set<Pile> tempTablePilesUsed = new HashSet<>(this.expression.getPiles());
+		tempTablePilesUsed.remove(handCard);
+		this.tablePilesUsed = Collections.unmodifiableSet(tempTablePilesUsed);
 		this.player = player;
 	}
 
