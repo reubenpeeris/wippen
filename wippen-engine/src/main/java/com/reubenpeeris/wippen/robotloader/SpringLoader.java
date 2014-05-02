@@ -42,8 +42,7 @@ public class SpringLoader<T> implements Loader<T> {
 		String path = url.substring(PROTOCOL.length());
 		ClassPathResource resource = new ClassPathResource(path);
 
-		try (@SuppressWarnings("resource")
-		AbstractApplicationContext context = resource.exists()
+		try (AbstractApplicationContext context = resource.exists()
 				? new ClassPathXmlApplicationContext(path)
 				: new FileSystemXmlApplicationContext(path)) {
 			try {
